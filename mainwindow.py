@@ -10,10 +10,10 @@ from datetime import datetime
 
 import pygame.camera
 from PyQt5.QtCore import QUrl, Qt, QTimer, QThread
-from PyQt5.QtGui import QIcon, QImage, QPixmap
+from PyQt5.QtGui import QIcon, QImage, QPixmap, QStandardItem
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
-    QListView
+    QListView, QTreeWidget
 from PyQt5 import uic, QtWidgets
 import detect
 from model_settings import ModelSettings
@@ -42,6 +42,7 @@ class Pyqt5Window:
         self.ui.play_pause_2.clicked.connect(self.playPause)
         # 双击播放
         self.ui.video_tree.itemDoubleClicked.connect(self.CameraVideo)
+        self.ui.work_list.itemDoubleClicked.connect(self.WorkListPreview)
         # 文件树展开
         self.ui.video_tree.itemExpanded.connect(self.loadSubtree)
         # 进度条
@@ -80,6 +81,9 @@ class Pyqt5Window:
         self.timer_cv = QTimer()
         self.timer_cv.timeout.connect(self.updateFrame)
         self.timer_cv.setInterval(30)  # 1000毫秒 = 1秒
+        # 启用多选
+        self.ui.video_tree.setSelectionMode(QTreeWidget.ExtendedSelection)
+        self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
 
         self.video_tree = []
         self.selected_folder = ""
@@ -112,7 +116,7 @@ class Pyqt5Window:
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
         splitter_video.setStretchFactor(0, 6)
-        splitter_video.setStretchFactor(1, 3)
+        splitter_video.setStretchFactor(1, 1)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
@@ -123,7 +127,15 @@ class Pyqt5Window:
         self.camera_icon = QIcon("resources/cam_ico.png")
 
     def addWorkspace(self):
-        print("1")
+        selected_items = self.ui.video_tree.selectedItems()
+        for item in selected_items:
+            # 复制选中的项到目标 TreeWidget
+            if item.childCount() <= 0:
+                cloned_item = item.clone()
+                cloned_item.isCamera = item.isCamera
+                if not item.isCamera:
+                    cloned_item.path = self.getFullPath(item)
+                self.ui.work_list.addTopLevelItem(cloned_item)
 
     def startIdentifyThread(self):
         # self.settings = QApplication([])
@@ -162,6 +174,7 @@ class Pyqt5Window:
             if self.camera_id_list is not None:
                 for camera_id in self.camera_id_list:
                     item = QTreeWidgetItem(self.ui.video_tree)
+                    item.isCamera = True
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
@@ -177,6 +190,7 @@ class Pyqt5Window:
             if self.camera_id_list is not None:
                 for camera_id in self.camera_id_list:
                     item = QTreeWidgetItem(self.ui.video_tree)
+                    item.isCamera = True
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
@@ -219,6 +233,7 @@ class Pyqt5Window:
                     # 文件夹
                     dir_path = os.path.join(root, dir)
                     child_item = QTreeWidgetItem(parent_item)
+                    child_item.isCamera = False
                     child_item.setData(0, Qt.UserRole, False)
                     child_item.setText(0, dir)
 
@@ -230,6 +245,7 @@ class Pyqt5Window:
                     # 文件
                     item = QTreeWidgetItem(parent_item)
                     item.setData(0, Qt.UserRole, False)
+                    item.isCamera = False
                     item.setText(0, file)
 
                     # 获取文件后缀
@@ -263,7 +279,7 @@ class Pyqt5Window:
     def CameraVideo(self, item):
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '视频列表':
-            self.playSelectedVideo(item)
+            self.playSelectedVideo(item, False)
 
             self.ui.player.setVisible(True)
             self.ui.camera.setVisible(False)
@@ -272,6 +288,19 @@ class Pyqt5Window:
             self.ui.camera.setVisible(True)
             self.capture = cv2.VideoCapture(0)
             self.timer_cv.start()
+
+    def WorkListPreview(self, item):
+        if item.isCamera:
+            self.ui.player.setVisible(False)
+            self.ui.camera.setVisible(True)
+            self.capture = cv2.VideoCapture(0)
+            self.timer_cv.start()
+        else:
+            print("cam")
+            self.playSelectedVideo(item, True)
+
+            self.ui.player.setVisible(True)
+            self.ui.camera.setVisible(False)
 
     def updateFrame(self):
         # 从OpenCV捕获摄像头获取一帧图像
@@ -282,14 +311,20 @@ class Pyqt5Window:
         self.ui.camera.setPixmap(QPixmap.fromImage(showImage).scaled(self.ui.camera.size(), Qt.KeepAspectRatio))
         self.ui.camera.setAlignment(Qt.AlignCenter)
 
-    def playSelectedVideo(self, item):
+    def playSelectedVideo(self, item, isworklist):
+        if self.capture is not None:
+            self.capture.release()
+        self.timer_cv.stop()
         # 重置标签
         self.ui.video_label_edit.setText("")
         # 解禁设置视频标签
         self.ui.video_label_edit.setEnabled(True)
         self.ui.save_label.setEnabled(True)
         # 获取所选项的完整路径，包括文件夹结构
-        selected_video_path = self.getFullPath(item)
+        if isworklist:
+            selected_video_path = item.path
+        else:
+            selected_video_path = self.getFullPath(item)
 
         if os.path.exists(selected_video_path):
             # 获取文件的基本名称（不包含路径）
