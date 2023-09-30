@@ -243,7 +243,11 @@
                  <item>
                   <widget class="QPushButton" name="play_pause">
                    <property name="text">
-                    <string>Play</string>
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -429,7 +433,11 @@
                       </sizepolicy>
                      </property>
                      <property name="text">
-                      <string>暂停/播放</string>
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
                      </property>
                     </widget>
                    </item>
@@ -577,7 +585,7 @@
   <action name="video_select">
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/sodetensonkid/.designer/backup/resources/file.ico</normaloff>C:/Users/sodetensonkid/.designer/backup/resources/file.ico</iconset>
+     <normaloff>resources/file.ico</normaloff>resources/file.ico</iconset>
    </property>
    <property name="text">
     <string>视频目录选择</string>
