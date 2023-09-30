@@ -127,6 +127,9 @@
            </item>
            <item>
             <widget class="QTreeWidget" name="video_tree">
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
              <attribute name="headerVisible">
               <bool>false</bool>
              </attribute>
@@ -138,7 +141,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="work_list"/>
+            <widget class="QTreeWidget" name="work_list">
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
            </item>
           </layout>
          </item>
