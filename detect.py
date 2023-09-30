@@ -296,7 +296,13 @@ def run(
             im1 = im0.astype("uint8")
             show = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
             showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-            show_label.setPixmap(QPixmap.fromImage(showImage).scaled(show_label.size(), Qt.KeepAspectRatio))
+
+            label_size = show_label.size()
+            label_size.setWidth(label_size.width() - 10)
+            label_size.setHeight(label_size.height() - 10)
+            scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
+            pixmap = QPixmap.fromImage(scaled_image)
+            show_label.setPixmap(pixmap)
             show_label.setAlignment(Qt.AlignCenter)
 
             # Save results (image with detections)

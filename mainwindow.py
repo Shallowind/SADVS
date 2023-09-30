@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 import threading
-
+import qdarkstyle
 import cv2
 # import ffmpeg
 from datetime import datetime
@@ -15,6 +15,8 @@ from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
     QListView, QTreeWidget
 from PyQt5 import uic, QtWidgets
+from qdarkstyle import LightPalette
+
 import detect
 from model_settings import ModelSettings
 from utils.myutil import file_is_pic, Globals
@@ -84,6 +86,17 @@ class Pyqt5Window:
         self.timer_cv.setInterval(30)  # 1000毫秒 = 1秒
         # 启用多选
         self.ui.video_tree.setSelectionMode(QTreeWidget.ExtendedSelection)
+        self.ui.video_tree.setStyleSheet("""
+        QTreeWidget::branch:has-siblings:!adjoins-item{ \
+            border-image:None 0;\
+        }\
+        QTreeWidget::branch:has-siblings:adjoins-item{\
+            border-image:None 0;\
+        }   \
+        QTreeWidget::branch:!has-children:!has-siblings:adjoins-item{\
+            border-image:None 0;\
+        }\
+        """)
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
 
         self.video_tree = []
@@ -104,6 +117,15 @@ class Pyqt5Window:
         splitter_tab.addWidget(self.ui.tabWidget)
         splitter_tab.setStretchFactor(0, 8)
         splitter_tab.setStretchFactor(1, 10)
+        splitter_tab.setStyleSheet("""
+            QSplitter {
+                background-color: white;
+            }
+            QSplitter::handle {
+                background-color: white;
+            }
+        """)
+
         self.ui.horizontalLayout.addWidget(splitter_tab)
 
         splitter_video = QSplitter(Qt.Horizontal)
@@ -116,7 +138,7 @@ class Pyqt5Window:
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
-        splitter_video.setStretchFactor(0, 6)
+        splitter_video.setStretchFactor(0, 9)
         splitter_video.setStretchFactor(1, 1)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
         # 图标
@@ -151,13 +173,11 @@ class Pyqt5Window:
 
     def startIdentify(self):
         model_path = 'D:/DaChuang/项目资料/yolov5_pyqt5-master/yolov5_pyqt5-master/weights/yolov5s.pt'
-        print("1")
         if model_path:
             # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
             # save_img=True, show_labellist=self.ui.action_list)
             detect.run(source=0, weights=model_path, show_label=self.ui.camera_2,
                        save_img=False, use_camera=True, show_labellist=self.ui.action_list)
-        print("2")
 
     # 视频/设备切换时触发
     def select_V_D(self):
@@ -300,7 +320,6 @@ class Pyqt5Window:
             self.capture = cv2.VideoCapture(0)
             self.timer_cv.start()
         else:
-            print("cam")
             self.playSelectedVideo(item, True)
 
             self.ui.player.setVisible(True)
@@ -311,8 +330,12 @@ class Pyqt5Window:
         flag, image = self.capture.read()
         show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-
-        self.ui.camera.setPixmap(QPixmap.fromImage(showImage).scaled(self.ui.camera.size(), Qt.KeepAspectRatio))
+        label_size = self.ui.camera.size()
+        label_size.setWidth(label_size.width() - 10)
+        label_size.setHeight(label_size.height() - 10)
+        scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
+        pixmap = QPixmap.fromImage(scaled_image)
+        self.ui.camera.setPixmap(pixmap)
         self.ui.camera.setAlignment(Qt.AlignCenter)
 
     def playSelectedVideo(self, item, isworklist):
@@ -451,6 +474,7 @@ class Pyqt5Window:
 
     # 显示剩余时间
     def displayTime(self, ms):
+        print(ms)
         minutes = int(ms / 60000)
         seconds = int((ms % 60000) / 1000)
         milliseconds = int(ms % 1000)
@@ -540,6 +564,7 @@ class Pyqt5Window:
 
 if __name__ == "__main__":
     app = QApplication([])
+    app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
     pyqt5 = Pyqt5Window()
     pyqt5.ui.show()
     app.exec()
