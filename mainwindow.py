@@ -75,6 +75,7 @@ class Pyqt5Window:
         self.ui.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 40px; }')
         self.ui.v_d_comboBox.setMaxVisibleItems(50)
         self.ui.camera.setVisible(False)
+        self.ui.play_pause_2.setVisible(False)
         # tab切换
         self.ui.tabWidget.currentChanged.connect(self.tabChanged)
         # 定时器
@@ -125,6 +126,8 @@ class Pyqt5Window:
         self.text_icon = QIcon("resources/text_ico.png")
         self.video_icon = QIcon("resources/video_ico.png")
         self.camera_icon = QIcon("resources/cam_ico.png")
+        self.play_ico = QIcon("resources/play_ico.png")
+        self.pause_ico = QIcon("resources/pause_ico.png")
 
     def addWorkspace(self):
         selected_items = self.ui.video_tree.selectedItems()
@@ -286,7 +289,8 @@ class Pyqt5Window:
         elif selected_option == '设备列表':
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
-            self.capture = cv2.VideoCapture(0)
+
+            self.capture = cv2.VideoCapture(int(item.text(0)))
             self.timer_cv.start()
 
     def WorkListPreview(self, item):
@@ -476,13 +480,17 @@ class Pyqt5Window:
     def playPause(self):
         if self.ui.tabWidget.currentIndex() == 0:
             if self.player.state() == 1:
+                self.ui.play_pause.setIcon(self.play_ico)
                 self.player.pause()
             else:
+                self.ui.play_pause.setIcon(self.pause_ico)
                 self.player.play()
         elif self.ui.tabWidget.currentIndex() == 1:
             if self.player_2.state() == 1:
+                self.ui.play_pause_2.setIcon(self.play_ico)
                 self.player_2.pause()
             else:
+                self.ui.play_pause_2.setIcon(self.pause_ico)
                 self.player_2.play()
 
     # 保存标签
