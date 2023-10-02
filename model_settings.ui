@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>434</width>
-    <height>358</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,61 +41,33 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="text">
           <string>视频保存地址  </string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit">
+        <widget class="QLineEdit" name="save_address_edit">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="styleSheet">
           <string notr="true">border-width:1;border-style:outset;border-color:gray;</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset>
-           <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,5,1">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>选择模型      </string>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_2">
-         <property name="styleSheet">
-          <string notr="true">border-width:1;border-style:outset;border-color:gray;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="save_address_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -123,20 +95,33 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="text">
-          <string>选择权重      </string>
+          <string>选择权重         </string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_3">
+        <widget class="QLineEdit" name="pt_edit">
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="styleSheet">
           <string notr="true">border-width:1;border-style:outset;border-color:gray;</string>
          </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_3">
+        <widget class="QPushButton" name="pt_select_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -155,6 +140,70 @@
       </layout>
      </item>
      <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,5,1">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
+         <property name="text">
+          <string>选择模型         </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="model_combox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>yolo_slowfast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>yolov5</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="model_select_button">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>resources/op_icon/alarm.png</normaloff>resources/op_icon/alarm.png</iconset>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="2,5,1">
        <item>
         <widget class="QLabel" name="label_4">
@@ -164,26 +213,41 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="text">
-          <string>标签集        </string>
+          <string>标签集            </string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox">
+        <widget class="QComboBox" name="label_combox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>微软雅黑</family>
+          </font>
+         </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
+         <item>
+          <property name="text">
+           <string>人物</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="labels_select_button">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -220,6 +284,9 @@
         <property name="leftMargin">
          <number>0</number>
         </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
         <property name="rightMargin">
          <number>0</number>
         </property>
@@ -249,17 +316,29 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string> </string>
+             <string/>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="save_button">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>微软雅黑</family>
+              <pointsize>10</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>保存</string>

@@ -13,18 +13,20 @@ from PyQt5.QtCore import QUrl, Qt, QTimer, QThread
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QStandardItem
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
-    QListView, QTreeWidget
+    QListView, QTreeWidget, QMainWindow
 from PyQt5 import uic, QtWidgets
 from qdarkstyle import LightPalette
 
 import detect
+import detect_yolov5
 from model_settings import ModelSettings
 from utils.myutil import file_is_pic, Globals
 
 
-class Pyqt5Window:
+class Pyqt5Window(QMainWindow):
     def __init__(self):
         # 加载designer设计的ui程序
+        super().__init__()
         self.ui = uic.loadUi('pyqt5.ui')
         self.ui.resize(1600, 900)
         self.ui.showMaximized()
@@ -43,6 +45,7 @@ class Pyqt5Window:
         self.ui.play_pause.clicked.connect(self.playPause)
         self.ui.play_pause_2.clicked.connect(self.playPause)
         # 双击播放
+        self.ui.video_tree.setSortingEnabled(False)
         self.ui.video_tree.itemDoubleClicked.connect(self.CameraVideo)
         self.ui.work_list.itemDoubleClicked.connect(self.WorkListPreview)
         # 文件树展开
@@ -70,9 +73,8 @@ class Pyqt5Window:
         self.ui.v_d_comboBox.currentIndexChanged.connect(self.select_V_D)
         self.ui.v_d_comboBox.setView(QListView())
         # 启动识别
-        self.ui.start_identify.clicked.connect(self.startIdentifyThread)
-        self.settings = None
-        self.settings_widget = None
+        self.ui.start_identify.clicked.connect(self.startIdentifyClicked)
+        self.settings_window = None
         # 使用样式表来设置项的高度
         self.ui.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 40px; }')
         self.ui.v_d_comboBox.setMaxVisibleItems(50)
@@ -162,22 +164,30 @@ class Pyqt5Window:
                     cloned_item.path = self.getFullPath(item)
                 self.ui.work_list.addTopLevelItem(cloned_item)
 
+    def startIdentifyClicked(self):
+        if self.settings_window is None:
+            Globals.settings['saved'] = False
+            self.settings_window = ModelSettings(self)
+            self.settings_window.ui.show()
+            self.ui.setEnabled(False)  # 暂停主窗口活动
+
     def startIdentifyThread(self):
-        # self.settings = QApplication([])
-        # self.settings_widget = ModelSettings()
-        # self.settings_widget.ui.show()
-        # self.settings.exec()
-        Globals.camera_running = True
-        identify_thread = threading.Thread(target=self.startIdentify)
-        identify_thread.start()
+        if Globals.settings['saved']:
+            self.timer_cv.stop()
+            Globals.camera_running = True
+            identify_thread = threading.Thread(target=self.startIdentify)
+            identify_thread.daemon = True  # 主界面关闭时自动退出此线程
+            identify_thread.start()
 
     def startIdentify(self):
-        model_path = 'D:/DaChuang/项目资料/yolov5_pyqt5-master/yolov5_pyqt5-master/weights/yolov5s.pt'
-        if model_path:
-            # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
-            # save_img=True, show_labellist=self.ui.action_list)
-            detect.run(source=0, weights=model_path, show_label=self.ui.camera_2,
+        if Globals.settings['model_select'] == 'yolov5':
+            detect_yolov5.run(source=0, weights=Globals.settings['pt_path'], show_label=self.ui.camera_2,
+                              save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+        elif Globals.settings['model_select'] == 'yolo_slowfast':
+            detect.run(source=0, weights=Globals.settings['pt_path'], show_label=self.ui.camera_2,
                        save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+        # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
+        # save_img=True, show_labellist=self.ui.action_list)
 
     # 视频/设备切换时触发
     def select_V_D(self):
@@ -321,7 +331,6 @@ class Pyqt5Window:
             self.timer_cv.start()
         else:
             self.playSelectedVideo(item, True)
-
             self.ui.player.setVisible(True)
             self.ui.camera.setVisible(False)
 
@@ -426,6 +435,7 @@ class Pyqt5Window:
             # 获取视频文件的基本信息
             video_info = os.stat(selected_video_path)
             file_size = video_info.st_size  # 文件大小（字节）
+
             modified_time = os.path.getmtime(selected_video_path)  # 文件修改日期时间
             formatted_date = datetime.fromtimestamp(modified_time).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -451,15 +461,26 @@ class Pyqt5Window:
 
             # 关闭视频文件
             cap.release()
-
+            file_size = self.convert_bytes_to_readable(file_size)
             # 将信息设置到UI元素中
             info_text = f"总帧数: {total_frames}\n\n帧率: {frame_rate}\n\n时长: {hours}:{minutes}:{seconds}\n\n"
-            info_text += f"修改日期:{formatted_date} \n\n文件大小 (字节): {file_size}\n\n分辨率: {width}x{height}"
+            info_text += f"修改日期:{formatted_date} \n\n文件大小: {file_size}\n\n分辨率: {width}x{height}"
             self.ui.video_info.setPlainText(info_text)
 
         except Exception as e:
             # 处理异常情况
             self.ui.video_info.setPlainText(f"获取视频信息时发生错误: {str(e)}")
+
+    # 单位转换
+    def convert_bytes_to_readable(self, size_in_bytes):
+        units = ["B", "KB", "MB", "GB", "TB"]
+        unit_index = 0
+        size = size_in_bytes
+        while size >= 1024 and unit_index < len(units) - 1:
+            size /= 1024
+            unit_index += 1
+        formatted_size = "{:.2f}".format(size)
+        return f"{formatted_size} {units[unit_index]}"
 
     # 视频实时位置获取
     def getPosition(self):
@@ -563,6 +584,9 @@ class Pyqt5Window:
 
 
 if __name__ == "__main__":
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication([])
     app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
     pyqt5 = Pyqt5Window()
