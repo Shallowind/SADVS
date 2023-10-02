@@ -7,5 +7,6 @@ def file_is_pic(suffix):
 
 # 全局变量
 class Globals:
+    settings = {}
     camera_running = False
     dict_text = {}
