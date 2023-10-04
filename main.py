@@ -10,6 +10,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 
 import detect
+import detect_yolov5
 from utils.myutil import file_is_pic, Globals
 
 
@@ -267,7 +268,7 @@ class DetectionThread(QThread):
         self.label = label
 
     def run(self):
-        detect.run(source=self.file_path, weights=self.model_path[0], show_label=self.label, save_img=True)
+        detect_yolov5.run(source=self.file_path, weights=self.model_path[0], show_label=self.label, save_img=True)
         self.signal_done.emit(1)  # 发送结束信号
 
 
@@ -279,7 +280,7 @@ class CameraDetectionThread(QThread):
         self.label = label
 
     def run(self):
-        detect.run(source=0, weights=self.model_path[0], show_label=self.label, save_img=False, use_camera=True)
+        detect_yolov5.run(source=0, weights=self.model_path[0], show_label=self.label, save_img=False, use_camera=True)
 
 
 if __name__ == '__main__':

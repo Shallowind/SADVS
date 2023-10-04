@@ -10,6 +10,12 @@
     <height>466</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>400</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -241,7 +247,7 @@ QPushButton:pressed {
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="ori_video">
          <attribute name="title">
@@ -460,6 +466,15 @@ QPushButton:pressed {
                      <pointsize>9</pointsize>
                     </font>
                    </property>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="accessibleDescription">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>在这里输入备注...</string>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -543,6 +558,9 @@ QPushButton:pressed {
                   <layout class="QHBoxLayout" name="horizontalLayout_11">
                    <item>
                     <widget class="QPushButton" name="start_identify">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                        <horstretch>0</horstretch>
