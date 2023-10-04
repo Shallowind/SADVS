@@ -13,7 +13,7 @@ from PyQt5.QtCore import QUrl, Qt, QTimer, QThread
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QStandardItem
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
-    QListView, QTreeWidget, QMainWindow
+    QListView, QTreeWidget, QMainWindow, QMenu, QAction
 from PyQt5 import uic, QtWidgets
 from qdarkstyle import LightPalette
 
@@ -28,7 +28,7 @@ class Pyqt5Window(QMainWindow):
         # 加载designer设计的ui程序
         super().__init__()
         self.ui = uic.loadUi('pyqt5.ui')
-        self.ui.resize(1600, 900)
+        self.ui.resize(1000, 600)
         self.ui.showMaximized()
         self.ui.setWindowTitle("视频检测")
         # 播放器
@@ -50,6 +50,9 @@ class Pyqt5Window(QMainWindow):
         self.ui.work_list.itemDoubleClicked.connect(self.WorkListPreview)
         # 文件树展开
         self.ui.video_tree.itemExpanded.connect(self.loadSubtree)
+        # 右键菜单
+        self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.video_tree.customContextMenuRequested.connect(self.showContextMenu)
         # 进度条
         self.player.durationChanged.connect(self.getDuration)
         self.player.positionChanged.connect(self.getPosition)
@@ -76,7 +79,7 @@ class Pyqt5Window(QMainWindow):
         self.ui.start_identify.clicked.connect(self.startIdentifyClicked)
         self.settings_window = None
         # 使用样式表来设置项的高度
-        self.ui.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 40px; }')
+        self.ui.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 20px; }')
         self.ui.v_d_comboBox.setMaxVisibleItems(50)
         self.ui.camera.setVisible(False)
         self.ui.play_pause_2.setVisible(False)
@@ -104,6 +107,7 @@ class Pyqt5Window(QMainWindow):
         self.video_tree = []
         self.selected_folder = ""
         self.selected_path = ""
+        self.selected_item = None
 
         # 分割器
         splitter_list = QSplitter(Qt.Vertical)
@@ -153,6 +157,31 @@ class Pyqt5Window(QMainWindow):
         self.play_ico = QIcon("resources/play_ico.png")
         self.pause_ico = QIcon("resources/pause_ico.png")
 
+    def showContextMenu(self, position):
+
+        item = self.ui.video_tree.itemAt(position)
+        if item is not None:
+            context_menu = QMenu(self.ui.video_tree)
+
+            context_menu.setStyleSheet("background-color: white")
+
+            action = QAction("右键菜单项", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
+
+            action = QAction("右键菜单项", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
+
+            action = QAction("右键菜单项", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
+
+            context_menu.exec_(self.ui.video_tree.mapToGlobal(position))
+
+    def onContextMenuClick(self, item_text):
+        print(f"右键菜单项被点击: {item_text}")
+
     def addWorkspace(self):
         selected_items = self.ui.video_tree.selectedItems()
         for item in selected_items:
@@ -162,6 +191,8 @@ class Pyqt5Window(QMainWindow):
                 cloned_item.isCamera = item.isCamera
                 if not item.isCamera:
                     cloned_item.path = self.getFullPath(item)
+                else:
+                    cloned_item.device = int(item.text(0))
                 self.ui.work_list.addTopLevelItem(cloned_item)
 
     def startIdentifyClicked(self):
@@ -180,12 +211,24 @@ class Pyqt5Window(QMainWindow):
             identify_thread.start()
 
     def startIdentify(self):
-        if Globals.settings['model_select'] == 'yolov5':
-            detect_yolov5.run(source=0, weights=Globals.settings['pt_path'], show_label=self.ui.camera_2,
-                              save_img=False, use_camera=True, show_labellist=self.ui.action_list)
-        elif Globals.settings['model_select'] == 'yolo_slowfast':
-            detect.run(source=0, weights=Globals.settings['pt_path'], show_label=self.ui.camera_2,
-                       save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+        if self.selected_item.isCamera:
+            if Globals.settings['model_select'] == 'yolov5':
+                detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
+                                  show_label=self.ui.camera_2,
+                                  save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+            elif Globals.settings['model_select'] == 'yolo_slowfast':
+                detect.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
+                           show_label=self.ui.camera_2,
+                           save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+        else:
+            if Globals.settings['model_select'] == 'yolov5':
+                detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
+                                  show_label=self.ui.camera_2,
+                                  save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+            elif Globals.settings['model_select'] == 'yolo_slowfast':
+                detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
+                           show_label=self.ui.camera_2,
+                           save_img=False, use_camera=True, show_labellist=self.ui.action_list)
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 
@@ -199,7 +242,8 @@ class Pyqt5Window(QMainWindow):
                 self.capture.release()
             self.timer_cv.stop()
             self.ui.video_tree.clear()
-            self.addFolderToTree(self.ui.video_tree, self.selected_folder)
+            if self.selected_folder != "":
+                self.addFolderToTree(self.ui.video_tree, self.selected_folder)
         elif selected_option == '设备列表':
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
@@ -324,6 +368,8 @@ class Pyqt5Window(QMainWindow):
             self.timer_cv.start()
 
     def WorkListPreview(self, item):
+        self.selected_item = item
+        self.ui.start_identify.setEnabled(True)
         if item.isCamera:
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
@@ -339,13 +385,18 @@ class Pyqt5Window(QMainWindow):
         flag, image = self.capture.read()
         show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-        label_size = self.ui.camera.size()
+        label = self.ui.camera
+        if self.ui.tabWidget.currentIndex() == 0:
+            label = self.ui.camera
+        elif self.ui.tabWidget.currentIndex() == 1:
+            label = self.ui.camera_2
+        label_size = label.size()
         label_size.setWidth(label_size.width() - 10)
         label_size.setHeight(label_size.height() - 10)
         scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
         pixmap = QPixmap.fromImage(scaled_image)
-        self.ui.camera.setPixmap(pixmap)
-        self.ui.camera.setAlignment(Qt.AlignCenter)
+        label.setPixmap(pixmap)
+        label.setAlignment(Qt.AlignCenter)
 
     def playSelectedVideo(self, item, isworklist):
         if self.capture is not None:
@@ -362,28 +413,6 @@ class Pyqt5Window(QMainWindow):
         else:
             selected_video_path = self.getFullPath(item)
 
-        if os.path.exists(selected_video_path):
-            # 获取文件的基本名称（不包含路径）
-            file_name = os.path.basename(selected_video_path)
-            # 获取文件的目录路径
-            directory = os.path.dirname(selected_video_path)
-            # 将文件名中的后缀名更改为.ini
-            new_file_name = os.path.splitext(file_name)[0] + ".ini"
-            # 构建新的文件路径
-            new_path = os.path.join(directory, new_file_name)
-            if os.path.exists(new_path):
-                # 以只读模式打开文件并读取内容
-                with open(new_path, "r") as file:
-                    file_content = file.read()
-                self.ui.video_label_edit.setText(file_content)
-            # 加载动作列表
-            # new_file_name = os.path.splitext(file_name)[0] + ".json"
-            # new_path = os.path.join(directory, new_file_name)
-            # if os.path.exists(new_path):
-            #     self.frame_dict = self.load_frame_dict(new_path)
-        else:
-            print("err")
-
         self.selected_path = selected_video_path
         file_extension = os.path.splitext(selected_video_path)[1]
 
@@ -391,6 +420,27 @@ class Pyqt5Window(QMainWindow):
         player = self.player
         play_pause = self.ui.play_pause
         if self.ui.tabWidget.currentIndex() == 0:
+            if os.path.exists(selected_video_path):
+                # 获取文件的基本名称（不包含路径）
+                file_name = os.path.basename(selected_video_path)
+                # 获取文件的目录路径
+                directory = os.path.dirname(selected_video_path)
+                # 将文件名中的后缀名更改为.ini
+                new_file_name = os.path.splitext(file_name)[0] + ".ini"
+                # 构建新的文件路径
+                new_path = os.path.join(directory, new_file_name)
+                if os.path.exists(new_path):
+                    # 以只读模式打开文件并读取内容
+                    with open(new_path, "r") as file:
+                        file_content = file.read()
+                    self.ui.video_label_edit.setText(file_content)
+                # 加载动作列表
+                # new_file_name = os.path.splitext(file_name)[0] + ".json"
+                # new_path = os.path.join(directory, new_file_name)
+                # if os.path.exists(new_path):
+                #     self.frame_dict = self.load_frame_dict(new_path)
+            else:
+                print("err")
             player = self.player
             play_pause = self.ui.play_pause
             if os.path.isfile(selected_video_path) and file_extension:
@@ -406,6 +456,22 @@ class Pyqt5Window(QMainWindow):
                     play_pause.setEnabled(False)
                 self.getVideoinfo(selected_video_path)
         elif self.ui.tabWidget.currentIndex() == 1:
+            video_path = selected_video_path
+            cap = cv2.VideoCapture(video_path)
+            if cap.isOpened():
+                # 读取第一帧
+                flag, image = cap.read()
+                if flag:
+                    show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                    showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
+                    label_size = self.ui.camera_2.size()
+                    label_size.setWidth(label_size.width() - 10)
+                    label_size.setHeight(label_size.height() - 10)
+                    scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
+                    pixmap = QPixmap.fromImage(scaled_image)
+                    self.ui.camera_2.setPixmap(pixmap)
+                    self.ui.camera_2.setAlignment(Qt.AlignCenter)
+            cap.release()
             player = self.player_2
             play_pause = self.ui.play_pause_2
 
@@ -563,6 +629,8 @@ class Pyqt5Window(QMainWindow):
 
     # 搜索动作标签
     def search_action(self):
+        if not Globals.dict_text:
+            return
         self.frame_dict = self.load_frame_dict(Globals.dict_text)
         if not self.frame_dict:
             return
@@ -579,8 +647,9 @@ class Pyqt5Window(QMainWindow):
 
     def tabChanged(self):
         self.player.pause()
-        if self.ui.tabWidget.currentIndex() != 0:
-            self.timer_cv.stop()
+        self.timer_cv.stop()
+        if self.capture is not None:
+            self.capture.release()
 
 
 if __name__ == "__main__":
