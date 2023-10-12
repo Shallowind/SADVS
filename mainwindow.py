@@ -4,6 +4,7 @@ import subprocess
 import sys
 import threading
 import qdarkstyle
+from tkinter import Tk, simpledialog
 import cv2
 # import ffmpeg
 from datetime import datetime
@@ -144,8 +145,8 @@ class Pyqt5Window(QMainWindow):
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
-        splitter_video.setStretchFactor(0, 9)
-        splitter_video.setStretchFactor(1, 1)
+        splitter_video.setStretchFactor(0, 6)
+        splitter_video.setStretchFactor(1, 2)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
@@ -165,22 +166,86 @@ class Pyqt5Window(QMainWindow):
 
             context_menu.setStyleSheet("background-color: white")
 
-            action = QAction("右键菜单项", context_menu)
+            action = QAction("重命名", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.rename_file(item))
+
+            action = QAction("删除", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.delete_file(item))
+
+            action = QAction("剪切", context_menu)
             context_menu.addAction(action)
             action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
 
-            action = QAction("右键菜单项", context_menu)
+            action = QAction("复制", context_menu)
             context_menu.addAction(action)
             action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
 
-            action = QAction("右键菜单项", context_menu)
+            action = QAction("粘贴", context_menu)
             context_menu.addAction(action)
             action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
+
+            action = QAction("加入工作区", context_menu)
+            context_menu.addAction(action)
+            action.triggered.connect(lambda: self.addWorkspace())
 
             context_menu.exec_(self.ui.video_tree.mapToGlobal(position))
 
-    def onContextMenuClick(self, item_text):
+    def update_video_tree(self, item):
+        # 在这里编写更新树形视图的逻辑
+        # 例如，从数据源获取新的数据并重新构建树形结构
+        self.ui.video_tree.clear()  # 清空树形视图的内容
+        # 添加新的节点和子节点到树形视图中
+        # ...
+        self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.video_tree.loadSubtree(self, item) # 加载子树的内容
+
+    def onContextMenuClick(self, item_text, item):
         print(f"右键菜单项被点击: {item_text}")
+        selected_video_path = self.getFullPath(item)
+        current_folder_path = os.path.dirname(selected_video_path)
+        print(current_folder_path)
+        # self.rename_file(item, current_folder_path, selected_video_path, '777.txt')
+
+    def get_user_input(self, input):
+        root = Tk()
+        root.withdraw()  # 隐藏Tkinter根窗口
+        root.geometry("600x600")
+        # 弹出对话框并获取用户输入
+        user_input = simpledialog.askstring(input, "Please enter your input:")
+        # 处理用户输入
+        return  user_input
+
+    # 文件重命名
+    def rename_file(self, item):
+        old_name = self.getFullPath(item)
+        current_folder_path = os.path.dirname(old_name)  # 获取选中视频的当前文件夹路径
+        new_name = self.get_user_input('重命名')
+        if new_name == None:
+            return
+        combined_path = os.path.join(current_folder_path,
+                                     os.path.basename(new_name))  # 将当前文件夹路径和视频文件名结合成新的路径
+        try:
+            os.rename(old_name, combined_path)
+            print(f"文件已成功重命名为： {new_name}")
+            print(item.setText(0, new_name))
+        except FileNotFoundError:
+            print("找不到指定的文件。请确认文件路径和名称是否正确。")
+        except Exception as e:
+            print(f"重命名文件时出现错误： {e}")
+
+    # 文件删除
+    def delete_file(self, item):
+        file_path = self.getFullPath(item)
+        print(file_path)
+        index = item.parent().indexOfChild(item)
+        if index != -1:
+            item.parent().takeChild(index)
+        del item
+        # self.ui.video_tree.remove(move_item)
+        os.remove(file_path)
+        print("文件已成功删除！")
 
     def addWorkspace(self):
         selected_items = self.ui.video_tree.selectedItems()
