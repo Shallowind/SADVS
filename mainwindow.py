@@ -98,9 +98,16 @@ class Pyqt5Window(QMainWindow):
         }\
         QTreeWidget::branch:has-siblings:adjoins-item{\
             border-image:None 0;\
-        }   \
+        }\
         QTreeWidget::branch:!has-children:!has-siblings:adjoins-item{\
             border-image:None 0;\
+        }\
+        QTreeWidget::branch:has-siblings:adjoins-item{\
+            border-image:None 0;\
+        }\
+        QLineEdit{\
+            padding: 0;\
+            margin: 0;\
         }\
         """)
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
@@ -168,23 +175,12 @@ class Pyqt5Window(QMainWindow):
 
             action = QAction("重命名", context_menu)
             context_menu.addAction(action)
-            action.triggered.connect(lambda: self.rename_file(item))
+            action.triggered.connect(lambda: self.rename_item(item))
 
             action = QAction("删除", context_menu)
             context_menu.addAction(action)
             action.triggered.connect(lambda: self.delete_file(item))
 
-            action = QAction("剪切", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
-
-            action = QAction("复制", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
-
-            action = QAction("粘贴", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.onContextMenuClick(item.text(0)))
 
             action = QAction("加入工作区", context_menu)
             context_menu.addAction(action)
@@ -199,7 +195,7 @@ class Pyqt5Window(QMainWindow):
         # 添加新的节点和子节点到树形视图中
         # ...
         self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.video_tree.loadSubtree(self, item) # 加载子树的内容
+        self.ui.video_tree.loadSubtree(self, item)  # 加载子树的内容
 
     def onContextMenuClick(self, item_text, item):
         print(f"右键菜单项被点击: {item_text}")
@@ -215,21 +211,30 @@ class Pyqt5Window(QMainWindow):
         # 弹出对话框并获取用户输入
         user_input = simpledialog.askstring(input, "Please enter your input:")
         # 处理用户输入
-        return  user_input
+        return user_input
 
     # 文件重命名
-    def rename_file(self, item):
+    def rename_item(self, item):
         old_name = self.getFullPath(item)
         current_folder_path = os.path.dirname(old_name)  # 获取选中视频的当前文件夹路径
-        new_name = self.get_user_input('重命名')
-        if new_name == None:
+        if item:
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            self.ui.video_tree.editItem(item)  # 启动编辑模式
+        new_name = item.text(0)
+        if new_name is None:
             return
-        combined_path = os.path.join(current_folder_path,
-                                     os.path.basename(new_name))  # 将当前文件夹路径和视频文件名结合成新的路径
+
+        # 在编辑模式退出后调用重命名
+        self.ui.video_tree.itemChanged.connect(lambda item: self.on_item_changed(item, old_name, current_folder_path))
+
+    def on_item_changed(self, item, old_name, current_folder_path):
+        new_name = item.text(0)
+        if new_name is None:
+            return
+        combined_path = os.path.join(current_folder_path, os.path.basename(new_name))  # 将当前文件夹路径和视频文件名结合成新的路径
         try:
             os.rename(old_name, combined_path)
             print(f"文件已成功重命名为： {new_name}")
-            print(item.setText(0, new_name))
         except FileNotFoundError:
             print("找不到指定的文件。请确认文件路径和名称是否正确。")
         except Exception as e:
@@ -279,21 +284,21 @@ class Pyqt5Window(QMainWindow):
         if self.selected_item.isCamera:
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
-                                  show_label=self.ui.camera_2,
+                                  show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                                   save_img=False, use_camera=True, show_labellist=self.ui.action_list)
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
-                           show_label=self.ui.camera_2,
+                           show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                            save_img=False, use_camera=True, show_labellist=self.ui.action_list)
         else:
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
-                                  show_label=self.ui.camera_2,
-                                  save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+                                  show_label=self.ui.camera_2, project=Globals.settings['save_path'],
+                                  save_img=True, use_camera=True, show_labellist=self.ui.action_list)
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
-                           show_label=self.ui.camera_2,
-                           save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+                           show_label=self.ui.camera_2, project=Globals.settings['save_path'],
+                           save_img=True, use_camera=True, show_labellist=self.ui.action_list)
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 
