@@ -409,11 +409,11 @@ class Pyqt5Window(QMainWindow):
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=True, use_camera=True, show_labellist=self.ui.action_list)
+                                  save_img=True, show_labellist=self.ui.action_list)
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=True, use_camera=True, show_labellist=self.ui.action_list)
+                           save_img=True, show_labellist=self.ui.action_list)
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 

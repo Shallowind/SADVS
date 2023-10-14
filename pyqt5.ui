@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>673</width>
-    <height>466</height>
+    <width>1066</width>
+    <height>647</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -39,9 +39,9 @@
           <number>5</number>
          </property>
          <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5,5">
+          <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1,10,10">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
              <property name="spacing">
               <number>2</number>
              </property>
@@ -76,19 +76,32 @@
                </item>
               </widget>
              </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0,0,0,0">
+             <property name="spacing">
+              <number>2</number>
+             </property>
+             <property name="rightMargin">
+              <number>30</number>
+             </property>
              <item>
               <widget class="QPushButton" name="new_file">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
-                 <height>25</height>
+                 <width>15</width>
+                 <height>15</height>
                 </size>
+               </property>
+               <property name="toolTip">
+                <string>刷新列表</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -115,8 +128,8 @@ QPushButton:pressed {
                </property>
                <property name="iconSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>15</width>
+                 <height>15</height>
                 </size>
                </property>
                <property name="autoDefault">
@@ -133,16 +146,19 @@ QPushButton:pressed {
              <item>
               <widget class="QPushButton" name="add_workspace">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>25</width>
-                 <height>25</height>
+                 <width>15</width>
+                 <height>15</height>
                 </size>
+               </property>
+               <property name="toolTip">
+                <string>加入工作区</string>
                </property>
                <property name="styleSheet">
                 <string notr="true">QPushButton {
@@ -169,8 +185,104 @@ QPushButton:pressed {
                </property>
                <property name="iconSize">
                 <size>
-                 <width>20</width>
-                 <height>20</height>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rename">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>重命名</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: none;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}rgb(204, 204, 204)
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/rename.png</normaloff>resources/op_icon/rename.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="delete_file">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>删除文件</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: none;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}rgb(204, 204, 204)
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/delete-file.png</normaloff>resources/op_icon/delete-file.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
                 </size>
                </property>
               </widget>
@@ -760,8 +872,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>673</width>
-     <height>22</height>
+     <width>1066</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
