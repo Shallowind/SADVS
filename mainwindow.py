@@ -54,6 +54,9 @@ class Pyqt5Window(QMainWindow):
         # 右键菜单
         self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.video_tree.customContextMenuRequested.connect(self.showContextMenu)
+        # 工作区右键菜单
+        self.ui.work_list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.work_list.customContextMenuRequested.connect(self.worklist_show_context_menu)
         # 进度条
         self.player.durationChanged.connect(self.getDuration)
         self.player.positionChanged.connect(self.getPosition)
@@ -105,6 +108,12 @@ class Pyqt5Window(QMainWindow):
         QTreeWidget::branch:has-siblings:adjoins-item{\
             border-image:None 0;\
         }\
+        QLineEdit{\
+            padding: 0;\
+            margin: 0;\
+        }\
+        """)
+        self.ui.work_list.setStyleSheet("""
         QLineEdit{\
             padding: 0;\
             margin: 0;\
@@ -165,28 +174,98 @@ class Pyqt5Window(QMainWindow):
         self.play_ico = QIcon("resources/play_ico.png")
         self.pause_ico = QIcon("resources/pause_ico.png")
 
-    def showContextMenu(self, position):
+    def worklist_show_context_menu(self, position):
+        item = self.ui.work_list.itemAt(position)
+        if item is None:
+            return
+        menu = QMenu(self.ui.work_list)
+        # 添加新建文件夹的菜单项
+        new_folder_action = QAction("重命名", self.ui.work_list)
+        new_folder_action.triggered.connect(lambda: self.worklist_rename(item))
+        menu.addAction(new_folder_action)
 
+        new_folder_action = QAction("删除", self.ui.work_list)
+        new_folder_action.triggered.connect(lambda: self.worklist_delete(item))
+        menu.addAction(new_folder_action)
+        # 显示菜单
+        menu.exec_(self.ui.work_list.mapToGlobal(position))
+
+    def worklist_rename(self, item):
+        # 获取当前项的文本
+        old_name = self.getFullPath(item)
+        if item:
+            item.setFlags(item.flags() | Qt.ItemIsEditable)
+            self.ui.work_list.editItem(item)  # 启动编辑模式
+        new_name = item.text(0)
+        if new_name is None:
+            return
+
+        item.setText(0, new_name)
+
+    def worklist_delete(self, item):
+        # 删除项
+        if item.parent():
+            # 如果有父节点，从父节点中移除
+            parent = item.parent()
+            index = parent.indexOfChild(item)
+            parent.takeChild(index)
+        else:
+            # 如果没有父节点，从顶级项中移除
+            index = self.ui.work_list.indexOfTopLevelItem(item)
+            self.ui.work_list.takeTopLevelItem(index)
+
+
+    def showContextMenu(self, position):
         item = self.ui.video_tree.itemAt(position)
         if item is not None:
-            context_menu = QMenu(self.ui.video_tree)
-
-            context_menu.setStyleSheet("background-color: white")
-
-            action = QAction("重命名", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.rename_item(item))
-
-            action = QAction("删除", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.delete_file(item))
-
-
-            action = QAction("加入工作区", context_menu)
-            context_menu.addAction(action)
-            action.triggered.connect(lambda: self.addWorkspace())
-
+            item_path = self.getFullPath(item)
+            # 根据文件类型选择不同菜单
+            if os.path.isdir(item_path):
+                context_menu = self.createFolderMenu(item)
+            else:
+                context_menu = self.createFileMenu(item)
+            # 在给定位置显示上下文菜单
             context_menu.exec_(self.ui.video_tree.mapToGlobal(position))
+
+    def createFileMenu(self, item):
+        context_menu = QMenu(self.ui.video_tree)
+        context_menu.setStyleSheet("background-color: white")
+
+        action = QAction("重命名", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.rename_file(item))
+
+        action = QAction("删除", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.delete_file(item))
+
+        action = QAction("加入工作区", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.addWorkspace())
+
+        return context_menu
+
+    def createFolderMenu(self, item):
+        context_menu = QMenu(self.ui.video_tree)
+        context_menu.setStyleSheet("background-color: white")
+
+        action = QAction("新建文件夹", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.create_folder(item))
+
+        action = QAction("新建", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.create_file(item))
+
+        action = QAction("删除", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.delete_folder(item))
+
+        action = QAction("重命名", context_menu)
+        context_menu.addAction(action)
+        action.triggered.connect(lambda: self.rename_file(item))
+
+        return context_menu
 
     def update_video_tree(self, item):
         # 在这里编写更新树形视图的逻辑
@@ -195,7 +274,7 @@ class Pyqt5Window(QMainWindow):
         # 添加新的节点和子节点到树形视图中
         # ...
         self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.video_tree.loadSubtree(self, item)  # 加载子树的内容
+        self.ui.video_tree.loadSubtree(self, item) # 加载子树的内容
 
     def onContextMenuClick(self, item_text, item):
         print(f"右键菜单项被点击: {item_text}")
@@ -211,10 +290,10 @@ class Pyqt5Window(QMainWindow):
         # 弹出对话框并获取用户输入
         user_input = simpledialog.askstring(input, "Please enter your input:")
         # 处理用户输入
-        return user_input
+        return  user_input
 
     # 文件重命名
-    def rename_item(self, item):
+    def rename_file(self, item):
         old_name = self.getFullPath(item)
         current_folder_path = os.path.dirname(old_name)  # 获取选中视频的当前文件夹路径
         if item:
@@ -226,6 +305,7 @@ class Pyqt5Window(QMainWindow):
 
         # 在编辑模式退出后调用重命名
         self.ui.video_tree.itemChanged.connect(lambda item: self.on_item_changed(item, old_name, current_folder_path))
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
     def on_item_changed(self, item, old_name, current_folder_path):
         new_name = item.text(0)
@@ -251,6 +331,41 @@ class Pyqt5Window(QMainWindow):
         # self.ui.video_tree.remove(move_item)
         os.remove(file_path)
         print("文件已成功删除！")
+
+    def create_file(self, item):
+        filename = "new_file.txt"
+        current_folder_path = self.getFullPath(item)
+        if filename == None:
+            return
+        combined_path = os.path.join(current_folder_path,
+                                     os.path.basename(filename))  # 将当前文件夹路径和视频文件名结合成新的路径
+        print(combined_path)
+        # 在文件树中生成文件节点
+        file_item_tree = QTreeWidgetItem([filename])
+        file_item_tree.setData(0, Qt.UserRole, True)
+        item.addChild(file_item_tree)
+
+        # 在文件中生成文件节点
+        with open(combined_path, 'w') as file:
+            # 写入文件内容
+            file.write('This is a file.')
+
+        print("File created:", filename)
+
+    def create_folder(self, item):
+        folder_name = 'wenjianjia'
+        current_folder_path = self.getFullPath(item)
+        new_folder_path = os.path.join(current_folder_path, folder_name)  # 将当前文件夹路径和新文件夹名称结合成新的路径
+
+        if not os.path.exists(new_folder_path):
+            os.makedirs(new_folder_path)
+
+            # 在文件树中生成文件夹节点
+            folder_item_tree = QTreeWidgetItem([folder_name])
+            folder_item_tree.setData(0, Qt.UserRole, False)  # 标记为文件夹节点
+            item.addChild(folder_item_tree)
+        else:
+            print("Folder already exists")
 
     def addWorkspace(self):
         selected_items = self.ui.video_tree.selectedItems()
@@ -548,6 +663,8 @@ class Pyqt5Window(QMainWindow):
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
         path_components = [item.text(0)]
+        if item.parent() is None:
+            return self.selected_folder
         while item.parent() is not None and item.parent().parent() is not None:
             item = item.parent()
             path_components.insert(0, item.text(0))
