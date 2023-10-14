@@ -268,6 +268,7 @@ class DetectionThread(QThread):
         self.label = label
 
     def run(self):
+        print(self.file_path)
         detect_yolov5.run(source=self.file_path, weights=self.model_path[0], show_label=self.label, save_img=True)
         self.signal_done.emit(1)  # 发送结束信号
 
