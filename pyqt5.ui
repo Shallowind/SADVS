@@ -106,13 +106,13 @@
                <property name="styleSheet">
                 <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -163,13 +163,13 @@ QPushButton:pressed {
                <property name="styleSheet">
                 <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -211,13 +211,13 @@ QPushButton:pressed {
                <property name="styleSheet">
                 <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -259,13 +259,13 @@ QPushButton:pressed {
                <property name="styleSheet">
                 <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -384,7 +384,7 @@ QPushButton:pressed {
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,1">
+                <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,0,1">
                  <property name="spacing">
                   <number>0</number>
                  </property>
@@ -420,50 +420,81 @@ QPushButton:pressed {
                   </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                  <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="10,0,0,0">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="10,0,0,0">
-                     <property name="spacing">
-                      <number>0</number>
+                    <widget class="QSlider" name="video_slider">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
-                     <item>
-                      <widget class="QSlider" name="video_slider">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="styleSheet">
-                        <string notr="true"/>
-                       </property>
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="video_time">
-                       <property name="text">
-                        <string>--:--</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="label">
-                       <property name="text">
-                        <string>/</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="video_time_all">
-                       <property name="text">
-                        <string>--:--</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
+                     <property name="styleSheet">
+                      <string notr="true"/>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="video_time">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label">
+                     <property name="text">
+                      <string>/</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="video_time_all">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,0,0,0">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="RangeSlider" name="cut_slider">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="cut_time">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>/</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="cut_time_all">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -471,6 +502,22 @@ QPushButton:pressed {
                   <widget class="QPushButton" name="play_pause">
                    <property name="enabled">
                     <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
                    </property>
                    <property name="text">
                     <string/>
@@ -502,7 +549,7 @@ QPushButton:pressed {
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_3" stretch="5,0,5">
+                <layout class="QVBoxLayout" name="verticalLayout_3" stretch="5,0,5,1">
                  <item>
                   <widget class="QTextBrowser" name="video_info">
                    <property name="font">
@@ -551,13 +598,13 @@ QPushButton:pressed {
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -608,6 +655,96 @@ QPushButton:pressed {
                     <string>在这里输入备注...</string>
                    </property>
                   </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <item>
+                    <widget class="QPushButton" name="cut_mode">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>剪辑模式</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="save_cut">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>保存视频</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="exit_mode">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>退出剪辑</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </item>
@@ -705,6 +842,22 @@ QPushButton:pressed {
                        <pointsize>9</pointsize>
                       </font>
                      </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
                      <property name="text">
                       <string>启动识别</string>
                      </property>
@@ -717,6 +870,22 @@ QPushButton:pressed {
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
                      </property>
                      <property name="text">
                       <string/>
@@ -783,13 +952,13 @@ QPushButton:pressed {
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
     background-color: #ffffff; /* 默认颜色，浅灰色 */
-    border: none;
+    border: 1px solid #cccccc; /* 灰色的边框 */
     padding: 5px 10px;
 }
 
 QPushButton:hover {
     background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}rgb(204, 204, 204)
+}
 
 QPushButton:pressed {
     background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
@@ -873,7 +1042,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
@@ -929,6 +1098,11 @@ QPushButton:pressed {
    <extends>QWidget</extends>
    <header location="global">PyQt5.QtMultimediaWidgets</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RangeSlider</class>
+   <extends>QSlider</extends>
+   <header>range_slider</header>
   </customwidget>
  </customwidgets>
  <resources/>

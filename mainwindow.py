@@ -10,12 +10,13 @@ import cv2
 from datetime import datetime
 
 import pygame.camera
-from PyQt5.QtCore import QUrl, Qt, QTimer, QThread
+from PyQt5.QtCore import QUrl, Qt, QTimer, QThread, QFileInfo, pyqtSignal
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QStandardItem
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
-    QListView, QTreeWidget, QMainWindow, QMenu, QAction
+    QListView, QTreeWidget, QMainWindow, QMenu, QAction, QMessageBox
 from PyQt5 import uic, QtWidgets
+from moviepy.video.io.VideoFileClip import VideoFileClip
 from qdarkstyle import LightPalette
 
 import detect
@@ -25,6 +26,8 @@ from utils.myutil import file_is_pic, Globals
 
 
 class Pyqt5Window(QMainWindow):
+    signal = pyqtSignal()
+
     def __init__(self):
         # 加载designer设计的ui程序
         super().__init__()
@@ -32,6 +35,8 @@ class Pyqt5Window(QMainWindow):
         self.ui.resize(1000, 600)
         self.ui.showMaximized()
         self.ui.setWindowTitle("视频检测")
+
+        self.ui.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
         # 播放器
         self.player = QMediaPlayer()
         self.player.setVideoOutput(self.ui.player)
@@ -64,6 +69,13 @@ class Pyqt5Window(QMainWindow):
         self.player_2.positionChanged.connect(self.getPosition)
         self.ui.video_slider.sliderMoved.connect(self.updatePosition)
         self.ui.video_slider_2.sliderMoved.connect(self.updatePosition)
+        self.ui.cut_slider.sliderMoved.connect(self.echo)
+        self.ui.cut_slider.setVisible(False)
+        self.ui.cut_time.setVisible(False)
+        self.ui.label_2.setVisible(False)
+        self.ui.cut_time_all.setVisible(False)
+        self.hipo = 0
+        self.lopo = 0
         # 保存标签
         self.ui.save_label.clicked.connect(self.saveLabel)
         # 动作列表
@@ -93,6 +105,14 @@ class Pyqt5Window(QMainWindow):
         self.timer_cv = QTimer()
         self.timer_cv.timeout.connect(self.updateFrame)
         self.timer_cv.setInterval(30)  # 1000毫秒 = 1秒
+        # 剪辑模式
+        self.ui.cut_mode.setEnabled(False)
+        self.ui.save_cut.setVisible(False)
+        self.ui.exit_mode.setVisible(False)
+        self.ui.cut_mode.clicked.connect(self.cutMode)
+        self.ui.exit_mode.clicked.connect(self.exitMode)
+        self.ui.save_cut.clicked.connect(self.saveCut)
+        self.cut_path = None
         # 启用多选
         self.ui.video_tree.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.video_tree.setStyleSheet("""
@@ -134,13 +154,31 @@ class Pyqt5Window(QMainWindow):
         self.ui.verticalLayout.setStretch(0, 1)  # 第一个部件的伸缩因子为1
         self.ui.verticalLayout.setStretch(1, 40)  # 第二个部件的伸缩因子为2
         self.ui.verticalLayout.setStretch(2, 40)  # 第三个部件的伸缩因子为3
+        splitter_list.setStyleSheet("""
+            QSplitter {
+                background-color: white;
+            }
+            QSplitter::handle {
+                background-color: white;
+            }
+        """)
 
         splitter_tab = QSplitter(Qt.Horizontal)
+        splitter_tab.setStyleSheet("background-color: white")
         splitter_tab.addWidget(self.ui.widget_list)
         splitter_tab.addWidget(self.ui.tabWidget)
         splitter_tab.setStretchFactor(0, 8)
         splitter_tab.setStretchFactor(1, 10)
         splitter_tab.setStyleSheet("""
+            QSplitter {
+                background-color: white;
+            }
+            QSplitter::handle {
+                background-color: white;
+            }
+        """)
+        self.ui.widget_list.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+        self.ui.centralwidget.setStyleSheet("""
             QSplitter {
                 background-color: white;
             }
@@ -157,12 +195,28 @@ class Pyqt5Window(QMainWindow):
         splitter_video.setStretchFactor(0, 5)
         splitter_video.setStretchFactor(1, 2)
         self.ui.horizontalLayout_5.addWidget(splitter_video)
+        splitter_video.setStyleSheet("""
+            QSplitter {
+                background-color: white;
+            }
+            QSplitter::handle {
+                background-color: white;
+            }
+        """)
 
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
         splitter_video.setStretchFactor(0, 6)
         splitter_video.setStretchFactor(1, 2)
+        splitter_video.setStyleSheet("""
+            QSplitter {
+                background-color: white;
+            }
+            QSplitter::handle {
+                background-color: white;
+            }
+        """)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
@@ -173,6 +227,91 @@ class Pyqt5Window(QMainWindow):
         self.camera_icon = QIcon("resources/cam_ico.png")
         self.play_ico = QIcon("resources/play_ico.png")
         self.pause_ico = QIcon("resources/pause_ico.png")
+        self.ui.cut_slider.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+
+    def saveCut(self):
+        cut_thread = threading.Thread(target=self.cut_thread)
+        cut_thread.daemon = True  # 主界面关闭时自动退出此线程
+        cut_thread.start()
+
+    def cut_completed(self):
+        result = QMessageBox.warning(self, "已完成", "剪辑已完成！\n是否加入工作区？", QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.Yes)
+        if result == QMessageBox.Yes:
+            item = QTreeWidgetItem(self.ui.work_list)
+            item.isCamera = False
+            item.path = self.cut_path
+            file_name = QFileInfo(self.cut_path).baseName()  # 获取文件名（不包括后缀）
+            file_extension = QFileInfo(self.cut_path).completeSuffix()  # 获取后缀名
+            # 根据文件后缀选择不同图标
+            if file_extension == "txt":
+                item.setIcon(0, self.text_icon)
+            elif file_extension == "jpg" or file_extension == "png":
+                item.setIcon(0, self.image_icon)
+            elif file_extension == "avi" or file_extension == "mp4":
+                item.setIcon(0, self.video_icon)
+            else:
+                item.setIcon(0, self.file_icon)
+            item.setText(0, file_name)
+            self.ui.work_list.addTopLevelItem(item)
+
+    def cut_thread(self):
+        # folder_path = QFileDialog.getExistingDirectory()
+        default_name = QFileInfo(self.selected_path).baseName()  # 获取文件名（不包括后缀）
+        default_extension = QFileInfo(self.selected_path).completeSuffix()  # 获取后缀名
+
+        target, fileType = QFileDialog.getSaveFileName(self, "保存文件", default_name, f"*.{default_extension}")
+        source = self.selected_path.strip()
+        target = target.strip()
+        start_time_ms = self.lopo  # 获取开始剪切时间（毫秒）
+        stop_time_ms = self.hipo  # 获取剪切的结束时间（毫秒）
+
+        start_time_sec = start_time_ms / 1000.0
+        stop_time_sec = stop_time_ms / 1000.0
+        try:
+            video = VideoFileClip(source)  # 视频文件加载
+            video = video.subclip(start_time_sec, stop_time_sec)  # 执行剪切操作，参数为秒
+            video.to_videofile(target, remove_temp=True)  # 输出文件
+            self.cut_path = target
+            self.signal.connect(self.cut_completed)
+            self.signal.emit()
+        except Exception as e:
+            print(f"出现错误： {e}")
+
+    def exitMode(self):
+        self.ui.cut_slider.setVisible(False)
+        self.ui.cut_time.setVisible(False)
+        self.ui.label_2.setVisible(False)
+        self.ui.cut_time_all.setVisible(False)
+        self.ui.cut_mode.setVisible(True)
+        self.ui.save_cut.setVisible(False)
+        self.ui.exit_mode.setVisible(False)
+
+    def cutMode(self):
+        self.player.pause()
+        self.ui.cut_slider.setVisible(True)
+        self.ui.cut_time.setVisible(True)
+        self.ui.label_2.setVisible(True)
+        self.ui.cut_time_all.setVisible(True)
+        self.ui.cut_mode.setVisible(False)
+        self.ui.save_cut.setVisible(True)
+        self.ui.exit_mode.setVisible(True)
+
+    def echo(self, low_value, high_value):
+        # print(low_value, high_value)
+        if self.ui.tabWidget.currentIndex() == 0:
+            if low_value != self.lopo:
+                self.lopo = low_value
+                self.player.play()
+                self.player.setPosition(low_value)
+                self.player.pause()
+                self.ui.play_pause.setIcon(self.play_ico)
+            elif high_value != self.hipo:
+                self.hipo = high_value
+                self.player.play()
+                self.player.setPosition(high_value)
+                self.player.pause()
+                self.ui.play_pause.setIcon(self.play_ico)
 
     def worklist_show_context_menu(self, position):
         item = self.ui.work_list.itemAt(position)
@@ -213,7 +352,6 @@ class Pyqt5Window(QMainWindow):
             # 如果没有父节点，从顶级项中移除
             index = self.ui.work_list.indexOfTopLevelItem(item)
             self.ui.work_list.takeTopLevelItem(index)
-
 
     def showContextMenu(self, position):
         item = self.ui.video_tree.itemAt(position)
@@ -267,15 +405,6 @@ class Pyqt5Window(QMainWindow):
 
         return context_menu
 
-    def update_video_tree(self, item):
-        # 在这里编写更新树形视图的逻辑
-        # 例如，从数据源获取新的数据并重新构建树形结构
-        self.ui.video_tree.clear()  # 清空树形视图的内容
-        # 添加新的节点和子节点到树形视图中
-        # ...
-        self.ui.video_tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.video_tree.loadSubtree(self, item) # 加载子树的内容
-
     def onContextMenuClick(self, item_text, item):
         print(f"右键菜单项被点击: {item_text}")
         selected_video_path = self.getFullPath(item)
@@ -290,7 +419,7 @@ class Pyqt5Window(QMainWindow):
         # 弹出对话框并获取用户输入
         user_input = simpledialog.askstring(input, "Please enter your input:")
         # 处理用户输入
-        return  user_input
+        return user_input
 
     # 文件重命名
     def rename_file(self, item):
@@ -633,11 +762,15 @@ class Pyqt5Window(QMainWindow):
                 # 根据文件后缀选择不同处理方式
                 if file_extension == ".avi" or file_extension == ".mp4":
                     play_pause.setEnabled(True)
+                    self.ui.cut_mode.setEnabled(True)
+                    self.ui.play_pause.setIcon(self.pause_ico)
                     player.play()
                 elif file_extension == ".jpg" or file_extension == ".png":
                     play_pause.setEnabled(False)
+                    self.ui.cut_mode.setEnabled(False)
                     player.play()
                 else:
+                    self.ui.cut_mode.setEnabled(False)
                     play_pause.setEnabled(False)
                 self.getVideoinfo(selected_video_path)
         elif self.ui.tabWidget.currentIndex() == 1:
@@ -676,6 +809,10 @@ class Pyqt5Window(QMainWindow):
     def getDuration(self, d):
         if self.ui.tabWidget.currentIndex() == 0:
             self.ui.video_slider.setRange(0, d)
+            self.ui.cut_slider.setRange(0, d)
+            self.ui.cut_slider.setHighToMaximum()
+            self.lopo = 0
+            self.hipo = self.ui.cut_slider.maximum()
             self.ui.video_slider.setEnabled(True)
         elif self.ui.tabWidget.currentIndex() == 1:
             self.ui.video_slider_2.setRange(0, d)
@@ -748,12 +885,13 @@ class Pyqt5Window(QMainWindow):
 
     # 显示剩余时间
     def displayTime(self, ms):
-        print(ms)
+        # print(ms)
         minutes = int(ms / 60000)
         seconds = int((ms % 60000) / 1000)
         milliseconds = int(ms % 1000)
         if self.ui.tabWidget.currentIndex() == 0:
             self.ui.video_time.setText('{}:{}'.format(minutes, seconds))
+            self.ui.cut_time.setText('{}:{}'.format(minutes, seconds))
         elif self.ui.tabWidget.currentIndex() == 1:
             self.ui.video_time_2.setText('{}:{}'.format(minutes, seconds))
             self.ui.action_list.clear()
@@ -769,7 +907,10 @@ class Pyqt5Window(QMainWindow):
     def updatePosition(self, v):
         if self.ui.tabWidget.currentIndex() == 0:
             self.displayTime(self.ui.video_slider.maximum() - v)
+            self.player.play()
             self.player.setPosition(v)
+            self.player.pause()
+            self.ui.play_pause.setIcon(self.play_ico)
         elif self.ui.tabWidget.currentIndex() == 1:
             self.displayTime(self.ui.video_slider_2.maximum() - v)
             self.player_2.setPosition(v)
@@ -844,7 +985,7 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication([])
-    app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+    # app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
     pyqt5 = Pyqt5Window()
     pyqt5.ui.show()
     app.exec()
