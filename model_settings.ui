@@ -340,6 +340,22 @@
               <pointsize>10</pointsize>
              </font>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+            </property>
             <property name="text">
              <string>保存</string>
             </property>

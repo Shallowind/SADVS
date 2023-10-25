@@ -12,3 +12,6 @@ seaborn~=0.12.2
 tqdm~=4.66.1
 opencv-python~=4.8.0.76
 pygame~=2.5.2
+pytorchvideo~=0.1.5
+imageio~=2.4.1
+moviepy~=1.0.3

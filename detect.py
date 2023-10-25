@@ -143,7 +143,7 @@ def run(
         project='result',  # save results to project/name
         name='',  # save results to project/name
         exist_ok=True,  # existing project/name ok, do not increment
-        line_thickness=1,  # bounding box thickness (pixels)
+        line_thickness=2,  # bounding box thickness (pixels)
         hide_labels=False,  # hide labels
         hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
