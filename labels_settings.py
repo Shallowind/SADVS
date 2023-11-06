@@ -8,11 +8,14 @@ from PyQt5.QtCore import Qt
 from qdarkstyle import LightPalette
 
 from utils.myutil import Globals
+
+
 # from tensorflow.python.platform import gfile
 
 class LabelsSettings(QWidget):
-    def __init__(self):
+    def __init__(self, modelset):
         super().__init__()
+        self.modelset = modelset
         self.ui = uic.loadUi("labels_settings.ui")
         self.ui.resize(1000, 600)
         self.ui.setWindowTitle("标签设置")
@@ -25,14 +28,21 @@ class LabelsSettings(QWidget):
         self.FullCollection_path = ''
         self.translations = {}
 
-        self.on_open_clicked()
+        if self.modelset.id == 1:
+            path = os.getcwd()
+            path = os.path.join(path, "labels")
+            self.FullCollection_path = os.path.join(path, self.modelset.ui.model_combox.currentText())
+        else:
+            self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
+        self.open_file()
+
         self.ui.pushButton_2.clicked.connect(self.save)
         self.ui.listWidget.itemClicked.connect(self.select)
         self.ui.pushButton.clicked.connect(self.displays_selection)
         self.ui.delete_2.clicked.connect(self.on_delete_clicked)
         self.ui.open.clicked.connect(self.on_open_clicked)
         self.ui.pushButton_4.clicked.connect(self.aa)
-        self.ui.listWidget.itemChanged.connect(lambda item,old_name: self.on_item_changed(item, old_name))
+        # self.ui.listWidget.itemChanged.connect(lambda item, old_name: self.on_item_changed(item, old_name))
         # 设置顶部显示
         self.ui.labels_part_2.setAlignment(Qt.AlignTop)
 
@@ -40,35 +50,45 @@ class LabelsSettings(QWidget):
         self.ui.listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.listWidget.customContextMenuRequested.connect(self.show_context_menu)
 
-    def on_item_changed(self, item, old_name):
-        print(222)
-        print(old_name)
-        name = item.text() + '.pbtxt'
-        new_name = os.path.join(self.FullCollection_path, name)
-        item.setData(Qt.UserRole, new_name)
-        print(333)
-        print(new_name)
-        os.rename(old_name, new_name)
+    # def on_item_changed(self, item, old_name):
+    #     print(222)
+    #     print(old_name)
+    #     name = item.text() + '.pbtxt'
+    #     new_name = os.path.join(self.FullCollection_path, name)
+    #     item.setData(Qt.UserRole, new_name)
+    #     print(333)
+    #     print(new_name)
+    #     os.rename(old_name, new_name)
 
     def rename_file(self):
+        # get the currently selected item and its old name
         item = self.ui.listWidget.currentItem()
         old_name = item.data(Qt.UserRole)
-        if isinstance(item, QListWidgetItem):
-            item.setFlags(item.flags() | Qt.ItemIsEditable)
-            self.ui.listWidget.editItem(item)
-        else:
-            print("Invalid item type.")
-            return
-        print(111)
-        print(old_name)
-        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
+        # make the item editable and start editing
+        item.setFlags(item.flags() | Qt.ItemIsEditable)
+        self.ui.listWidget.editItem(item)
+
+        # wait until editing is finished
+        QApplication.instance().processEvents()
+
+        # get the new name from the edited item
+        new_name = os.path.join(self.FullCollection_path,item.text()+'.pbtxt')
+
+        # check if the new name is different from the old name
+        if old_name != new_name:
+            # perform the actual renaming operation
+            os.rename(old_name, new_name)
 
 
     def aa(self):
         print(self.FullCollection_path)
+
     def on_open_clicked(self):
         self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
+        self.open_file()
+
+    def open_file(self):
         # 清空list
         self.translations = {}
         self.ui.listWidget.clear()
@@ -138,8 +158,8 @@ class LabelsSettings(QWidget):
             os.remove(selected_item.data(Qt.UserRole))
 
     def save(self):
-        base = "button_data.pbtxt"
-        path = os.path.join(self.FullCollection_path, base)
+        base = "新建标签子集"
+        path = os.path.join(self.FullCollection_path, base+'.pbtxt')
         with open(path, "w", encoding="utf-8") as f:
             for checkbox in self.checkboxes:
                 if checkbox.isChecked():

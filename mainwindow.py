@@ -40,6 +40,8 @@ class Pyqt5Window(QMainWindow):
         self.icon.addPixmap(QPixmap("./UI/logo.ico"), QIcon.Normal, QIcon.Off)
         self.ui.setWindowIcon(self.icon)
 
+        self.id = 0
+
         self.ui.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.signal.connect(self.cut_completed)
         # 播放器
@@ -544,11 +546,11 @@ class Pyqt5Window(QMainWindow):
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=True, show_labellist=self.ui.action_list)
+                                  save_img=True, show_labellist=self.ui.action_list, classes=[0,2])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=True, show_labellist=self.ui.action_list)
+                           save_img=True, show_labellist=self.ui.action_list, classes=[0,2])
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 
