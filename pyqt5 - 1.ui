@@ -1,0 +1,1123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1066</width>
+    <height>647</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>600</width>
+    <height>400</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
+      <item>
+       <widget class="QWidget" name="widget_list" native="true">
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>5</number>
+         </property>
+         <property name="topMargin">
+          <number>5</number>
+         </property>
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>5</number>
+         </property>
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout" stretch="2,1,10,10">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
+             <property name="spacing">
+              <number>2</number>
+             </property>
+             <item>
+              <widget class="QComboBox" name="v_d_comboBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>微软雅黑</family>
+                </font>
+               </property>
+               <item>
+                <property name="text">
+                 <string>视频列表</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>设备列表</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_12" stretch="0,0,0,0,0">
+             <property name="spacing">
+              <number>2</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QPushButton" name="new_file">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>刷新列表</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/file.png</normaloff>resources/op_icon/file.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="autoDefault">
+                <bool>false</bool>
+               </property>
+               <property name="default">
+                <bool>false</bool>
+               </property>
+               <property name="flat">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="add_workspace">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>加入工作区</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/add.png</normaloff>resources/op_icon/add.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rename">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>重命名</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/rename.png</normaloff>resources/op_icon/rename.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="delete_file">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>删除文件</string>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>resources/op_icon/delete-file.png</normaloff>resources/op_icon/delete-file.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>15</width>
+                 <height>15</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QTreeWidget" name="video_tree">
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    background-color: rgb(255, 255, 255); /* 默认颜色，浅灰色 */
+    border: none;
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color:54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #606060; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTreeWidget" name="work_list">
+             <property name="font">
+              <font>
+               <family>微软雅黑</family>
+              </font>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="ori_video">
+         <attribute name="title">
+          <string> 原始/实时视频 </string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="5,2">
+            <item>
+             <widget class="QWidget" name="video_widget" native="true">
+              <layout class="QGridLayout" name="gridLayout_4">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,0,1">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QVideoWidget" name="player" native="true">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">
+        background: rgb(0, 0, 0);</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="camera">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">
+        background: rgb(0, 0, 0);</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="10,0,0,0">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="QSlider" name="video_slider">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true"/>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="video_time">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label">
+                     <property name="text">
+                      <string>/</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="video_time_all">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,0,0,0">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <widget class="RangeSlider" name="cut_slider">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="cut_time">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>/</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="cut_time_all">
+                     <property name="text">
+                      <string>--:--</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="play_pause">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="icon">
+                    <iconset>
+                     <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="video_label_widget" native="true">
+              <layout class="QGridLayout" name="gridLayout_6">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_3" stretch="5,0,5,1">
+                 <item>
+                  <widget class="QTextBrowser" name="video_info">
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>9</pointsize>
+                    </font>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="4,1">
+                   <item>
+                    <widget class="QLabel" name="video_label">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>备注</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="save_label">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <normaloff>resources/op_icon/save.png</normaloff>resources/op_icon/save.png</iconset>
+                     </property>
+                     <property name="autoRepeat">
+                      <bool>false</bool>
+                     </property>
+                     <property name="autoDefault">
+                      <bool>false</bool>
+                     </property>
+                     <property name="default">
+                      <bool>false</bool>
+                     </property>
+                     <property name="flat">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QTextEdit" name="video_label_edit">
+                   <property name="enabled">
+                    <bool>false</bool>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>9</pointsize>
+                    </font>
+                   </property>
+                   <property name="statusTip">
+                    <string/>
+                   </property>
+                   <property name="accessibleDescription">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>在这里输入备注...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_2">
+                   <item>
+                    <widget class="QPushButton" name="cut_mode">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>剪辑模式</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="save_cut">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>保存视频</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="exit_mode">
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>退出剪辑</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="act_identify">
+         <attribute name="title">
+          <string> 行为识别 </string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="5,2">
+            <item>
+             <widget class="QWidget" name="video_widget_2" native="true">
+              <layout class="QGridLayout" name="gridLayout_7">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_4" stretch="9,0,1,0">
+                 <item>
+                  <widget class="QLabel" name="camera_2">
+                   <property name="styleSheet">
+                    <string notr="true">
+        background: rgb(0, 0, 0);</string>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QVideoWidget" name="player_2" native="true">
+                   <property name="styleSheet">
+                    <string notr="true">
+        background: rgb(0, 0, 0);</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_9" stretch="10,1">
+                     <item>
+                      <widget class="QSlider" name="video_slider_2">
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="video_time_2">
+                       <property name="text">
+                        <string>--:--</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_11">
+                   <item>
+                    <widget class="QPushButton" name="start_identify">
+                     <property name="enabled">
+                      <bool>false</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="font">
+                      <font>
+                       <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
+                      </font>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string>启动识别</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="play_pause_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="video_label_widget_2" native="true">
+              <layout class="QGridLayout" name="gridLayout_8">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <layout class="QVBoxLayout" name="verticalLayout_5" stretch="5,0,5">
+                 <item>
+                  <widget class="QListWidget" name="action_list">
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>9</pointsize>
+                    </font>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1">
+                   <item>
+                    <widget class="QLineEdit" name="item_search"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="item_search_button">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="mouseTracking">
+                      <bool>false</bool>
+                     </property>
+                     <property name="styleSheet">
+                      <string notr="true">QPushButton {
+    background-color: #ffffff; /* 默认颜色，浅灰色 */
+    border: 1px solid #cccccc; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #dddddd; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #cccccc; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="icon">
+                      <iconset>
+                       <normaloff>resources/op_icon/search.png</normaloff>resources/op_icon/search.png</iconset>
+                     </property>
+                     <property name="autoRepeat">
+                      <bool>false</bool>
+                     </property>
+                     <property name="autoDefault">
+                      <bool>false</bool>
+                     </property>
+                     <property name="default">
+                      <bool>false</bool>
+                     </property>
+                     <property name="flat">
+                      <bool>false</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <widget class="QListWidget" name="search_result">
+                   <property name="font">
+                    <font>
+                     <family>微软雅黑</family>
+                     <pointsize>9</pointsize>
+                    </font>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="abn_identify">
+         <attribute name="title">
+          <string> 异常行为检测 </string>
+         </attribute>
+         <widget class="QSplitter" name="splitter">
+          <property name="geometry">
+           <rect>
+            <x>130</x>
+            <y>20</y>
+            <width>256</width>
+            <height>384</height>
+           </rect>
+          </property>
+          <property name="cursor">
+           <cursorShape>UpArrowCursor</cursorShape>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QTextEdit" name="textEdit_2"/>
+          <widget class="QTextEdit" name="textEdit"/>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1066</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="system_set">
+    <property name="title">
+     <string>系统设置</string>
+    </property>
+    <addaction name="video_select"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="device_manager">
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+     </font>
+    </property>
+    <property name="title">
+     <string>设备管理</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="model_manager">
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+     </font>
+    </property>
+    <property name="title">
+     <string>模型设置</string>
+    </property>
+   </widget>
+   <addaction name="system_set"/>
+   <addaction name="device_manager"/>
+   <addaction name="model_manager"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="video_select">
+   <property name="icon">
+    <iconset>
+     <normaloff>resources/file.ico</normaloff>resources/file.ico</iconset>
+   </property>
+   <property name="text">
+    <string>视频目录选择</string>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+    </font>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QVideoWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">PyQt5.QtMultimediaWidgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RangeSlider</class>
+   <extends>QSlider</extends>
+   <header>range_slider</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
