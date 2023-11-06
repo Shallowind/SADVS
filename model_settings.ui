@@ -182,11 +182,6 @@
            <property name="styleSheet">
             <string notr="true"/>
            </property>
-           <item>
-            <property name="text">
-             <string>人物</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
@@ -206,7 +201,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
+             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
            </property>
           </widget>
          </item>
@@ -223,7 +218,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
+             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
            </property>
           </widget>
          </item>
@@ -257,7 +252,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
+             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
            </property>
           </widget>
          </item>
