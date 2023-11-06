@@ -23,7 +23,8 @@ import detect
 import detect_yolov5
 from model_settings import ModelSettings
 from utils.myutil import file_is_pic, Globals
-
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
 class Pyqt5Window(QMainWindow):
     signal = pyqtSignal()
@@ -34,9 +35,13 @@ class Pyqt5Window(QMainWindow):
         self.ui = uic.loadUi('pyqt5.ui')
         self.ui.resize(1000, 600)
         self.ui.showMaximized()
-        self.ui.setWindowTitle("视频检测")
+        self.ui.setWindowTitle("MMX")
+        self.icon = QIcon()
+        self.icon.addPixmap(QPixmap("./UI/logo.ico"), QIcon.Normal, QIcon.Off)
+        self.ui.setWindowIcon(self.icon)
 
-        self.ui.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+        self.ui.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.signal.connect(self.cut_completed)
         # 播放器
         self.player = QMediaPlayer()
         self.player.setVideoOutput(self.ui.player)
@@ -156,34 +161,33 @@ class Pyqt5Window(QMainWindow):
         self.ui.verticalLayout.setStretch(2, 40)  # 第三个部件的伸缩因子为3
         splitter_list.setStyleSheet("""
             QSplitter {
-                background-color: white;
+                background-color: 19232d;
             }
             QSplitter::handle {
-                background-color: white;
+                background-color: 19232d;
             }
         """)
 
         splitter_tab = QSplitter(Qt.Horizontal)
-        splitter_tab.setStyleSheet("background-color: white")
         splitter_tab.addWidget(self.ui.widget_list)
         splitter_tab.addWidget(self.ui.tabWidget)
         splitter_tab.setStretchFactor(0, 8)
         splitter_tab.setStretchFactor(1, 10)
         splitter_tab.setStyleSheet("""
             QSplitter {
-                background-color: white;
+                background-color: 19232d;
             }
             QSplitter::handle {
-                background-color: white;
+                background-color: 19232d;
             }
         """)
-        self.ui.widget_list.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+        self.ui.widget_list.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.centralwidget.setStyleSheet("""
             QSplitter {
-                background-color: white;
+                background-color: 19232d;
             }
             QSplitter::handle {
-                background-color: white;
+                background-color: 19232d;
             }
         """)
 
@@ -197,24 +201,24 @@ class Pyqt5Window(QMainWindow):
         self.ui.horizontalLayout_5.addWidget(splitter_video)
         splitter_video.setStyleSheet("""
             QSplitter {
-                background-color: white;
+                background-color: 19232d;
             }
             QSplitter::handle {
-                background-color: white;
+                background-color: 19232d;
             }
         """)
 
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
-        splitter_video.setStretchFactor(0, 6)
-        splitter_video.setStretchFactor(1, 2)
+        splitter_video.setStretchFactor(0, 10)
+        splitter_video.setStretchFactor(1, 1)
         splitter_video.setStyleSheet("""
             QSplitter {
-                background-color: white;
+                background-color: 19232d;
             }
             QSplitter::handle {
-                background-color: white;
+                background-color: 19232d;
             }
         """)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
@@ -227,7 +231,9 @@ class Pyqt5Window(QMainWindow):
         self.camera_icon = QIcon("resources/cam_ico.png")
         self.play_ico = QIcon("resources/play_ico.png")
         self.pause_ico = QIcon("resources/pause_ico.png")
-        self.ui.cut_slider.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+        self.ui.menubar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.ui.statusbar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        self.ui.centralwidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
     def saveCut(self):
         cut_thread = threading.Thread(target=self.cut_thread)
@@ -235,6 +241,7 @@ class Pyqt5Window(QMainWindow):
         cut_thread.start()
 
     def cut_completed(self):
+        print("hehe")
         result = QMessageBox.warning(self, "已完成", "剪辑已完成！\n是否加入工作区？", QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.Yes)
         if result == QMessageBox.Yes:
@@ -273,7 +280,6 @@ class Pyqt5Window(QMainWindow):
             video = video.subclip(start_time_sec, stop_time_sec)  # 执行剪切操作，参数为秒
             video.to_videofile(target, remove_temp=True)  # 输出文件
             self.cut_path = target
-            self.signal.connect(self.cut_completed)
             self.signal.emit()
         except Exception as e:
             print(f"出现错误： {e}")
@@ -985,7 +991,7 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication([])
-    # app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=LightPalette()))
+    # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     pyqt5 = Pyqt5Window()
     pyqt5.ui.show()
     app.exec()
