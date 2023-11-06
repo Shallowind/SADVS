@@ -206,7 +206,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
+             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
            </property>
           </widget>
          </item>
@@ -223,7 +223,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
+             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
            </property>
           </widget>
          </item>
@@ -257,7 +257,7 @@
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>resources/op_icon/edit.png</normaloff>resources/op_icon/edit.png</iconset>
+             <normaloff>resources/op_icon/edit_1.png</normaloff>resources/op_icon/edit_1.png</iconset>
            </property>
           </widget>
          </item>

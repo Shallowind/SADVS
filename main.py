@@ -294,7 +294,7 @@ if __name__ == '__main__':
     # ui.setWindowFlags(Qt.FramelessWindowHint)
     # 设置窗口图标
     icon = QIcon()
-    icon.addPixmap(QPixmap("./UI/icon.ico"), QIcon.Normal, QIcon.Off)
+    icon.addPixmap(QPixmap("./UI/logo.ico"), QIcon.Normal, QIcon.Off)
     ui.setWindowIcon(icon)
     ui.show()
     sys.exit(app.exec_())
