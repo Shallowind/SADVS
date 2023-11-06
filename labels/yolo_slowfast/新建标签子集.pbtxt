@@ -1,0 +1,16 @@
+item {
+  name: "bend/bow (at the waist)"
+  id: 1
+}
+item {
+  name: "crawl"
+  id: 2
+}
+item {
+  name: "crouch/kneel"
+  id: 3
+}
+item {
+  name: "fall down"
+  id: 5
+}

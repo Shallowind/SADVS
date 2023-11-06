@@ -1,0 +1,16 @@
+item {
+  name: "sit"
+  id: 11
+}
+item {
+  name: "stand"
+  id: 12
+}
+item {
+  name: "swim"
+  id: 13
+}
+item {
+  name: "walk"
+  id: 14
+}
