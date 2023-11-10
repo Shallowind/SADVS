@@ -1,11 +1,14 @@
 import sys
 import os
+
+import qdarkstyle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
 from PyQt5 import uic, QtWidgets
 
 from utils.myutil import Globals
 from labels_settings import LabelsSettings
+
 
 class ModelSettings(QWidget):
     def __init__(self, main_window):
@@ -15,6 +18,7 @@ class ModelSettings(QWidget):
         self.ui.resize(800, 400)
         self.ui.setWindowTitle("识别设置")
         self.ui.show()  # 显示窗口
+        self.ui.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
         self.id = 1
 
@@ -46,10 +50,10 @@ class ModelSettings(QWidget):
             # 如果文件后缀不是 "bptxt"，则跳过
             if ext != ".pbtxt":
                 continue
-            self.ui.label_combox.insertItem(0,base)
+            self.ui.label_combox.insertItem(0, base)
 
     def labelsSelect(self):
-        class_ids = self.read_label_map(os.path.join(self.path, self.ui.label_combox.currentText()+'.pbtxt'))
+        class_ids = self.read_label_map(os.path.join(self.path, self.ui.label_combox.currentText() + '.pbtxt'))
         print(os.path.join(self.path, self.ui.label_combox.currentText()))
         Globals.classes = class_ids
         print(class_ids)

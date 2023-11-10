@@ -1,32 +1,35 @@
-import json
 import os
-import subprocess
-import sys
+import ctypes
+import os
 import threading
-import qdarkstyle
-from tkinter import Tk, simpledialog
-import cv2
 # import ffmpeg
 from datetime import datetime
+from tkinter import Tk, simpledialog
 
+import cv2
 import pygame.camera
-from PyQt5.QtCore import QUrl, Qt, QTimer, QThread, QFileInfo, pyqtSignal
-from PyQt5.QtGui import QIcon, QImage, QPixmap, QStandardItem
+import qdarkstyle
+from PyQt5 import uic
+from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal
+from PyQt5.QtGui import QIcon, QImage, QPixmap
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtWidgets import QFileDialog, QApplication, QListWidgetItem, QSplitter, QTreeWidgetItem, QHeaderView, \
-    QListView, QTreeWidget, QMainWindow, QMenu, QAction, QMessageBox
-from PyQt5 import uic, QtWidgets
+from PyQt5.QtWidgets import QFileDialog, QApplication, QSplitter, QTreeWidgetItem, QListView, QTreeWidget, QMainWindow, \
+    QMenu, QAction, QMessageBox
+from matplotlib import pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from moviepy.video.io.VideoFileClip import VideoFileClip
-from qdarkstyle import LightPalette
 
 import detect
 import detect_yolov5
+from labels_settings import LabelsSettings
 from model_settings import ModelSettings
-from utils.myutil import file_is_pic, Globals
-import ctypes
+from utils.myutil import Globals
+
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
-class Pyqt5Window(QMainWindow):
+
+class MainWindow(QMainWindow):
     signal = pyqtSignal()
 
     def __init__(self):
@@ -52,6 +55,8 @@ class Pyqt5Window(QMainWindow):
         # 选择文件夹
         self.ui.video_select.triggered.connect(self.openVideoFolder)
         self.ui.new_file.clicked.connect(self.openVideoFolder)
+        # 标签集设置
+        self.ui.action_sets.triggered.connect(self.labelSetsSettings)
         # 加入工作区
         self.ui.add_workspace.clicked.connect(self.addWorkspace)
         # 暂停
@@ -120,6 +125,13 @@ class Pyqt5Window(QMainWindow):
         self.ui.exit_mode.clicked.connect(self.exitMode)
         self.ui.save_cut.clicked.connect(self.saveCut)
         self.cut_path = None
+        # 创建NavigationToolbar
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        # 添加到布局中
+        self.ui.verticalLayout_6.addWidget(self.toolbar)
+        self.ui.verticalLayout_6.addWidget(self.canvas)
         # 启用多选
         self.ui.video_tree.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.video_tree.setStyleSheet("""
@@ -152,6 +164,7 @@ class Pyqt5Window(QMainWindow):
         self.selected_folder = ""
         self.selected_path = ""
         self.selected_item = None
+        self.labsettings_window = None
 
         # 分割器
         splitter_list = QSplitter(Qt.Vertical)
@@ -236,6 +249,11 @@ class Pyqt5Window(QMainWindow):
         self.ui.menubar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.statusbar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.centralwidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
+    def labelSetsSettings(self):
+        self.labsettings_window = LabelsSettings(self)
+        # self.settings_window.setWindowZOrder(Qt.TopMost)
+        self.labsettings_window.ui.show()
 
     def saveCut(self):
         cut_thread = threading.Thread(target=self.cut_thread)
@@ -537,20 +555,20 @@ class Pyqt5Window(QMainWindow):
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+                                  save_img=False, use_camera=True, show_window=self)
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=False, use_camera=True, show_labellist=self.ui.action_list)
+                           save_img=False, use_camera=True, show_window=self)
         else:
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=True, show_labellist=self.ui.action_list, classes=[0,2])
+                                  save_img=True, show_window=self, classes=[0, 2])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=True, show_labellist=self.ui.action_list, classes=[0,2])
+                           save_img=True, show_window=self, classes=[0, 2])
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 
@@ -974,12 +992,64 @@ class Pyqt5Window(QMainWindow):
         self.ui.search_result.clear()
         if item:
             for t, action_list in self.frame_dict.items():
-                for action in action_list:
-                    if item in action_list[action]:
+                for order in action_list:
+                    if item in action_list[order]:
                         # print(action_list[action])
                         # item = QListWidgetItem(video_file)
-                        self.ui.search_result.addItem(f"时间：{t} 动作：{action}-{action_list[action]}")
+                        self.ui.search_result.addItem(f"时间：{t} 动作：{order}-{action_list[order]}")
             # self.ui.item_search.setText("")
+
+    def drawLineChart(self):
+        if not Globals.dict_text:
+            return
+        self.frame_dict = self.load_frame_dict(Globals.dict_text)
+        if not self.frame_dict:
+            return
+        # Clear the previous plot
+        self.ax.clear()
+
+        # Create a dictionary to store counts for each unique action
+        action_counts = {}
+
+        # Iterate through the frame_dict and count occurrences of each unique action
+        for t, action_dict in self.frame_dict.items():
+            # Initialize counts dictionary for each timestamp
+            counts = {}
+
+            for order, action in action_dict.items():
+                if action not in counts:
+                    counts[action] = 0
+
+                counts[action] += 1
+
+                if action not in action_counts:
+                    action_counts[action] = {'t': [t], 'count': [1]}
+                else:
+                    # Check if 't' has changed
+                    if action_counts[action]['t'][-1] != t:
+                        action_counts[action]['t'].append(t)
+                        action_counts[action]['count'].append(1)
+                    else:
+                        # Update the last 'count' value
+                        action_counts[action]['count'][-1] = counts[action]
+
+        # Plot each unique action as a separate line
+        for action, data in action_counts.items():
+            self.ax.plot(data['t'], data['count'], marker='o', label=action)
+            print(data)
+
+        # Set labels and title
+        self.ax.set_xlabel('t')
+        self.ax.set_ylabel('Count')
+        self.ax.set_title('Action Counts Over Time')
+
+        # Add legend
+        self.ax.legend()
+
+        # Redraw the canvas
+        self.canvas.draw()
+
+
 
     def tabChanged(self):
         self.player.pause()
@@ -994,6 +1064,6 @@ if __name__ == "__main__":
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication([])
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    pyqt5 = Pyqt5Window()
+    pyqt5 = MainWindow()
     pyqt5.ui.show()
     app.exec()

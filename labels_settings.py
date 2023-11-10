@@ -20,6 +20,7 @@ class LabelsSettings(QWidget):
         self.ui.resize(1000, 600)
         self.ui.setWindowTitle("标签设置")
         self.ui.show()  # 显示窗口
+        self.ui.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         # self.ui.closeEvent = self.closeEvent
 
         self.buttons = []
@@ -32,23 +33,24 @@ class LabelsSettings(QWidget):
             path = os.getcwd()
             path = os.path.join(path, "labels")
             self.FullCollection_path = os.path.join(path, self.modelset.ui.model_combox.currentText())
-        else:
-            self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
-        self.open_file()
-
+            self.open_file()
+        self.ui.open.setVisible(False)
+        self.ui.pushButton.setVisible(False)
         self.ui.pushButton_2.clicked.connect(self.save)
-        self.ui.listWidget.itemClicked.connect(self.select)
+        self.ui.sets_list.itemClicked.connect(self.select)
+        self.ui.models_list.itemClicked.connect(self.visit_sets)
         self.ui.pushButton.clicked.connect(self.displays_selection)
         self.ui.delete_2.clicked.connect(self.on_delete_clicked)
         self.ui.open.clicked.connect(self.on_open_clicked)
-        self.ui.pushButton_4.clicked.connect(self.aa)
-        # self.ui.listWidget.itemChanged.connect(lambda item, old_name: self.on_item_changed(item, old_name))
+        # self.ui.sets_list.itemChanged.connect(lambda item, old_name: self.on_item_changed(item, old_name))
         # 设置顶部显示
         self.ui.labels_part_2.setAlignment(Qt.AlignTop)
 
         # 右键菜单栏
-        self.ui.listWidget.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.listWidget.customContextMenuRequested.connect(self.show_context_menu)
+        self.ui.sets_list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.sets_list.customContextMenuRequested.connect(self.show_context_menu)
+
+        self.modellist()
 
     # def on_item_changed(self, item, old_name):
     #     print(222)
@@ -60,38 +62,65 @@ class LabelsSettings(QWidget):
     #     print(new_name)
     #     os.rename(old_name, new_name)
 
+    def visit_sets(self, item):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        # labels文件夹的路径
+        self.FullCollection_path = os.path.join(script_directory, 'labels', item.text())
+        if self.FullCollection_path:
+            self.open_file()
+
+    def modellist(self):
+        # 清空 listwidget，以便重新加载文件夹名
+        self.ui.models_list.clear()
+
+        # 获取当前脚本所在目录的路径
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # labels文件夹的路径
+        labels_directory = os.path.join(script_directory, 'labels')
+
+        # 检查labels文件夹是否存在
+        if os.path.exists(labels_directory) and os.path.isdir(labels_directory):
+            # 遍历labels文件夹内的文件夹
+            for folder_name in os.listdir(labels_directory):
+                # 确保是文件夹而不是文件
+                folder_path = os.path.join(labels_directory, folder_name)
+                if os.path.isdir(folder_path):
+                    # 将文件夹名添加到listwidget
+                    self.ui.models_list.addItem(folder_name)
+        else:
+            print("labels文件夹不存在或者不是一个文件夹")
+
     def rename_file(self):
         # get the currently selected item and its old name
-        item = self.ui.listWidget.currentItem()
+        item = self.ui.sets_list.currentItem()
         old_name = item.data(Qt.UserRole)
 
         # make the item editable and start editing
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-        self.ui.listWidget.editItem(item)
+        self.ui.sets_list.editItem(item)
 
         # wait until editing is finished
         QApplication.instance().processEvents()
 
         # get the new name from the edited item
-        new_name = os.path.join(self.FullCollection_path,item.text()+'.pbtxt')
+        new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
 
         # check if the new name is different from the old name
         if old_name != new_name:
             # perform the actual renaming operation
             os.rename(old_name, new_name)
 
-
-    def aa(self):
-        print(self.FullCollection_path)
-
     def on_open_clicked(self):
+        self.FullCollection_path = None
         self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
-        self.open_file()
+        if self.FullCollection_path:
+            self.open_file()
 
     def open_file(self):
         # 清空list
         self.translations = {}
-        self.ui.listWidget.clear()
+        self.ui.sets_list.clear()
         # 清空工作区
         while self.ui.labels_part_2.count():
             item = self.ui.labels_part_2.takeAt(0)
@@ -113,12 +142,12 @@ class LabelsSettings(QWidget):
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, file_path)
-            self.ui.listWidget.addItem(item)
+            self.ui.sets_list.addItem(item)
 
     def show_context_menu(self, position):
-        item = self.ui.listWidget.itemAt(position)
+        item = self.ui.sets_list.itemAt(position)
         if item is not None:
-            menu = QMenu(self.ui.listWidget)
+            menu = QMenu(self.ui.sets_list)
 
             action = QAction("重命名", menu)
             action.triggered.connect(self.rename_file)
@@ -132,10 +161,10 @@ class LabelsSettings(QWidget):
             action.triggered.connect(self.on_delete_clicked)
             menu.addAction(action)
 
-            menu.exec_(self.ui.listWidget.mapToGlobal(position))
+            menu.exec_(self.ui.sets_list.mapToGlobal(position))
 
     def on_delete_clicked(self):
-        selected_item = self.ui.listWidget.currentItem()
+        selected_item = self.ui.sets_list.currentItem()
         if selected_item:
             # 如果文件名与标签集名相同不可删除
             filename, extension = os.path.splitext(os.path.basename(selected_item.data(Qt.UserRole)))
@@ -144,7 +173,7 @@ class LabelsSettings(QWidget):
                 return
 
         if selected_item:
-            row = self.ui.listWidget.row(selected_item)
+            row = self.ui.sets_list.row(selected_item)
             self.buttons = []
             self.checkboxes = []
             self.checkboxes_data = {}
@@ -153,13 +182,13 @@ class LabelsSettings(QWidget):
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
-            item = self.ui.listWidget.takeItem(row)
+            item = self.ui.sets_list.takeItem(row)
             del item
             os.remove(selected_item.data(Qt.UserRole))
 
     def save(self):
         base = "新建标签子集"
-        path = os.path.join(self.FullCollection_path, base+'.pbtxt')
+        path = os.path.join(self.FullCollection_path, base + '.pbtxt')
         with open(path, "w", encoding="utf-8") as f:
             for checkbox in self.checkboxes:
                 if checkbox.isChecked():
@@ -168,7 +197,7 @@ class LabelsSettings(QWidget):
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, path)
-            self.ui.listWidget.addItem(item)
+            self.ui.sets_list.addItem(item)
 
     def displays_selection(self):
         for checkbox in self.checkboxes:
@@ -178,7 +207,7 @@ class LabelsSettings(QWidget):
 
     # 选择标签子集并显示
     def select(self):
-        selected_item = self.ui.listWidget.currentItem()
+        selected_item = self.ui.sets_list.currentItem()
         if selected_item:
             # 清空工作区
             self.buttons = []
