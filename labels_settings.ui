@@ -18,11 +18,27 @@
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,2">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,0,10,0">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <widget class="QPushButton" name="open">
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+            </property>
             <property name="text">
              <string>打开文件夹</string>
             </property>
@@ -33,6 +49,22 @@
             <property name="toolTip">
              <string>显示内容</string>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+            </property>
             <property name="text">
              <string>显示内容</string>
             </property>
@@ -41,11 +73,33 @@
          </layout>
         </item>
         <item>
+         <widget class="QListWidget" name="models_list"/>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QPushButton" name="pushButton_2">
             <property name="toolTip">
              <string>新建</string>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
             </property>
             <property name="text">
              <string>新建</string>
@@ -57,6 +111,22 @@
             <property name="toolTip">
              <string>删除</string>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+    padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+            </property>
             <property name="text">
              <string>删除</string>
             </property>
@@ -65,18 +135,10 @@
          </layout>
         </item>
         <item>
-         <widget class="QListWidget" name="listWidget"/>
+         <widget class="QListWidget" name="sets_list"/>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QPushButton" name="pushButton_4">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_3"/>
         </item>
        </layout>
       </item>
@@ -90,13 +152,13 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>499</width>
-           <height>516</height>
+           <width>504</width>
+           <height>525</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <layout class="QVBoxLayout" name="labels_part_2" stretch="">
+           <layout class="QVBoxLayout" name="labels_part_2">
             <property name="topMargin">
              <number>0</number>
             </property>

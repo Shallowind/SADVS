@@ -23,6 +23,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QImage
 
 import utils
+from mainwindow import MainWindow
 from models.common import DetectMultiBackend
 from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
 from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
@@ -151,7 +152,7 @@ def run(
         vid_stride=1,  # video frame-rate stride
         show_label=None,
         use_camera=False,
-        show_labellist=None
+        show_window=None
 ):
     source = str(source)
     # Directories
@@ -235,13 +236,14 @@ def run(
             dict_text[(idx // fps)] = dict_text_persec
             Globals.dict_text[(idx // fps)] = dict_text_persec
             print(dict_text_persec)
-            if show_labellist is not None:
-                show_labellist.clear()
+            if show_window is not None:
+                show_window.ui.action_list.clear()
                 # 启动输出动作标签
                 for action in dict_text_persec:
                     print(action)
                     print(dict_text_persec[action])
-                    show_labellist.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+                    show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+            MainWindow.drawLineChart(show_window)
 
             del dict_text_persec
             dict_text_persec = {}

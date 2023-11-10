@@ -1452,7 +1452,7 @@ QPushButton:pressed {
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <layout class="QVBoxLayout" name="verticalLayout_5" stretch="5,0,5">
+                <layout class="QVBoxLayout" name="verticalLayout_5" stretch="4,5">
                  <item>
                   <widget class="QListWidget" name="action_list">
                    <property name="font">
@@ -1464,29 +1464,65 @@ QPushButton:pressed {
                   </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1">
-                   <item>
-                    <widget class="QLineEdit" name="item_search"/>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="item_search_button">
-                     <property name="enabled">
-                      <bool>true</bool>
+                  <widget class="QTabWidget" name="result_tab">
+                   <property name="font">
+                    <font>
+                     <pointsize>9</pointsize>
+                    </font>
+                   </property>
+                   <property name="currentIndex">
+                    <number>1</number>
+                   </property>
+                   <widget class="QWidget" name="search_tab">
+                    <attribute name="title">
+                     <string>搜索</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_5">
+                     <property name="leftMargin">
+                      <number>0</number>
                      </property>
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
+                     <property name="topMargin">
+                      <number>0</number>
                      </property>
-                     <property name="mouseTracking">
-                      <bool>false</bool>
+                     <property name="rightMargin">
+                      <number>0</number>
                      </property>
-                     <property name="styleSheet">
-                      <string notr="true">QPushButton {
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1">
+                       <property name="spacing">
+                        <number>6</number>
+                       </property>
+                       <item>
+                        <widget class="QLineEdit" name="item_search">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="item_search_button">
+                         <property name="enabled">
+                          <bool>true</bool>
+                         </property>
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="mouseTracking">
+                          <bool>false</bool>
+                         </property>
+                         <property name="styleSheet">
+                          <string notr="true">QPushButton {
     background-color: #455364; /* 默认颜色，浅灰色 */
     border: 1px solid #666666; /* 灰色的边框 */
-    padding: 5px 10px;
 }
 
 QPushButton:hover {
@@ -1497,38 +1533,69 @@ QPushButton:pressed {
     background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
 }
 </string>
+                         </property>
+                         <property name="text">
+                          <string/>
+                         </property>
+                         <property name="icon">
+                          <iconset>
+                           <normaloff>resources/op_icon/search.png</normaloff>resources/op_icon/search.png</iconset>
+                         </property>
+                         <property name="autoRepeat">
+                          <bool>false</bool>
+                         </property>
+                         <property name="autoDefault">
+                          <bool>false</bool>
+                         </property>
+                         <property name="default">
+                          <bool>false</bool>
+                         </property>
+                         <property name="flat">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QListWidget" name="search_result">
+                       <property name="font">
+                        <font>
+                         <family>微软雅黑</family>
+                         <pointsize>9</pointsize>
+                        </font>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="plot_tab">
+                    <attribute name="title">
+                     <string>折线图</string>
+                    </attribute>
+                    <layout class="QGridLayout" name="gridLayout_10">
+                     <property name="leftMargin">
+                      <number>0</number>
                      </property>
-                     <property name="text">
-                      <string/>
+                     <property name="topMargin">
+                      <number>0</number>
                      </property>
-                     <property name="icon">
-                      <iconset>
-                       <normaloff>resources/op_icon/search.png</normaloff>resources/op_icon/search.png</iconset>
+                     <property name="rightMargin">
+                      <number>0</number>
                      </property>
-                     <property name="autoRepeat">
-                      <bool>false</bool>
+                     <property name="bottomMargin">
+                      <number>0</number>
                      </property>
-                     <property name="autoDefault">
-                      <bool>false</bool>
-                     </property>
-                     <property name="default">
-                      <bool>false</bool>
-                     </property>
-                     <property name="flat">
-                      <bool>false</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <widget class="QListWidget" name="search_result">
-                   <property name="font">
-                    <font>
-                     <family>微软雅黑</family>
-                     <pointsize>9</pointsize>
-                    </font>
-                   </property>
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="verticalLayout_6"/>
+                     </item>
+                    </layout>
+                   </widget>
+                   <widget class="QWidget" name="tab_3">
+                    <attribute name="title">
+                     <string>统计图</string>
+                    </attribute>
+                   </widget>
                   </widget>
                  </item>
                 </layout>
@@ -1584,6 +1651,12 @@ QPushButton:pressed {
     </property>
     <addaction name="video_select"/>
     <addaction name="separator"/>
+    <addaction name="action_2"/>
+    <addaction name="action_3"/>
+    <addaction name="separator"/>
+    <addaction name="action_6"/>
+    <addaction name="separator"/>
+    <addaction name="action_8"/>
    </widget>
    <widget class="QMenu" name="device_manager">
     <property name="font">
@@ -1594,6 +1667,7 @@ QPushButton:pressed {
     <property name="title">
      <string>设备管理</string>
     </property>
+    <addaction name="action"/>
    </widget>
    <widget class="QMenu" name="model_manager">
     <property name="font">
@@ -1604,10 +1678,18 @@ QPushButton:pressed {
     <property name="title">
      <string>模型设置</string>
     </property>
+    <addaction name="action_4"/>
+    <addaction name="action_sets"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string> 关于 </string>
+    </property>
    </widget>
    <addaction name="system_set"/>
    <addaction name="device_manager"/>
    <addaction name="model_manager"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="video_select">
@@ -1622,6 +1704,41 @@ QPushButton:pressed {
     <font>
      <family>微软雅黑</family>
     </font>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>增加设备</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>默认视频目录</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>默认保存路径</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>模型查看</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>保存</string>
+   </property>
+  </action>
+  <action name="action_8">
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </action>
+  <action name="action_sets">
+   <property name="text">
+    <string>标签集设置</string>
    </property>
   </action>
  </widget>
