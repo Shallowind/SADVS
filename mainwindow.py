@@ -7,11 +7,12 @@ from datetime import datetime
 from tkinter import Tk, simpledialog
 
 import cv2
+import numpy as np
 import pygame.camera
 import qdarkstyle
 from PyQt5 import uic
 from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal
-from PyQt5.QtGui import QIcon, QImage, QPixmap
+from PyQt5.QtGui import QIcon, QImage, QPixmap, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QSplitter, QTreeWidgetItem, QListView, QTreeWidget, QMainWindow, \
     QMenu, QAction, QMessageBox
@@ -125,13 +126,35 @@ class MainWindow(QMainWindow):
         self.ui.exit_mode.clicked.connect(self.exitMode)
         self.ui.save_cut.clicked.connect(self.saveCut)
         self.cut_path = None
-        # 创建NavigationToolbar
+        # 创建图形
         self.figure, self.ax = plt.subplots()
+        self.ax.set_facecolor('#19232d')
+        self.ax.set_xlabel('t', color='white')
+        self.ax.set_ylabel('Count', color='white')
+        self.ax.tick_params(axis='both', colors='white')
+        self.ax.spines['bottom'].set_color('white')
+        self.ax.spines['top'].set_color('white')
+        self.ax.spines['right'].set_color('white')
+        self.ax.spines['left'].set_color('white')
+        self.ax.set_title('Action Counts Over Time', color='white')
+        self.figure.set_facecolor('#19232d')
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
         # 添加到布局中
         self.ui.verticalLayout_6.addWidget(self.toolbar)
         self.ui.verticalLayout_6.addWidget(self.canvas)
+        # 创建图形
+        self.figure2, self.ax2 = plt.subplots()
+        labels = ('unkown',)
+        sizes = [100]
+        self.ax2.set_title('Action Counts', color='white')
+        self.ax2.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
+        self.figure2.set_facecolor('#19232d')
+        self.canvas2 = FigureCanvas(self.figure2)
+        self.toolbar2 = NavigationToolbar(self.canvas2, self)
+        # 添加到布局中
+        self.ui.verticalLayout_7.addWidget(self.toolbar2)
+        self.ui.verticalLayout_7.addWidget(self.canvas2)
         # 启用多选
         self.ui.video_tree.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.video_tree.setStyleSheet("""
@@ -1000,20 +1023,26 @@ class MainWindow(QMainWindow):
             # self.ui.item_search.setText("")
 
     def drawLineChart(self):
+        # 如果全局变量 Globals.dict_text 为空，则返回
         if not Globals.dict_text:
             return
+
+        # 从 Globals.dict_text 加载数据到 self.frame_dict
         self.frame_dict = self.load_frame_dict(Globals.dict_text)
+
+        # 如果 self.frame_dict 为空，则返回
         if not self.frame_dict:
             return
-        # Clear the previous plot
+
+        # 清除之前的绘图
         self.ax.clear()
 
-        # Create a dictionary to store counts for each unique action
+        # 创建一个字典来存储每个唯一动作的计数
         action_counts = {}
 
-        # Iterate through the frame_dict and count occurrences of each unique action
+        # 遍历 frame_dict 并计算每个唯一动作的发生次数
         for t, action_dict in self.frame_dict.items():
-            # Initialize counts dictionary for each timestamp
+            # 为每个时间戳初始化计数字典
             counts = {}
 
             for order, action in action_dict.items():
@@ -1025,31 +1054,104 @@ class MainWindow(QMainWindow):
                 if action not in action_counts:
                     action_counts[action] = {'t': [t], 'count': [1]}
                 else:
-                    # Check if 't' has changed
+                    # 检查 't' 是否发生变化
                     if action_counts[action]['t'][-1] != t:
                         action_counts[action]['t'].append(t)
                         action_counts[action]['count'].append(1)
                     else:
-                        # Update the last 'count' value
+                        # 更新最后一个 'count' 的值
                         action_counts[action]['count'][-1] = counts[action]
 
-        # Plot each unique action as a separate line
-        for action, data in action_counts.items():
-            self.ax.plot(data['t'], data['count'], marker='o', label=action)
-            print(data)
+        # 初始化一个包含所有时间点的集合
+        all_t = set()
 
-        # Set labels and title
+        # 遍历 action_counts 获取所有时间点
+        for action, data in action_counts.items():
+            all_t.update(data['t'])
+
+        # 遍历 action_counts 更新数据结构
+        for action, data in action_counts.items():
+            # 创建补全后的数据结构
+            filled_data = {'t': list(all_t), 'count': [0] * len(all_t)}
+
+            # 将已有数据填入相应位置
+            for i, t in enumerate(data['t']):
+                # 只在时间点在原始数据之后的位置进行填充
+                if t in filled_data['t']:
+                    filled_data['count'][filled_data['t'].index(t)] = data['count'][i]
+
+            # 剔除前面的零
+            first_non_zero_index = next((i for i, count in enumerate(filled_data['count']) if count != 0), None)
+            if first_non_zero_index is not None:
+                filled_data['t'] = filled_data['t'][first_non_zero_index:]
+                filled_data['count'] = filled_data['count'][first_non_zero_index:]
+
+            # 替换原始数据
+            action_counts[action] = filled_data
+            last_10_data = {'t': filled_data['t'][-10:], 'count': filled_data['count'][-10:]}
+
+            # 进行绘图等操作
+            self.ax.plot(last_10_data['t'], last_10_data['count'], marker='o', label=action)
+
+        # 设置标签和标题
         self.ax.set_xlabel('t')
         self.ax.set_ylabel('Count')
-        self.ax.set_title('Action Counts Over Time')
+        self.ax.set_title('Action Counts Over Time', color='white')
 
-        # Add legend
+        # 添加图例
         self.ax.legend()
 
-        # Redraw the canvas
+        # 重新绘制画布
         self.canvas.draw()
 
+    def drawPieChart(self):
+        # 如果全局变量 Globals.dict_text 为空，则返回
+        if not Globals.dict_text:
+            return
 
+        # 从 Globals.dict_text 加载数据到 self.frame_dict
+        self.frame_dict = self.load_frame_dict(Globals.dict_text)
+
+        # 如果 self.frame_dict 为空，则返回
+        if not self.frame_dict:
+            return
+
+        # 清除之前的绘图
+        self.ax2.clear()
+
+        # 创建一个字典来存储每个唯一动作的计数
+        action_counts = {}
+
+        # 遍历 frame_dict 并计算每个唯一动作的发生次数
+        for t, action_dict in self.frame_dict.items():
+            # 为每个时间戳初始化计数字典
+            counts = {}
+
+            for order, action in action_dict.items():
+                if action not in counts:
+                    counts[action] = 0
+
+                counts[action] += 1
+
+            # 累积每个动作在所有时间戳上的计数
+            for action, count in counts.items():
+                if action not in action_counts:
+                    action_counts[action] = count
+                else:
+                    action_counts[action] += count
+
+        # 为累积计数绘制饼图
+        labels = list(action_counts.keys())
+        counts = list(action_counts.values())
+
+        # 绘制饼图
+        self.ax2.pie(counts, labels=labels, autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
+
+        # 设置标题
+        self.ax2.set_title('Action Counts', color='white')
+
+        # 重新绘制画布
+        self.canvas2.draw()
 
     def tabChanged(self):
         self.player.pause()

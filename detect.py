@@ -244,7 +244,7 @@ def run(
                     print(dict_text_persec[action])
                     show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
             MainWindow.drawLineChart(show_window)
-
+            MainWindow.drawPieChart(show_window)
             del dict_text_persec
             dict_text_persec = {}
 

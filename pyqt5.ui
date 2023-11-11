@@ -351,11 +351,6 @@ QPushButton:pressed {
              <attribute name="headerVisible">
               <bool>false</bool>
              </attribute>
-             <column>
-              <property name="text">
-               <string notr="true">1</string>
-              </property>
-             </column>
             </widget>
            </item>
           </layout>
@@ -372,7 +367,7 @@ QPushButton:pressed {
          </font>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="ori_video">
          <attribute name="title">
@@ -1471,7 +1466,7 @@ QPushButton:pressed {
                     </font>
                    </property>
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>2</number>
                    </property>
                    <widget class="QWidget" name="search_tab">
                     <attribute name="title">
@@ -1595,6 +1590,23 @@ QPushButton:pressed {
                     <attribute name="title">
                      <string>统计图</string>
                     </attribute>
+                    <layout class="QGridLayout" name="gridLayout_11">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <layout class="QVBoxLayout" name="verticalLayout_7"/>
+                     </item>
+                    </layout>
                    </widget>
                   </widget>
                  </item>

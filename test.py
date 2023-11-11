@@ -1,46 +1,45 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-
-class MyMainWindow(QMainWindow):
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+class PieChart(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Matplotlib in PyQt")
+        self.setWindowTitle("Pie Chart in PyQt5")
         self.setGeometry(100, 100, 800, 600)
 
-        self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
 
-        self.layout = QVBoxLayout(self.central_widget)
+        layout = QVBoxLayout(central_widget)
 
-        # 创建Matplotlib的FigureCanvas和NavigationToolbar
-        self.canvas = FigureCanvas(plt.Figure())
+        # 创建Matplotlib图形
+        self.figure, self.ax = plt.subplots()
+        self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
+        # 添加到布局中
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
 
-        # 将它们添加到布局中
-        self.layout.addWidget(self.toolbar)
-        self.layout.addWidget(self.canvas)
+        # 调用绘制饼图的函数
+        self.plot_pie_chart()
 
-        # 在FigureCanvas上绘制折线图
-        self.draw_line_chart()
+    def plot_pie_chart(self):
+        # 示例数据
+        labels = ('Aaa',)
+        sizes = [100]
 
-    def draw_line_chart(self):
-        # 这里放入你的Matplotlib绘图代码
-        # 注意：要绘制的图形应该是 self.canvas.figure 中的Figure对象
-        ax = self.canvas.figure.add_subplot(111)
-        ax.plot([1, 2, 3, 4], [10, 20, 25, 30], label='Example Line')
-        ax.set_xlabel('X-axis')
-        ax.set_ylabel('Y-axis')
-        ax.legend()
+        # 绘制饼图
+        self.ax.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+        self.ax.axis('equal')  # 使饼图保持圆形
 
-        # 绘制完成后刷新图形
+        # 在Matplotlib图形上绘制饼图后，更新Qt窗口
         self.canvas.draw()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = MyMainWindow()
+    window = PieChart()
     window.show()
     sys.exit(app.exec_())
