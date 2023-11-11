@@ -48,7 +48,7 @@ def run(
         vid_stride=1,  # video frame-rate stride
         show_label=None,
         use_camera=False,
-        show=None
+        show_window=None
 ):
     source = str(source)
     # Directories
