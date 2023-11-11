@@ -578,20 +578,28 @@ class MainWindow(QMainWindow):
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=False, use_camera=True, show_window=self)
+                                  save_img=False, use_camera=True, show_window=self, classes=Globals.select_labels,
+                                  max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
+                                  iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=False, use_camera=True, show_window=self)
+                           save_img=False, use_camera=True, show_window=self, select_labels=Globals.select_labels,
+                           max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
+                           iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
         else:
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                                  save_img=True, show_window=self, classes=[0, 2])
+                                  save_img=True, show_window=self, classes=Globals.select_labels,
+                                  max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
+                                  iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
-                           save_img=True, show_window=self, classes=[0, 2])
+                           save_img=True, show_window=self, select_labels=Globals.select_labels,
+                           max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
+                           iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 

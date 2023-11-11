@@ -8,7 +8,7 @@ from PyQt5 import uic, QtWidgets
 
 from utils.myutil import Globals
 from labels_settings import LabelsSettings
-
+from json import loads
 
 class ModelSettings(QWidget):
     def __init__(self, main_window):
@@ -31,8 +31,35 @@ class ModelSettings(QWidget):
         self.ui.pt_select_button.clicked.connect(self.ptSelectButton)
         self.ui.model_select_button.clicked.connect(self.modelSelect)
         self.ui.save_button.clicked.connect(self.saveSettings)
+        self.ui.save_button.setShortcut('enter')
+        self.ui.begin.clicked.connect(self.beginIdentify)
+
         self.ui.model_combox.currentIndexChanged.connect(self.init_labels_combox)
         self.ui.labels_select_button.clicked.connect(self.labelsetting)
+
+        try:
+            with open('Default settings.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+            seted = loads(content)
+            self.ui.save_address_edit.setText(seted['save_path'])
+            self.ui.pt_edit.setText(seted['pt_path'])
+            self.ui.model_combox.setCurrentText(seted['model_select'])
+            self.ui.label_combox.setCurrentText(seted['labels'])
+            self.ui.max_size_comboBox.setCurrentText(seted['max_det'])
+            self.ui.conf_doubleSpinBox.setValue(seted['conf'])
+            self.ui.iou_doubleSpinBox.setValue(seted['iou'])
+            self.ui.line_thickness.setValue(seted['line_thickness'])
+
+            # 'save_path': self.ui.save_address_edit.text(),
+            # 'pt_path': self.ui.pt_edit.text(),
+            # 'model_select': self.ui.model_combox.currentText(),
+            # 'labels': self.ui.label_combox.currentText(),
+            # 'max_det': self.ui.max_size_comboBox.currentText(),
+            # 'conf': self.ui.conf_doubleSpinBox.value(),
+            # 'iou': self.ui.iou_doubleSpinBox.value(),
+            # 'line_thickness': self.ui.line_thickness.value()
+        except FileNotFoundError:
+            print("文件不存在")
 
     def labelsetting(self):
         self.settings_window = LabelsSettings(self)
@@ -55,12 +82,11 @@ class ModelSettings(QWidget):
     def labelsSelect(self):
         class_ids = self.read_label_map(os.path.join(self.path, self.ui.label_combox.currentText() + '.pbtxt'))
         print(os.path.join(self.path, self.ui.label_combox.currentText()))
-        Globals.classes = class_ids
+        Globals.select_labels = class_ids
         print(class_ids)
 
     def read_label_map(self, label_map_file):
         class_ids = []
-        class_id = ""
         with open(label_map_file, "r") as f:
             for line in f:
                 if line.startswith("  id:") or line.startswith("  label_id:"):
@@ -96,7 +122,7 @@ class ModelSettings(QWidget):
         # 显示对话框
         message_box.exec_()
 
-    def saveSettings(self):
+    def beginIdentify(self):
         if not self.ui.save_address_edit.text():
             # 如果文本内容为空，显示提示消息
             QMessageBox.warning(self, "警告", "保存地址不能为空")
@@ -110,12 +136,37 @@ class ModelSettings(QWidget):
                 'pt_path': self.ui.pt_edit.text(),
                 'model_select': self.ui.model_combox.currentText(),
                 'labels': self.ui.label_combox.currentText(),
+                'max_det': self.ui.max_size_comboBox.currentText(),
+                'conf': self.ui.conf_doubleSpinBox.value(),
+                'iou': self.ui.iou_doubleSpinBox.value(),
+                'line_thickness': self.ui.line_thickness.value()
             }
             Globals.settings = settings_data
             print(Globals.settings)
             self.labelsSelect()
+
+            import json
+
+            # 假设这是从数据库中获取的数据
+            data = {
+                'save_path': self.ui.save_address_edit.text(),
+                'pt_path': self.ui.pt_edit.text(),
+                'model_select': self.ui.model_combox.currentText(),
+                'labels': self.ui.label_combox.currentText(),
+                'max_det': self.ui.max_size_comboBox.currentText(),
+                'conf': self.ui.conf_doubleSpinBox.value(),
+                'iou': self.ui.iou_doubleSpinBox.value(),
+                'line_thickness': self.ui.line_thickness.value()
+            }
+
+            # 将数据写入文件
+            with open('Default settings.txt', 'w') as f:
+                json.dump(data, f)
+
             self.ui.close()
 
+    def saveSettings(self):
+        return
 
 if __name__ == "__main__":
     app = QApplication([])
