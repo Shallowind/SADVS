@@ -26,8 +26,10 @@ class LabelsSettings(QWidget):
         self.buttons = []
         self.checkboxes = []
         self.checkboxes_data = {}
+        self.id = []
         self.FullCollection_path = ''
         self.translations = {}
+        self.full_buttons = []
 
         if self.modelset.id == 1:
             path = os.getcwd()
@@ -42,6 +44,7 @@ class LabelsSettings(QWidget):
         self.ui.pushButton.clicked.connect(self.displays_selection)
         self.ui.delete_2.clicked.connect(self.on_delete_clicked)
         self.ui.open.clicked.connect(self.on_open_clicked)
+        self.ui.fan.clicked.connect(self.on_fan_clicked)
         # self.ui.sets_list.itemChanged.connect(lambda item, old_name: self.on_item_changed(item, old_name))
         # 设置顶部显示
         self.ui.labels_part_2.setAlignment(Qt.AlignTop)
@@ -61,6 +64,13 @@ class LabelsSettings(QWidget):
     #     print(333)
     #     print(new_name)
     #     os.rename(old_name, new_name)
+
+    def on_fan_clicked(self):
+        for checkbox in self.checkboxes:
+            if checkbox.isChecked():
+                checkbox.setChecked(False)
+            else:
+                checkbox.setChecked(True)
 
     def visit_sets(self, item):
         script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -133,6 +143,10 @@ class LabelsSettings(QWidget):
             content = f.read()
         self.translations = loads(content)
 
+        path = os.path.join(self.FullCollection_path, os.path.basename(self.FullCollection_path) + ".pbtxt")
+        self.full_buttons, id = self.read_label_map(path)
+        self.full_buttons = self.create_buttons(self.full_buttons)
+
         for filename in os.listdir(self.FullCollection_path):
             file_path = os.path.join(self.FullCollection_path, filename)
             base, ext = os.path.splitext(filename)
@@ -191,6 +205,8 @@ class LabelsSettings(QWidget):
         path = os.path.join(self.FullCollection_path, base + '.pbtxt')
         with open(path, "w", encoding="utf-8") as f:
             for checkbox in self.checkboxes:
+                item = self.checkboxes_data[checkbox.text()]
+                print(item)
                 if checkbox.isChecked():
                     item = self.checkboxes_data[checkbox.text()]
                     f.write(f"item {{\n  name: \"{item[1]}\"\n  id: {item[0]}\n}}\n")
@@ -210,6 +226,7 @@ class LabelsSettings(QWidget):
         selected_item = self.ui.sets_list.currentItem()
         if selected_item:
             # 清空工作区
+            self.id = []
             self.buttons = []
             self.checkboxes = []
             self.checkboxes_data = {}
@@ -219,7 +236,7 @@ class LabelsSettings(QWidget):
                 if widget is not None:
                     widget.deleteLater()
             # 显示选中标签集
-            label_map, class_ids = self.read_label_map(selected_item.data(Qt.UserRole))
+            label_map, self.id = self.read_label_map(selected_item.data(Qt.UserRole))
             self.buttons = self.create_buttons(label_map)
             self.display_checkboxes(self.buttons)
 
@@ -236,13 +253,20 @@ class LabelsSettings(QWidget):
 
     # 展示标签集
     def display_checkboxes(self, buttons):
-        for button in buttons:
+        for button in self.full_buttons:
             # 创建复选框并添加到布局中，使用 button 变量作为标签
             checkbox_name = self.translations[str(button.data)]
             checkbox = QCheckBox(checkbox_name)
+
+            if button.data[0] in self.id:
+                checkbox.setChecked(True)
+            else:
+                checkbox.setChecked(False)
+
             self.checkboxes_data[checkbox_name] = button.data
             self.ui.labels_part_2.addWidget(checkbox)
             self.checkboxes.append(checkbox)
+
 
     # 新建标签子集
     def save_to_file(self, button_data_list):

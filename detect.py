@@ -21,8 +21,7 @@ from pytorchvideo.transforms.functional import (
 from PyQt5 import QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QImage
-
-import utils
+from utils.myutil import Globals
 from mainwindow import MainWindow
 from models.common import DetectMultiBackend
 from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
@@ -152,7 +151,8 @@ def run(
         vid_stride=1,  # video frame-rate stride
         show_label=None,
         use_camera=False,
-        show_window=None
+        show_window=None,
+        select_labels=None
 ):
     source = str(source)
     # Directories
@@ -164,7 +164,7 @@ def run(
     model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
     stride, names, pt = model.stride, model.names, model.pt
     imgsz = check_img_size(imgsz, s=stride)  # check image size
-
+    print(names)
     # Dataloader
     bs = 1  # batch_size
     if webcam:
@@ -179,6 +179,7 @@ def run(
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     video_model = slowfast_r50_detection(True).eval().to(device)
     id_to_ava_labels = {}
+    id_to_labels = {}
     ava_labelnames, _ = AvaLabeledVideoFramePaths.read_label_map("selfutils/temp.pbtxt")
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
     stack = []
@@ -228,6 +229,7 @@ def run(
             det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0s[0].shape if use_camera else im0s.shape).round()
         time_deepsort_end = time.time()
 
+
         if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
             fps = vid_cap.get(cv2.CAP_PROP_FPS)
             print(f"processing {idx // fps}th second clips")
@@ -236,17 +238,6 @@ def run(
             dict_text[(idx // fps)] = dict_text_persec
             Globals.dict_text[(idx // fps)] = dict_text_persec
             print(dict_text_persec)
-            if show_window is not None:
-                show_window.ui.action_list.clear()
-                # 启动输出动作标签
-                for action in dict_text_persec:
-                    print(action)
-                    print(dict_text_persec[action])
-                    show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
-            MainWindow.drawLineChart(show_window)
-            MainWindow.drawPieChart(show_window)
-            del dict_text_persec
-            dict_text_persec = {}
 
             if yolo_pred[0].shape[0]:
                 inputs, inp_boxes, _ = ava_inference_transform(clip, yolo_pred[0][:, 0:4],
@@ -261,6 +252,20 @@ def run(
                     slowfaster_preds = slowfaster_preds.cpu()
                 for tid, avalabel in zip(yolo_pred[0][:, 5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist()):
                     id_to_ava_labels[tid] = ava_labelnames[avalabel + 1]
+                    id_to_labels[tid] = avalabel + 1
+
+            if show_window is not None:
+                show_window.ui.action_list.clear()
+                # 启动输出动作标签
+                for action in dict_text_persec:
+                    # 过滤动作标签
+                    if id_to_labels[action] in select_labels:
+                        show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+        MainWindow.drawLineChart(show_window)
+        MainWindow.drawPieChart(show_window)
+        del dict_text_persec
+        dict_text_persec = {}
+
         idx += 1
         if len(stack) >= 30:
             del stack[0]
@@ -284,6 +289,10 @@ def run(
                         ava_label = ''
                     elif trackid in id_to_ava_labels.keys():
                         ava_label = id_to_ava_labels[trackid].split(' ')[0]
+                        if id_to_labels[trackid] not in select_labels:
+                            # continue
+                            print(f'continue {id_to_labels[trackid]}')
+                            continue
                     else:
                         ava_label = 'Unknow'
                     text = '{} {} {}'.format(int(trackid), names[int(cls)], ava_label)

@@ -152,16 +152,44 @@ QPushButton:pressed {
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>504</width>
-           <height>525</height>
+           <width>499</width>
+           <height>516</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <layout class="QVBoxLayout" name="labels_part_2">
-            <property name="topMargin">
-             <number>0</number>
-            </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,10">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QPushButton" name="fan">
+                <property name="text">
+                 <string>反选</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="labels_part_2">
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+             </layout>
+            </item>
            </layout>
           </item>
          </layout>

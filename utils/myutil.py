@@ -10,4 +10,4 @@ class Globals:
     settings = {}
     camera_running = False
     dict_text = {}
-    classes = []
+    select_labels = []
