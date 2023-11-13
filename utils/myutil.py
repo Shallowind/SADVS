@@ -11,3 +11,4 @@ class Globals:
     camera_running = False
     dict_text = {}
     select_labels = []
+    detection_run = False
