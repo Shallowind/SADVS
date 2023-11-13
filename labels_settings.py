@@ -4,7 +4,7 @@ from json import loads
 import qdarkstyle
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCheckBox, QListWidgetItem, QMenu, QAction, QMessageBox
 from PyQt5 import uic, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from qdarkstyle import LightPalette
 
 from utils.myutil import Globals
@@ -66,6 +66,8 @@ class LabelsSettings(QWidget):
     #     os.rename(old_name, new_name)
 
     def on_fan_clicked(self):
+        if self.checkboxes is None:
+            return
         for checkbox in self.checkboxes:
             if checkbox.isChecked():
                 checkbox.setChecked(False)
@@ -101,25 +103,35 @@ class LabelsSettings(QWidget):
         else:
             print("labels文件夹不存在或者不是一个文件夹")
 
+    def rename(self, item, old_name):
+        new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
+        item.setData(Qt.UserRole, new_name)
+        print(new_name)
+        # 检查新名称是否与旧名称不同
+        if old_name != new_name:
+            # 执行重命名操作，将旧名称改为新名称
+            os.rename(old_name, new_name)
+        print(666)
     def rename_file(self):
-        # get the currently selected item and its old name
-        item = self.ui.sets_list.currentItem()
-        old_name = item.data(Qt.UserRole)
-
-        # make the item editable and start editing
+        # 获取当前选中项和其旧名称
+        item = self.ui.sets_list.currentItem()  # 获取当前选中的项目
+        old_name = item.data(Qt.UserRole)  # 获取该项目的旧名称
+        print(old_name)
+        # 将该项目设为可编辑状态并开始编辑
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.ui.sets_list.editItem(item)
 
-        # wait until editing is finished
-        QApplication.instance().processEvents()
-
-        # get the new name from the edited item
-        new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
-
-        # check if the new name is different from the old name
-        if old_name != new_name:
-            # perform the actual renaming operation
-            os.rename(old_name, new_name)
+        self.ui.sets_list.itemChanged.connect(lambda item: self.rename(item, old_name))
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+        # self.rename(item, old_name)
+        # # 获取该项目编辑后的新名称
+        # new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
+        # print(new_name)
+        # # 检查新名称是否与旧名称不同
+        # if old_name != new_name:
+        #     # 执行重命名操作，将旧名称改为新名称
+        #     os.rename(old_name, new_name)
+        # print(666)
 
     def on_open_clicked(self):
         self.FullCollection_path = None
@@ -206,13 +218,14 @@ class LabelsSettings(QWidget):
         with open(path, "w", encoding="utf-8") as f:
             for checkbox in self.checkboxes:
                 item = self.checkboxes_data[checkbox.text()]
-                print(item)
                 if checkbox.isChecked():
                     item = self.checkboxes_data[checkbox.text()]
                     f.write(f"item {{\n  name: \"{item[1]}\"\n  id: {item[0]}\n}}\n")
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, path)
+            if self.ui.sets_list.findItems(base, Qt.MatchExactly) != []:
+                item = self.ui.sets_list.takeItem(self.ui.sets_list.row(item))
             self.ui.sets_list.addItem(item)
 
     def displays_selection(self):

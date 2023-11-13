@@ -33,6 +33,10 @@ class ModelSettings(QWidget):
         self.ui.save_button.clicked.connect(self.saveSettings)
         self.ui.save_button.setShortcut('enter')
         self.ui.begin.clicked.connect(self.beginIdentify)
+        self.ui.max_size.clicked.connect(self.max_size_clicked)
+        self.ui.conf.clicked.connect(self.conf_clicked)
+        self.ui.iou.clicked.connect(self.iou_clicked)
+        self.ui.line_thickness_button.clicked.connect(self.line_thickness_clicked)
 
         self.ui.model_combox.currentIndexChanged.connect(self.init_labels_combox)
         self.ui.labels_select_button.clicked.connect(self.labelsetting)
@@ -60,6 +64,62 @@ class ModelSettings(QWidget):
             # 'line_thickness': self.ui.line_thickness.value()
         except FileNotFoundError:
             print("文件不存在")
+
+    def line_thickness_clicked(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("设置线条粗细")
+        # 设置对话框的文本内容
+        message = "线条粗细表示检测框的粗细。\n\n"
+        message += "yolo_slowfast：默认线条粗细是2。\n"
+        message += "yolo5：默认线条粗细是3。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+
+    def iou_clicked(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("设置IoU")
+        # 设置对话框的文本内容
+        message = "IoU表示两个矩形的交集面积除以它们的并集面积。IoU值越高，表示两个矩形之间的重叠程度越大。\n\n"
+        message += "yolo_slowfast：默认IoU是0.4。\n"
+        message += "yolo5：默认iou是0.45。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+
+    def conf_clicked(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("设置置信度")
+        # 设置对话框的文本内容
+        message = "置信度通常用于表示分类器对于某个样本属于某个类别的信心水平。置信度越高，表示分类器对该样本属于该类别的确定程度越高。\n\n"
+        message += "yolo_slowfast：默认置信度是0.4。\n"
+        message += "yolo5：默认置信度是0.25。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+
+    def max_size_clicked(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("设置最大识别数量")
+        # 设置对话框的文本内容
+        message = "最大识别数量表示每张图片允许的最大检测数。\n\n"
+        message += "yolo_slowfast：默认最大识别数量是100。\n"
+        message += "yolo5：默认最大识别数量是1000。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
 
     def labelsetting(self):
         self.settings_window = LabelsSettings(self)
