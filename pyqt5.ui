@@ -740,7 +740,7 @@ QPushButton:pressed {
          </font>
         </property>
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="ori_video">
          <attribute name="title">
@@ -1713,6 +1713,7 @@ QPushButton:pressed {
                      <property name="font">
                       <font>
                        <family>微软雅黑</family>
+                       <pointsize>9</pointsize>
                       </font>
                      </property>
                      <property name="styleSheet">
@@ -2176,10 +2177,16 @@ QPushButton:pressed {
      <string> 关于 </string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu123">
+    <property name="title">
+     <string>123</string>
+    </property>
+   </widget>
    <addaction name="system_set"/>
    <addaction name="device_manager"/>
    <addaction name="model_manager"/>
    <addaction name="menu"/>
+   <addaction name="menu123"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="video_select">
@@ -2236,13 +2243,13 @@ QPushButton:pressed {
   <customwidget>
    <class>QVideoWidget</class>
    <extends>QWidget</extends>
-   <header location="global">PyQt5.QtMultimediaWidgets</header>
+   <header>PyQt5.QtMultimediaWidgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RangeSlider</class>
    <extends>QSlider</extends>
-   <header>range_slider</header>
+   <header location="global">range_slider</header>
   </customwidget>
  </customwidgets>
  <resources/>
