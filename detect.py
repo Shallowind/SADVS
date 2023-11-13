@@ -190,6 +190,8 @@ def run(
     dict_text_persec = {}
     a = time.time()
     for path, im, im0s, vid_cap, s in dataset:
+        if not Globals.detection_run:
+            break
         if use_camera:
             vid_cap = dataset.cap
         time_frame_st = time.time()

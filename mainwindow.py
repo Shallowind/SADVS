@@ -56,13 +56,17 @@ class MainWindow(QMainWindow):
         # 选择文件夹
         self.ui.video_select.triggered.connect(self.openVideoFolder)
         self.ui.new_file.clicked.connect(self.openVideoFolder)
+        # 工作区/原始列表
+        self.ui.listcon.clicked.connect(self.listcon)
+        self.ui.workcon.clicked.connect(self.workcon)
+        self.ui.original.activity = True
+        self.ui.works.activity = True
         # 标签集设置
         self.ui.action_sets.triggered.connect(self.labelSetsSettings)
         # 加入工作区
         self.ui.add_workspace.clicked.connect(self.addWorkspace)
         # 暂停
         self.ui.play_pause.clicked.connect(self.playPause)
-        self.ui.play_pause_2.clicked.connect(self.playPause)
         # 双击播放
         self.ui.video_tree.setSortingEnabled(False)
         self.ui.video_tree.itemDoubleClicked.connect(self.CameraVideo)
@@ -107,11 +111,12 @@ class MainWindow(QMainWindow):
         # 启动识别
         self.ui.start_identify.clicked.connect(self.startIdentifyClicked)
         self.settings_window = None
+        # 停止识别
+        self.ui.stop_identify.clicked.connect(self.stopIdentify)
         # 使用样式表来设置项的高度
         self.ui.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 20px; }')
         self.ui.v_d_comboBox.setMaxVisibleItems(50)
         self.ui.camera.setVisible(False)
-        self.ui.play_pause_2.setVisible(False)
         # tab切换
         self.ui.tabWidget.currentChanged.connect(self.tabChanged)
         # 定时器
@@ -191,12 +196,12 @@ class MainWindow(QMainWindow):
 
         # 分割器
         splitter_list = QSplitter(Qt.Vertical)
-        splitter_list.addWidget(self.ui.video_tree)
-        splitter_list.addWidget(self.ui.work_list)
-        self.ui.verticalLayout.addWidget(splitter_list)
-        self.ui.verticalLayout.setStretch(0, 1)  # 第一个部件的伸缩因子为1
-        self.ui.verticalLayout.setStretch(1, 40)  # 第二个部件的伸缩因子为2
-        self.ui.verticalLayout.setStretch(2, 40)  # 第三个部件的伸缩因子为3
+        splitter_list.addWidget(self.ui.original)
+        splitter_list.addWidget(self.ui.works)
+        self.ui.verticalLayout_13.addWidget(splitter_list)
+        self.ui.verticalLayout_13.setStretch(0, 1)  # 第一个部件的伸缩因子为1
+        self.ui.verticalLayout_13.setStretch(1, 40)  # 第二个部件的伸缩因子为2
+        self.ui.verticalLayout_13.setStretch(2, 40)  # 第三个部件的伸缩因子为3
         splitter_list.setStyleSheet("""
             QSplitter {
                 background-color: 19232d;
@@ -250,7 +255,7 @@ class MainWindow(QMainWindow):
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
         splitter_video.setStretchFactor(0, 10)
-        splitter_video.setStretchFactor(1, 1)
+        splitter_video.setStretchFactor(1, 2)
         splitter_video.setStyleSheet("""
             QSplitter {
                 background-color: 19232d;
@@ -272,6 +277,86 @@ class MainWindow(QMainWindow):
         self.ui.menubar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.statusbar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.centralwidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+
+    def listcon(self):
+        if self.ui.original.activity:
+            self.ui.original.activity = False
+        else:
+            self.ui.original.activity = True
+        self.refresh_widgetlist()
+
+    def workcon(self):
+        if self.ui.works.activity:
+            self.ui.works.activity = False
+        else:
+            self.ui.works.activity = True
+        self.refresh_widgetlist()
+
+    def refresh_widgetlist(self):
+        if self.ui.original.activity:
+            self.ui.original.setVisible(True)
+            self.ui.listcon.setStyleSheet("""
+                QPushButton {
+                    background-color: #54687a;
+                    border: 1px solid #259ae9;
+                }
+
+                QPushButton:hover {
+                    background-color: #54687a;
+                }
+
+                QPushButton:pressed {
+                    background-color: #455364;
+                }
+            """)
+        else:
+            self.ui.original.setVisible(False)
+            self.ui.listcon.setStyleSheet("""
+                    QPushButton {
+                        background-color: #2A3A4C;
+                        border: 1px solid #666666;
+                    }
+
+                    QPushButton:hover {
+                        background-color: #2A3A4C;
+                    }
+
+                    QPushButton:pressed {
+                        background-color: #455364;
+                    }
+                """)
+        if self.ui.works.activity:
+            self.ui.works.setVisible(True)
+            self.ui.workcon.setStyleSheet("""
+                QPushButton {
+                    background-color: #54687a;
+                    border: 1px solid #259ae9;
+                }
+
+                QPushButton:hover {
+                    background-color: #54687a;
+                }
+
+                QPushButton:pressed {
+                    background-color: #455364;
+                }
+            """)
+        else:
+            self.ui.works.setVisible(False)
+            self.ui.workcon.setStyleSheet("""
+                    QPushButton {
+                        background-color: #2A3A4C;
+                        border: 1px solid #666666;
+                    }
+
+                    QPushButton:hover {
+                        background-color: #2A3A4C;
+                    }
+
+                    QPushButton:pressed {
+                        background-color: #455364;
+                    }
+                """)
 
     def labelSetsSettings(self):
         self.labsettings_window = LabelsSettings(self)
@@ -558,6 +643,11 @@ class MainWindow(QMainWindow):
                     cloned_item.device = int(item.text(0))
                 self.ui.work_list.addTopLevelItem(cloned_item)
 
+    def stopIdentify(self):
+        Globals.detection_run = False
+        self.ui.start_identify.setEnabled(True)
+        self.ui.stop_identify.setEnabled(False)
+
     def startIdentifyClicked(self):
         if self.settings_window is None:
             Globals.settings['saved'] = False
@@ -574,6 +664,9 @@ class MainWindow(QMainWindow):
             identify_thread.start()
 
     def startIdentify(self):
+        Globals.detection_run = True
+        self.ui.start_identify.setEnabled(False)
+        self.ui.stop_identify.setEnabled(True)
         if self.selected_item.isCamera:
             if Globals.settings['model_select'] == 'yolov5':
                 detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
@@ -848,7 +941,6 @@ class MainWindow(QMainWindow):
                     self.ui.camera_2.setAlignment(Qt.AlignCenter)
             cap.release()
             player = self.player_2
-            play_pause = self.ui.play_pause_2
 
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
@@ -983,10 +1075,8 @@ class MainWindow(QMainWindow):
                 self.player.play()
         elif self.ui.tabWidget.currentIndex() == 1:
             if self.player_2.state() == 1:
-                self.ui.play_pause_2.setIcon(self.play_ico)
                 self.player_2.pause()
             else:
-                self.ui.play_pause_2.setIcon(self.pause_ico)
                 self.player_2.play()
 
     # 保存标签
