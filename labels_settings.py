@@ -4,7 +4,7 @@ from json import loads
 import qdarkstyle
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCheckBox, QListWidgetItem, QMenu, QAction, QMessageBox
 from PyQt5 import uic, QtWidgets
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 from qdarkstyle import LightPalette
 
 from utils.myutil import Globals
@@ -106,32 +106,32 @@ class LabelsSettings(QWidget):
     def rename(self, item, old_name):
         new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
         item.setData(Qt.UserRole, new_name)
-        print(new_name)
         # 检查新名称是否与旧名称不同
         if old_name != new_name:
             # 执行重命名操作，将旧名称改为新名称
-            os.rename(old_name, new_name)
-        print(666)
+            try:
+                os.rename(old_name, new_name)
+            except OSError as e:
+                return
+
     def rename_file(self):
-        # 获取当前选中项和其旧名称
         item = self.ui.sets_list.currentItem()  # 获取当前选中的项目
+
+        if item:
+            # 如果文件名与标签集名相同不可删除
+            filename, extension = os.path.splitext(os.path.basename(item.data(Qt.UserRole)))
+            if os.path.basename(self.FullCollection_path) == filename:
+                QMessageBox.warning(self, "警告", "不能对此标签集进行重命名")
+                return
+
+
         old_name = item.data(Qt.UserRole)  # 获取该项目的旧名称
-        print(old_name)
         # 将该项目设为可编辑状态并开始编辑
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.ui.sets_list.editItem(item)
 
         self.ui.sets_list.itemChanged.connect(lambda item: self.rename(item, old_name))
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
-        # self.rename(item, old_name)
-        # # 获取该项目编辑后的新名称
-        # new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
-        # print(new_name)
-        # # 检查新名称是否与旧名称不同
-        # if old_name != new_name:
-        #     # 执行重命名操作，将旧名称改为新名称
-        #     os.rename(old_name, new_name)
-        # print(666)
 
     def on_open_clicked(self):
         self.FullCollection_path = None

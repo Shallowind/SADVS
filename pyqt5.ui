@@ -442,6 +442,7 @@ QPushButton:pressed {
                   <property name="font">
                    <font>
                     <family>微软雅黑</family>
+                    <pointsize>9</pointsize>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -713,6 +714,7 @@ QPushButton:pressed {
                    <property name="font">
                     <font>
                      <family>微软雅黑</family>
+                     <pointsize>7</pointsize>
                     </font>
                    </property>
                    <property name="text">
@@ -2133,7 +2135,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
@@ -2142,12 +2144,12 @@ QPushButton:pressed {
     </property>
     <addaction name="video_select"/>
     <addaction name="separator"/>
-    <addaction name="action_2"/>
-    <addaction name="action_3"/>
+    <addaction name="video_path"/>
+    <addaction name="save_path"/>
     <addaction name="separator"/>
     <addaction name="action_6"/>
     <addaction name="separator"/>
-    <addaction name="action_8"/>
+    <addaction name="quit"/>
    </widget>
    <widget class="QMenu" name="device_manager">
     <property name="font">
@@ -2169,24 +2171,26 @@ QPushButton:pressed {
     <property name="title">
      <string>模型设置</string>
     </property>
-    <addaction name="action_4"/>
+    <addaction name="model_view"/>
     <addaction name="action_sets"/>
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string> 关于 </string>
     </property>
+    <addaction name="Use_Information"/>
+    <addaction name="Version_Information"/>
    </widget>
-   <widget class="QMenu" name="menu123">
+   <widget class="QMenu" name="menu_2">
     <property name="title">
-     <string>123</string>
+     <string>异常设置</string>
     </property>
    </widget>
    <addaction name="system_set"/>
    <addaction name="device_manager"/>
    <addaction name="model_manager"/>
+   <addaction name="menu_2"/>
    <addaction name="menu"/>
-   <addaction name="menu123"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="video_select">
@@ -2208,17 +2212,17 @@ QPushButton:pressed {
     <string>增加设备</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="video_path">
    <property name="text">
     <string>默认视频目录</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="save_path">
    <property name="text">
     <string>默认保存路径</string>
    </property>
   </action>
-  <action name="action_4">
+  <action name="model_view">
    <property name="text">
     <string>模型查看</string>
    </property>
@@ -2228,7 +2232,7 @@ QPushButton:pressed {
     <string>保存</string>
    </property>
   </action>
-  <action name="action_8">
+  <action name="quit">
    <property name="text">
     <string>退出</string>
    </property>
@@ -2238,18 +2242,28 @@ QPushButton:pressed {
     <string>标签集设置</string>
    </property>
   </action>
+  <action name="Use_Information">
+   <property name="text">
+    <string>使用信息</string>
+   </property>
+  </action>
+  <action name="Version_Information">
+   <property name="text">
+    <string>版本信息</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QVideoWidget</class>
    <extends>QWidget</extends>
-   <header>PyQt5.QtMultimediaWidgets</header>
+   <header location="global">PyQt5.QtMultimediaWidgets</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>RangeSlider</class>
    <extends>QSlider</extends>
-   <header location="global">range_slider</header>
+   <header>range_slider</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -5,7 +5,7 @@ import threading
 # import ffmpeg
 from datetime import datetime
 from tkinter import Tk, simpledialog
-
+from json import loads
 import cv2
 import numpy as np
 import pygame.camera
@@ -25,6 +25,7 @@ import detect
 import detect_yolov5
 from labels_settings import LabelsSettings
 from model_settings import ModelSettings
+from user_management import User_management
 from utils.myutil import Globals
 
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
@@ -44,7 +45,7 @@ class MainWindow(QMainWindow):
         self.icon.addPixmap(QPixmap("./UI/logo.ico"), QIcon.Normal, QIcon.Off)
         self.ui.setWindowIcon(self.icon)
 
-        self.id = 0
+        self.path = ''
 
         self.ui.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.signal.connect(self.cut_completed)
@@ -56,17 +57,29 @@ class MainWindow(QMainWindow):
         # 选择文件夹
         self.ui.video_select.triggered.connect(self.openVideoFolder)
         self.ui.new_file.clicked.connect(self.openVideoFolder)
+        # 设置默认视频目录
+        self.ui.video_path.triggered.connect(self.changePath)
+        # 默认保存路径
+        self.ui.save_path.triggered.connect(self.changePath)
+        # 退出
+        self.ui.quit.triggered.connect(self.Quit)
+        # 模型查看
+        self.ui.model_view.triggered.connect(self.ModelView)
+        # 标签集设置
+        self.ui.action_sets.triggered.connect(self.labelSetsSettings)
+        # 使用信息说明
+        self.ui.Use_Information.triggered.connect(self.display_Use_Information)
+        # 版本信息说明
+        self.ui.Version_Information.triggered.connect(self.display_Version_Information)
+        # 加入工作区
+        self.ui.add_workspace.clicked.connect(self.addWorkspace)
+        # 暂停
+        self.ui.play_pause.clicked.connect(self.playPause)
         # 工作区/原始列表
         self.ui.listcon.clicked.connect(self.listcon)
         self.ui.workcon.clicked.connect(self.workcon)
         self.ui.original.activity = True
         self.ui.works.activity = True
-        # 标签集设置
-        self.ui.action_sets.triggered.connect(self.labelSetsSettings)
-        # 加入工作区
-        self.ui.add_workspace.clicked.connect(self.addWorkspace)
-        # 暂停
-        self.ui.play_pause.clicked.connect(self.playPause)
         # 双击播放
         self.ui.video_tree.setSortingEnabled(False)
         self.ui.video_tree.itemDoubleClicked.connect(self.CameraVideo)
@@ -255,7 +268,7 @@ class MainWindow(QMainWindow):
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
         splitter_video.setStretchFactor(0, 10)
-        splitter_video.setStretchFactor(1, 2)
+        splitter_video.setStretchFactor(1, 1)
         splitter_video.setStyleSheet("""
             QSplitter {
                 background-color: 19232d;
@@ -278,6 +291,23 @@ class MainWindow(QMainWindow):
         self.ui.statusbar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.centralwidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
+        try:
+            with open('Default settings.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+            seted = loads(content)
+            try:
+                video_path = seted['video_path']
+                if os.path.isdir(video_path):
+                    self.openVideoFolder(video_path)
+            except KeyError:
+                print("The key 'video_path' does not exist in the dictionary.")
+        except FileNotFoundError:
+            print("文件不存在")
+
+    def stopIdentify(self):
+        Globals.detection_run = False
+        self.ui.start_identify.setEnabled(True)
+        self.ui.stop_identify.setEnabled(False)
     def listcon(self):
         if self.ui.original.activity:
             self.ui.original.activity = False
@@ -352,11 +382,57 @@ class MainWindow(QMainWindow):
                     QPushButton:hover {
                         background-color: #2A3A4C;
                     }
-
-                    QPushButton:pressed {
-                        background-color: #455364;
-                    }
                 """)
+    def display_Use_Information(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("使用信息")
+        # 设置对话框的文本内容
+        message = "yolo_slowfast是一种快速的目标检测模型，可以用于实时检测图像或视频中的人体动作。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+        return
+    def display_Version_Information(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("版本信息")
+        # 设置对话框的文本内容
+        message = "yolo_slowfast是一种快速的目标检测模型，可以用于实时检测图像或视频中的人体动作。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+        return
+    def ModelView(self):
+        message_box = QMessageBox()
+        # 设置对话框的标题
+        message_box.setWindowTitle("模型查看")
+        # 设置对话框的文本内容
+        message = "yolo_slowfast是一种快速的目标检测模型，可以用于实时检测图像或视频中的人体动作。\n"
+        message += "yolo5则是一种目标检测模型，可以用于检测图像或视频中的物体。\n"
+        message_box.setText(message)
+        # 添加 OK 按钮
+        message_box.addButton(QMessageBox.Ok)
+        # 显示对话框
+        message_box.exec_()
+        return
+    def changePath(self):
+        try:
+            with open('Default settings.txt', 'r', encoding='utf-8') as f:
+                content = f.read()
+            seted = loads(content)
+            video_path = seted['video_path']
+            save_path = seted['save_path']
+
+        except FileNotFoundError:
+            print("文件不存在")
+
+    def Quit(self):
+        del pyqt5.ui
 
     def labelSetsSettings(self):
         self.labsettings_window = LabelsSettings(self)
@@ -643,11 +719,6 @@ class MainWindow(QMainWindow):
                     cloned_item.device = int(item.text(0))
                 self.ui.work_list.addTopLevelItem(cloned_item)
 
-    def stopIdentify(self):
-        Globals.detection_run = False
-        self.ui.start_identify.setEnabled(True)
-        self.ui.stop_identify.setEnabled(False)
-
     def startIdentifyClicked(self):
         if self.settings_window is None:
             Globals.settings['saved'] = False
@@ -742,13 +813,19 @@ class MainWindow(QMainWindow):
         item.setData(0, Qt.UserRole, True)
         self._addFilesToTree(item, selected_video_path, 0)
 
-    def openVideoFolder(self):
+    def openVideoFolder(self,path=""):
         # 选择文件夹
-        folder_path = QFileDialog.getExistingDirectory()
+        print(path)
+        if os.path.isdir(path):
+            folder_path = path
+        else:
+            folder_path = QFileDialog.getExistingDirectory()
+
         if folder_path:
             self.selected_folder = folder_path
             self.ui.video_tree.clear()
             self.addFolderToTree(self.ui.video_tree, folder_path)
+        self.path = folder_path
 
     def addFolderToTree(self, tree_widget, folder_path):
         # 创建根节点
@@ -833,6 +910,7 @@ class MainWindow(QMainWindow):
 
     def WorkListPreview(self, item):
         self.selected_item = item
+        self.ui.start_identify.setEnabled(True)
         self.ui.start_identify.setEnabled(True)
         if item.isCamera:
             self.ui.player.setVisible(False)
@@ -1075,8 +1153,10 @@ class MainWindow(QMainWindow):
                 self.player.play()
         elif self.ui.tabWidget.currentIndex() == 1:
             if self.player_2.state() == 1:
+                self.ui.play_pause_2.setIcon(self.play_ico)
                 self.player_2.pause()
             else:
+                self.ui.play_pause_2.setIcon(self.pause_ico)
                 self.player_2.play()
 
     # 保存标签
@@ -1259,11 +1339,17 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+
+
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication([])
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    user = User_management()
+    user.ui.show()
+    app.exec()
+
     pyqt5 = MainWindow()
     pyqt5.ui.show()
     app.exec()

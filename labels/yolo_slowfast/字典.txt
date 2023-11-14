@@ -47,7 +47,7 @@
     "(46, 'push (an object)')": "推物体",  
     "(47, 'put down')": "放下",  
     "(48, 'read')": "阅读",
-    "(49, 'sit')": "坐下",  
+    "(49, 'ride (e.g., a bike, a car, a horse)')": "骑车（例如，自行车、汽车、马）",  
     "(50, 'row boat')": "划船",  
     "(51, 'sail boat')": "航海",  
     "(52, 'shoot')": "射击",  
@@ -59,7 +59,7 @@
     "(58, 'throw')": "扔东西",  
     "(59, 'touch (an object)')": "触摸物体",  
     "(60, 'turn (e.g., a screwdriver)')": "旋转（例如螺丝刀）",  
-    "(61, 'stand')": "站立",  
+    "(61, 'watch (e.g., TV)')": "看（例如电视）",  
     "(62, 'work on a computer')": "在电脑上工作",  
     "(63, 'write')": "写字",  
     "(64, 'fight/hit (a person)')": "打架/打人",  
@@ -78,5 +78,5 @@
     "(77, 'sing to (e.g., self, a person, a group)')": "唱歌（例如给自己、某人、一群人）",  
     "(78, 'take (an object) from (a person)')": "从某人那里拿走某物",  
     "(79, 'talk to (e.g., self, a person, a group)')": "和（例如自己、某人、一群人）说话",  
-    "(80, 'stand')": "站立"
+    "(80, 'watch (a person)')": "看（某人）"
 }
