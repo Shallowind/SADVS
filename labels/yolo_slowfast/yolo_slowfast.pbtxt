@@ -191,7 +191,7 @@ item {
   id: 48
 }
 item {
-  name: "sit"
+  name: "ride (e.g., a bike, a car, a horse)"
   id: 49
 }
 item {
@@ -239,7 +239,7 @@ item {
   id: 60
 }
 item {
-  name: "stand"
+  name: "watch (e.g., TV)"
   id: 61
 }
 item {
@@ -315,6 +315,6 @@ item {
   id: 79
 }
 item {
-  name: "stand"
+  name: "watch (a person)"
   id: 80
 }

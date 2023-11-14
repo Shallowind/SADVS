@@ -53,15 +53,6 @@ class ModelSettings(QWidget):
             self.ui.conf_doubleSpinBox.setValue(seted['conf'])
             self.ui.iou_doubleSpinBox.setValue(seted['iou'])
             self.ui.line_thickness.setValue(seted['line_thickness'])
-
-            # 'save_path': self.ui.save_address_edit.text(),
-            # 'pt_path': self.ui.pt_edit.text(),
-            # 'model_select': self.ui.model_combox.currentText(),
-            # 'labels': self.ui.label_combox.currentText(),
-            # 'max_det': self.ui.max_size_comboBox.currentText(),
-            # 'conf': self.ui.conf_doubleSpinBox.value(),
-            # 'iou': self.ui.iou_doubleSpinBox.value(),
-            # 'line_thickness': self.ui.line_thickness.value()
         except FileNotFoundError:
             print("文件不存在")
 
@@ -209,6 +200,7 @@ class ModelSettings(QWidget):
 
             # 假设这是从数据库中获取的数据
             data = {
+                'video_path' : self.main_window.path,
                 'save_path': self.ui.save_address_edit.text(),
                 'pt_path': self.ui.pt_edit.text(),
                 'model_select': self.ui.model_combox.currentText(),
