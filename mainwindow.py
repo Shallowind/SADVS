@@ -1,6 +1,7 @@
 import os
 import ctypes
 import os
+import sys
 import threading
 # import ffmpeg
 from datetime import datetime
@@ -26,7 +27,7 @@ import detect_yolov5
 from labels_settings import LabelsSettings
 from model_settings import ModelSettings
 from user_management import User_management
-from utils.myutil import Globals
+from utils.myutil import Globals, ConsoleRedirector
 
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
@@ -78,8 +79,10 @@ class MainWindow(QMainWindow):
         # 工作区/原始列表
         self.ui.listcon.clicked.connect(self.listcon)
         self.ui.workcon.clicked.connect(self.workcon)
+        self.ui.terminalcon.clicked.connect(self.terminalcon)
         self.ui.original.activity = True
         self.ui.works.activity = True
+        self.ui.controlWidget.activity = True
         # 双击播放
         self.ui.video_tree.setSortingEnabled(False)
         self.ui.video_tree.itemDoubleClicked.connect(self.CameraVideo)
@@ -200,6 +203,9 @@ class MainWindow(QMainWindow):
         }\
         """)
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
+        self.ui.terminal.setStyleSheet("background-color: 000000")
+        sys.stdout = ConsoleRedirector(self, self.ui.terminal)
+        print()
 
         self.video_tree = []
         self.selected_folder = ""
@@ -247,7 +253,7 @@ class MainWindow(QMainWindow):
             }
         """)
 
-        self.ui.horizontalLayout.addWidget(splitter_tab)
+        self.ui.horizontalLayout_14.addWidget(splitter_tab)
 
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget)
@@ -278,6 +284,21 @@ class MainWindow(QMainWindow):
             }
         """)
         self.ui.horizontalLayout_7.addWidget(splitter_video)
+
+        splitter_control = QSplitter(Qt.Vertical)
+        splitter_control.addWidget(self.ui.useSpace)
+        splitter_control.addWidget(self.ui.controlWidget)
+        splitter_control.setStretchFactor(0, 10)
+        splitter_control.setStretchFactor(1, 2)
+        splitter_control.setStyleSheet("""
+            QSplitter {
+                background-color: 19232d;
+            }
+            QSplitter::handle {
+                background-color: 19232d;
+            }
+        """)
+        self.ui.verticalLayout_10.addWidget(splitter_control)
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
         self.folder_icon = QIcon("resources/folder_ico.ico")
@@ -297,6 +318,7 @@ class MainWindow(QMainWindow):
             seted = loads(content)
             try:
                 video_path = seted['video_path']
+                print(video_path)
                 if os.path.isdir(video_path):
                     self.openVideoFolder(video_path)
             except KeyError:
@@ -308,6 +330,14 @@ class MainWindow(QMainWindow):
         Globals.detection_run = False
         self.ui.start_identify.setEnabled(True)
         self.ui.stop_identify.setEnabled(False)
+
+    def terminalcon(self):
+        if self.ui.controlWidget.activity:
+            self.ui.controlWidget.activity = False
+        else:
+            self.ui.controlWidget.activity = True
+        self.refresh_widgetlist()
+
     def listcon(self):
         if self.ui.original.activity:
             self.ui.original.activity = False
@@ -383,6 +413,35 @@ class MainWindow(QMainWindow):
                         background-color: #2A3A4C;
                     }
                 """)
+        if self.ui.controlWidget.activity:
+            self.ui.controlWidget.setVisible(True)
+            self.ui.terminalcon.setStyleSheet("""
+                QPushButton {
+                    background-color: #54687a;
+                    border: 1px solid #259ae9;
+                }
+
+                QPushButton:hover {
+                    background-color: #54687a;
+                }
+
+                QPushButton:pressed {
+                    background-color: #455364;
+                }
+            """)
+        else:
+            self.ui.controlWidget.setVisible(False)
+            self.ui.terminalcon.setStyleSheet("""
+                    QPushButton {
+                        background-color: #2A3A4C;
+                        border: 1px solid #666666;
+                    }
+
+                    QPushButton:hover {
+                        background-color: #2A3A4C;
+                    }
+                """)
+
     def display_Use_Information(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -395,6 +454,7 @@ class MainWindow(QMainWindow):
         # 显示对话框
         message_box.exec_()
         return
+
     def display_Version_Information(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -407,6 +467,7 @@ class MainWindow(QMainWindow):
         # 显示对话框
         message_box.exec_()
         return
+
     def ModelView(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -420,6 +481,7 @@ class MainWindow(QMainWindow):
         # 显示对话框
         message_box.exec_()
         return
+
     def changePath(self):
         try:
             with open('Default settings.txt', 'r', encoding='utf-8') as f:
@@ -445,7 +507,7 @@ class MainWindow(QMainWindow):
         cut_thread.start()
 
     def cut_completed(self):
-        print("hehe")
+        print("剪辑已完成！")
         result = QMessageBox.warning(self, "已完成", "剪辑已完成！\n是否加入工作区？", QMessageBox.Yes | QMessageBox.No,
                                      QMessageBox.Yes)
         if result == QMessageBox.Yes:
@@ -480,6 +542,7 @@ class MainWindow(QMainWindow):
         start_time_sec = start_time_ms / 1000.0
         stop_time_sec = stop_time_ms / 1000.0
         try:
+            print("剪辑进行中，请耐心等待...")
             video = VideoFileClip(source)  # 视频文件加载
             video = video.subclip(start_time_sec, stop_time_sec)  # 执行剪切操作，参数为秒
             video.to_videofile(target, remove_temp=True)  # 输出文件
@@ -794,6 +857,7 @@ class MainWindow(QMainWindow):
     def initialize_camera(self):
         pygame.camera.init()
         self.camera_id_list = pygame.camera.list_cameras()
+        print("检测到设备："+str(self.camera_id_list))
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '设备列表':
             self.ui.player.setVisible(False)
@@ -813,13 +877,14 @@ class MainWindow(QMainWindow):
         item.setData(0, Qt.UserRole, True)
         self._addFilesToTree(item, selected_video_path, 0)
 
-    def openVideoFolder(self,path=""):
+    def openVideoFolder(self, path=""):
         # 选择文件夹
         print(path)
         if os.path.isdir(path):
             folder_path = path
         else:
             folder_path = QFileDialog.getExistingDirectory()
+
 
         if folder_path:
             self.selected_folder = folder_path
@@ -1339,8 +1404,6 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-
-
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
