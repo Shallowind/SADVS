@@ -1,52 +1,79 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPlainTextEdit, QPushButton, QWidget
-from PyQt5.QtCore import Qt, QTextStream
-from PyQt5.QtGui import QPalette, QColor, QTextCursor
+import logging
 
-from utils.myutil import ConsoleRedirector
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QWidget
+from PyQt5.QtCore import Qt, pyqtSlot
 
+class ConsoleRedirector:
+    def __init__(self, parent, text_widget, color=None):
+        self.parent = parent
+        self.text_widget = text_widget
+        self.color = color
 
-class ConsoleWindow(QMainWindow):
+        # Redirect sys.stdout and sys.stderr
+        self.original_stdout = sys.stdout
+        sys.stdout = self
+        self.original_stderr = sys.stderr
+        sys.stderr = self
+
+        # Redirect logging output
+        logging.basicConfig(stream=self)
+
+    def write(self, text):
+        # Display text in the console
+        cursor = self.text_widget.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        if self.color:
+            cursor.insertHtml(f'<font color="{self.color.name()}">{text}</font>')
+        else:
+            cursor.insertText(text)
+        self.text_widget.setTextCursor(cursor)
+        self.text_widget.ensureCursorVisible()
+
+    def flush(self):
+        pass
+
+    def restore_stdout_stderr(self):
+        sys.stdout = self.original_stdout
+        sys.stderr = self.original_stderr
+
+    def restore_logging(self):
+        logging.basicConfig(stream=self.original_stdout)
+
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.initUI()
 
     def initUI(self):
-        # 设置主窗口
-        self.setWindowTitle('Console Window')
-        self.setGeometry(100, 100, 800, 600)
-
-        # 创建控制台输出区域
-        self.console_output = QPlainTextEdit(self)
-        self.console_output.setReadOnly(True)  # 设置为只读
-        # self.console_output.setStyleSheet("background-color: black; color: white;")  # 设置背景颜色和文本颜色
-
-        # 创建清除按钮
-        clear_button = QPushButton('Clear Console', self)
-        clear_button.clicked.connect(self.clearConsole)
-
-        # 创建布局并添加控件
-        layout = QVBoxLayout()
-        layout.addWidget(self.console_output)
-        layout.addWidget(clear_button)
-
-        central_widget = QWidget()
-        central_widget.setLayout(layout)
+        central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        # 重定向标准输出到控制台
-        sys.stdout = ConsoleRedirector(self, self.console_output)
+        layout = QVBoxLayout(central_widget)
 
-    def clearConsole(self):
-        # self.console_output.clear()
-        print("123")
+        self.output_textedit = QTextEdit(self)
+        layout.addWidget(self.output_textedit)
 
+        self.redirect_button = QPushButton('Redirect Console', self)
+        self.redirect_button.clicked.connect(self.redirect_console)
+        layout.addWidget(self.redirect_button)
 
+    @pyqtSlot()
+    def redirect_console(self):
+        self.console_redirector = ConsoleRedirector(self, self.output_textedit, color=None)
+        print("Console redirected.")
 
+    def closeEvent(self, event):
+        if hasattr(self, 'console_redirector'):
+            self.console_redirector.restore_stdout_stderr()
+            self.console_redirector.restore_logging()
+        event.accept()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainWindow = ConsoleWindow()
+    mainWindow = MainWindow()
+    mainWindow.setGeometry(100, 100, 800, 600)
     mainWindow.show()
     sys.exit(app.exec_())

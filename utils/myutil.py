@@ -1,5 +1,5 @@
 # 查验导入数据是否是图片
-from PyQt5.QtGui import QTextCursor
+from PyQt5.QtGui import QTextCursor, QColor
 
 
 def file_is_pic(suffix):
@@ -18,17 +18,21 @@ class Globals:
 
 
 class ConsoleRedirector:
-    def __init__(self, parent, text_widget):
+    def __init__(self, parent, text_widget, color=QColor(255, 255, 255)):
         self.parent = parent
         self.text_widget = text_widget
+        self.color = color
 
     def write(self, text):
         # 在控制台中显示文本
         cursor = self.text_widget.textCursor()
         cursor.movePosition(QTextCursor.End)
-        cursor.insertText(text)
+        if self.color == QColor(255, 0, 0):
+            text_with_br = text.replace('\n', '<br>')
+            cursor.insertHtml(f'<font color="{self.color.name()}">{text_with_br}</font>')
+            cursor.insertText('\n')
+        else:
+            text_with_br = text.replace('\n', '<br>')
+            cursor.insertHtml(f'<font color="{self.color.name()}">{text_with_br}</font>')
         self.text_widget.setTextCursor(cursor)
         self.text_widget.ensureCursorVisible()
-
-    def flush(self):
-        pass
