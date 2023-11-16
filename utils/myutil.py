@@ -15,6 +15,8 @@ class Globals:
     dict_text = {}
     select_labels = []
     detection_run = False
+    yolo_slowfast_dict = {}
+    yolov5_dict = {}
 
 
 class ConsoleRedirector:
@@ -36,3 +38,5 @@ class ConsoleRedirector:
             cursor.insertHtml(f'<font color="{self.color.name()}">{text_with_br}</font>')
         self.text_widget.setTextCursor(cursor)
         self.text_widget.ensureCursorVisible()
+    def flush(self):
+        pass

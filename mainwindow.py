@@ -148,6 +148,7 @@ class MainWindow(QMainWindow):
         self.ui.save_cut.clicked.connect(self.saveCut)
         self.cut_path = None
         # 创建图形
+        plt.rcParams['font.family'] = 'Microsoft YaHei'
         self.figure, self.ax = plt.subplots()
         self.ax.set_facecolor('#19232d')
         self.ax.set_xlabel('t', color='white')
@@ -157,7 +158,7 @@ class MainWindow(QMainWindow):
         self.ax.spines['top'].set_color('white')
         self.ax.spines['right'].set_color('white')
         self.ax.spines['left'].set_color('white')
-        self.ax.set_title('Action Counts Over Time', color='white')
+        self.ax.set_title('每秒动作数目趋势', color='white')
         self.figure.set_facecolor('#19232d')
         self.canvas = FigureCanvas(self.figure)
         self.toolbar = NavigationToolbar(self.canvas, self)
@@ -168,7 +169,7 @@ class MainWindow(QMainWindow):
         self.figure2, self.ax2 = plt.subplots()
         labels = ('unkown',)
         sizes = [100]
-        self.ax2.set_title('Action Counts', color='white')
+        self.ax2.set_title('动作分布', color='white')
         self.ax2.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
         self.figure2.set_facecolor('#19232d')
         self.canvas2 = FigureCanvas(self.figure2)
@@ -313,6 +314,7 @@ class MainWindow(QMainWindow):
         self.ui.statusbar.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.ui.centralwidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
+        # 获得默认地址
         try:
             with open('Default settings.txt', 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -326,6 +328,16 @@ class MainWindow(QMainWindow):
                 print("The key 'video_path' does not exist in the dictionary.")
         except FileNotFoundError:
             print("文件不存在")
+
+        path = os.path.join(os.getcwd(), 'labels')
+        with open(os.path.join(path, "yolo_slowfast", "字典.txt"), 'r', encoding='utf-8') as f:
+            content = f.read()
+        Globals.yolo_slowfast_dict = loads(content)
+
+        with open(os.path.join(path, "yolov5", "字典.txt"), 'r', encoding='utf-8') as f:
+            content = f.read()
+        Globals.yolov5_dict = loads(content)
+
 
     def stopIdentify(self):
         Globals.detection_run = False
@@ -858,7 +870,7 @@ class MainWindow(QMainWindow):
     def initialize_camera(self):
         pygame.camera.init()
         self.camera_id_list = pygame.camera.list_cameras()
-        print("检测到设备："+str(self.camera_id_list))
+        print("检测到设备：" + str(self.camera_id_list))
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '设备列表':
             self.ui.player.setVisible(False)
@@ -885,7 +897,6 @@ class MainWindow(QMainWindow):
             folder_path = path
         else:
             folder_path = QFileDialog.getExistingDirectory()
-
 
         if folder_path:
             self.selected_folder = folder_path
@@ -1338,9 +1349,9 @@ class MainWindow(QMainWindow):
             self.ax.plot(last_10_data['t'], last_10_data['count'], marker='o', label=action)
 
         # 设置标签和标题
-        self.ax.set_xlabel('t')
-        self.ax.set_ylabel('Count')
-        self.ax.set_title('Action Counts Over Time', color='white')
+        self.ax.set_xlabel('时间')
+        self.ax.set_ylabel('数目')
+        self.ax.set_title('每秒动作数目趋势', color='white')
 
         # 添加图例
         self.ax.legend()
@@ -1392,7 +1403,7 @@ class MainWindow(QMainWindow):
         self.ax2.pie(counts, labels=labels, autopct='%1.1f%%', startangle=90, textprops={'color': 'white'})
 
         # 设置标题
-        self.ax2.set_title('Action Counts', color='white')
+        self.ax2.set_title('动作分布', color='white')
 
         # 重新绘制画布
         self.canvas2.draw()

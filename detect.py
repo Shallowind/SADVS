@@ -164,7 +164,6 @@ def run(
     model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
     stride, names, pt = model.stride, model.names, model.pt
     imgsz = check_img_size(imgsz, s=stride)  # check image size
-    print(names)
     # Dataloader
     bs = 1  # batch_size
     if webcam:
@@ -234,7 +233,7 @@ def run(
 
         if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
             fps = vid_cap.get(cv2.CAP_PROP_FPS)
-            print(f"processing {idx // fps}th second clips")
+            print(f"正在处理第{idx // fps}秒的片段")
             stack_tensor = [to_tensor(img) for img in stack]
             clip = torch.cat(stack_tensor).permute(-1, 0, 1, 2)
             dict_text[(idx // fps)] = dict_text_persec
@@ -261,8 +260,17 @@ def run(
                 # 启动输出动作标签
                 for action in dict_text_persec:
                     # 过滤动作标签
-                    if id_to_labels[action] in select_labels:
-                        show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+                    try:
+                        if id_to_labels[action] in select_labels:
+                            show_window.ui.action_list.addItem(
+                                f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+                    except KeyError:
+                        continue
+
+                    # try:
+                    #     if id_to_labels[action] in select_labels:
+                    #         show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+
         MainWindow.drawLineChart(show_window)
         MainWindow.drawPieChart(show_window)
         del dict_text_persec
@@ -290,15 +298,18 @@ def run(
                     if int(cls) != 0:
                         ava_label = ''
                     elif trackid in id_to_ava_labels.keys():
-                        ava_label = id_to_ava_labels[trackid].split(' ')[0]
+                        ava_label = id_to_ava_labels[trackid]
+                        #.split(' ')[0]
+                        # 过滤动作标签
                         if id_to_labels[trackid] not in select_labels:
-                            # continue
-                            print(f'continue {id_to_labels[trackid]}')
                             continue
                     else:
                         ava_label = 'Unknow'
-                    text = '{} {} {}'.format(int(trackid), names[int(cls)], ava_label)
-                    dict_text_persec[int(trackid)] = '{} {}'.format(names[int(cls)], ava_label)
+
+                    text = '{} {} {}'.format(int(trackid), names[int(cls)],
+                                                 ava_label)
+                    dict_text_persec[int(trackid)] = '{} {}'.format(Globals.yolov5_dict[names[int(cls)]],
+                                                                    Globals.yolo_slowfast_dict[ava_label])
 
                     color = color_map[int(cls)]
                     # label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
@@ -345,6 +356,6 @@ def run(
         if not Globals.camera_running and use_camera:
             dataset.cap.release()  # 释放摄像头
             break
-    print("total cost: {:.3f} s".format(time.time() - a))
+    print("总用时: {:.3f} s".format(time.time() - a))
     with open('pred_results.json', 'w') as json_file:
         json.dump(dict_text, json_file)
