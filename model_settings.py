@@ -134,7 +134,6 @@ class ModelSettings(QWidget):
         class_ids = self.read_label_map(os.path.join(self.path, self.ui.label_combox.currentText() + '.pbtxt'))
         print(os.path.join(self.path, self.ui.label_combox.currentText()))
         Globals.select_labels = class_ids
-        print(class_ids)
 
     def read_label_map(self, label_map_file):
         class_ids = []

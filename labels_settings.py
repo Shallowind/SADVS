@@ -9,9 +9,6 @@ from qdarkstyle import LightPalette
 
 from utils.myutil import Globals
 
-
-# from tensorflow.python.platform import gfile
-
 class LabelsSettings(QWidget):
     def __init__(self, modelset):
         super().__init__()
@@ -31,11 +28,6 @@ class LabelsSettings(QWidget):
         self.translations = {}
         self.full_buttons = []
 
-        if self.modelset.id == 1:
-            path = os.getcwd()
-            path = os.path.join(path, "labels")
-            self.FullCollection_path = os.path.join(path, self.modelset.ui.model_combox.currentText())
-            self.open_file()
         self.ui.open.setVisible(False)
         self.ui.pushButton.setVisible(False)
         self.ui.pushButton_2.clicked.connect(self.save)
@@ -45,7 +37,6 @@ class LabelsSettings(QWidget):
         self.ui.delete_2.clicked.connect(self.on_delete_clicked)
         self.ui.open.clicked.connect(self.on_open_clicked)
         self.ui.fan.clicked.connect(self.on_fan_clicked)
-        # self.ui.sets_list.itemChanged.connect(lambda item, old_name: self.on_item_changed(item, old_name))
         # 设置顶部显示
         self.ui.labels_part_2.setAlignment(Qt.AlignTop)
 
@@ -54,16 +45,6 @@ class LabelsSettings(QWidget):
         self.ui.sets_list.customContextMenuRequested.connect(self.show_context_menu)
 
         self.modellist()
-
-    # def on_item_changed(self, item, old_name):
-    #     print(222)
-    #     print(old_name)
-    #     name = item.text() + '.pbtxt'
-    #     new_name = os.path.join(self.FullCollection_path, name)
-    #     item.setData(Qt.UserRole, new_name)
-    #     print(333)
-    #     print(new_name)
-    #     os.rename(old_name, new_name)
 
     def on_fan_clicked(self):
         if self.checkboxes is None:
@@ -268,7 +249,7 @@ class LabelsSettings(QWidget):
     def display_checkboxes(self, buttons):
         for button in self.full_buttons:
             # 创建复选框并添加到布局中，使用 button 变量作为标签
-            checkbox_name = self.translations[str(button.data)]
+            checkbox_name = self.translations[str(button.data[1])]
             checkbox = QCheckBox(checkbox_name)
 
             if button.data[0] in self.id:

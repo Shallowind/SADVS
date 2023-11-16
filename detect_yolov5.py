@@ -59,7 +59,6 @@ def run(
     device = select_device(device)
     model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
     stride, names, pt = model.stride, model.names, model.pt
-    print(names)
     imgsz = check_img_size(imgsz, s=stride)  # check image size
 
     # Dataloader
