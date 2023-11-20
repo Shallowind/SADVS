@@ -290,7 +290,7 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names)+'汉字')
             if len(det):
 
                 for j, (*box, cls, trackid, vx, vy) in enumerate(yolo_pred[0]):
@@ -306,8 +306,9 @@ def run(
                     else:
                         ava_label = 'Unknow'
 
-                    text = '{} {} {}'.format(int(trackid), names[int(cls)],
-                                                 ava_label)
+                    text = '{} {} {}'.format(int(trackid), Globals.yolov5_dict[names[int(cls)]],
+                                             Globals.yolo_slowfast_dict[ava_label])
+
                     dict_text_persec[int(trackid)] = '{} {}'.format(Globals.yolov5_dict[names[int(cls)]],
                                                                     Globals.yolo_slowfast_dict[ava_label])
 
