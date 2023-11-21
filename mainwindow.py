@@ -275,7 +275,7 @@ class MainWindow(QMainWindow):
         splitter_video = QSplitter(Qt.Horizontal)
         splitter_video.addWidget(self.ui.video_widget_2)
         splitter_video.addWidget(self.ui.video_label_widget_2)
-        splitter_video.setStretchFactor(0, 10)
+        splitter_video.setStretchFactor(0, 5)
         splitter_video.setStretchFactor(1, 1)
         splitter_video.setStyleSheet("""
             QSplitter {

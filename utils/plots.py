@@ -82,31 +82,51 @@ class Annotator:
 
     def box_label(self, box, label='', color=(128, 128, 128), txt_color=(255, 255, 255)):
         # Add one xyxy box to image with label
+        # if self.pil or not is_ascii(label):
+        #     self.draw.rectangle(box, width=self.lw, outline=tuple(color))  # box
+        #     if label:
+        #         # w, h = self.font.getsize(label)  # text width, height (WARNING: deprecated) in 9.2.0
+        #         _, _, w, h = self.font.getbbox(label)  # text width, height (New)
+        #         outside = box[1] - h >= 0  # label fits outside box
+        #         self.draw.rectangle(
+        #             (box[0], box[1] - h if outside else box[1], box[0] + w + 1,
+        #              box[1] + 1 if outside else box[1] + h + 1),
+        #             fill=tuple(color),
+        #         )
+        #         # self.draw.text((box[0], box[1]), label, fill=txt_color, font=self.font, anchor='ls')  # for PIL>8.0
+        #         self.draw.text((box[0], box[1] - h if outside else box[1]), label, fill=tuple(txt_color),
+        #                    font=self.font,spacing=max(self.lw - 1, 1))
         if self.pil or not is_ascii(label):
-            self.draw.rectangle(box, width=self.lw, outline=color)  # box
+            self.draw.rectangle(box, width=self.lw, outline=tuple(color))  # box
             if label:
-                w, h = self.font.getsize(label)  # text width, height (WARNING: deprecated) in 9.2.0
-                # _, _, w, h = self.font.getbbox(label)  # text width, height (New)
-                outside = box[1] - h >= 0  # label fits outside box
-                self.draw.rectangle(
-                    (box[0], box[1] - h if outside else box[1], box[0] + w + 1,
-                     box[1] + 1 if outside else box[1] + h + 1),
-                    fill=color,
-                )
-                # self.draw.text((box[0], box[1]), label, fill=txt_color, font=self.font, anchor='ls')  # for PIL>8.0
-                self.draw.text((box[0], box[1] - h if outside else box[1]), label, fill=txt_color, font=self.font)
+                # 获取文本的尺寸
+                text_width, text_height = self.draw.textsize(label, font=self.font)
+                # 根据文本尺寸计算框的位置和大小
+                box_left = box[0]
+                box_top = box[1] - text_height  # 调整以匹配文本高度
+                box_right = box_left + text_width + 1
+                box_bottom = box_top + text_height + 1
+                # 绘制填充的矩形框
+                self.draw.rectangle((box_left, box_top + 5, box_right, box_bottom), fill=tuple(color))
+                # 绘制文本
+                self.draw.text((box_left, box_top), label, fill=tuple(txt_color),
+                               font=self.font, spacing=max(self.lw - 1, 1))
+
         else:  # cv2
             p1, p2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
             cv2.rectangle(self.im, p1, p2, color, thickness=self.lw, lineType=cv2.LINE_AA)
             if label:
+
                 tf = max(self.lw - 1, 1)  # font thickness
                 w, h = cv2.getTextSize(label, 0, fontScale=self.lw / 3, thickness=tf)[0]  # text width, height
                 outside = p1[1] - h >= 3
                 p2 = p1[0] + w, p1[1] - h - 3 if outside else p1[1] + h + 3
                 cv2.rectangle(self.im, p1, p2, color, -1, cv2.LINE_AA)  # filled
+
                 cv2.putText(self.im,
-                            label, (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
-                            0,
+                            label,
+                            (p1[0], p1[1] - 2 if outside else p1[1] + h + 2),
+                            0,  # 使用字体常数
                             self.lw / 3,
                             txt_color,
                             thickness=tf,
