@@ -76,6 +76,11 @@ class MainWindow(QMainWindow):
         self.ui.add_workspace.clicked.connect(self.addWorkspace)
         # 暂停
         self.ui.play_pause.clicked.connect(self.playPause)
+        # 倍速功能
+        self.ui.speed.currentIndexChanged.connect(self.speed_change)
+        # 上一个/下一个视频
+        self.ui.prev.clicked.connect(self.prev_video)
+        self.ui.next.clicked.connect(self.next_video)
         # 工作区/原始列表
         self.ui.listcon.clicked.connect(self.listcon)
         self.ui.workcon.clicked.connect(self.workcon)
@@ -206,7 +211,7 @@ class MainWindow(QMainWindow):
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.terminal.setStyleSheet("background-color: 000000")
         sys.stdout = ConsoleRedirector(self, self.ui.terminal)
-        sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
+        # sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
         print()
 
         self.video_tree = []
@@ -583,18 +588,71 @@ class MainWindow(QMainWindow):
         self.ui.save_cut.setVisible(True)
         self.ui.exit_mode.setVisible(True)
 
+    # 获得视频文件路径列表
+    def get_video_files(self):
+        path = os.path.dirname(self.selected_path)
+        # 从当前文件夹中获取所有视频文件
+        try:
+            video_files = [f for f in os.listdir(path)]
+        except FileNotFoundError:
+            return None
+        # 构建完整的视频文件路径列表
+        video_paths = [os.path.join(path, video_file) for video_file in video_files]
+        print(video_paths)
+        return video_paths
+
+    def prev_video(self):
+        video_paths = self.get_video_files()
+        if video_paths is None:
+            return
+        index = video_paths.index(self.selected_path)
+        index -= 1
+        # 如果当前索引小于0，循环到视频列表的末尾
+        if index < 0:
+            index = len(video_paths) - 1
+        # 停止当前视频的播放
+        self.player.pause()
+        # 播放上一个视频
+        self.playSelectedVideo(None,None,video_paths[index])
+
+    def next_video(self):
+        video_paths = self.get_video_files()
+        if video_paths is None:
+            return
+        index = video_paths.index(self.selected_path)
+        index += 1
+        # 如果当前索引小于0，循环到视频列表的末尾
+        if index == len(video_paths):
+            index = 0
+        # 停止当前视频的播放
+        self.player.pause()
+        # 播放上一个视频
+        self.playSelectedVideo(None, None, video_paths[index])
+    # 速度改变
+    def speed_change(self):
+        if self.ui.tabWidget.currentIndex() == 0:
+            self.player.pause()
+            self.speed_play(self.player)
+
+    # 倍速播放
+    def speed_play(self, player):
+        speed = self.ui.speed.currentText()
+        speed = float(speed.split("×")[0])
+        player.setPlaybackRate(speed)
+        player.play()
+
     def echo(self, low_value, high_value):
         # print(low_value, high_value)
         if self.ui.tabWidget.currentIndex() == 0:
             if low_value != self.lopo:
                 self.lopo = low_value
-                self.player.play()
+                self.speed_play(self.player)
                 self.player.setPosition(low_value)
                 self.player.pause()
                 self.ui.play_pause.setIcon(self.play_ico)
             elif high_value != self.hipo:
                 self.hipo = high_value
-                self.player.play()
+                self.speed_play(self.player)
                 self.player.setPosition(high_value)
                 self.player.pause()
                 self.ui.play_pause.setIcon(self.play_ico)
@@ -975,7 +1033,6 @@ class MainWindow(QMainWindow):
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '视频列表':
             self.playSelectedVideo(item, False)
-
             self.ui.player.setVisible(True)
             self.ui.camera.setVisible(False)
         elif selected_option == '设备列表':
@@ -1017,7 +1074,7 @@ class MainWindow(QMainWindow):
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
 
-    def playSelectedVideo(self, item, isworklist):
+    def playSelectedVideo(self, item, isworklist, path=''):
         if self.capture is not None:
             self.capture.release()
         self.timer_cv.stop()
@@ -1027,10 +1084,15 @@ class MainWindow(QMainWindow):
         self.ui.video_label_edit.setEnabled(True)
         self.ui.save_label.setEnabled(True)
         # 获取所选项的完整路径，包括文件夹结构
-        if isworklist:
-            selected_video_path = item.path
+        if path:
+            self.ui.player.setVisible(True)
+            self.ui.camera.setVisible(False)
+            selected_video_path = path
         else:
-            selected_video_path = self.getFullPath(item)
+            if isworklist:
+                selected_video_path = item.path
+            else:
+                selected_video_path = self.getFullPath(item)
 
         self.selected_path = selected_video_path
         file_extension = os.path.splitext(selected_video_path)[1]
@@ -1069,11 +1131,11 @@ class MainWindow(QMainWindow):
                     play_pause.setEnabled(True)
                     self.ui.cut_mode.setEnabled(True)
                     self.ui.play_pause.setIcon(self.pause_ico)
-                    player.play()
+                    self.speed_play(player)
                 elif file_extension == ".jpg" or file_extension == ".png":
                     play_pause.setEnabled(False)
                     self.ui.cut_mode.setEnabled(False)
-                    player.play()
+                    self.speed_play(player)
                 else:
                     self.ui.cut_mode.setEnabled(False)
                     play_pause.setEnabled(False)
@@ -1199,19 +1261,12 @@ class MainWindow(QMainWindow):
         elif self.ui.tabWidget.currentIndex() == 1:
             self.ui.video_time_2.setText('{}:{}'.format(minutes, seconds))
             self.ui.action_list.clear()
-            # 启动输出动作标签
-            # for t, action_list in self.frame_dict.items():
-            #     if t == seconds:
-            #         # print(action_list[action])
-            #         # item = QListWidgetItem(video_file)
-            #         for action in action_list:
-            #             self.ui.action_list.addItem(f"时间：{t} 动作：{action}-{action_list[action]}")
 
     # 用进度条更新视频位置
     def updatePosition(self, v):
         if self.ui.tabWidget.currentIndex() == 0:
             self.displayTime(self.ui.video_slider.maximum() - v)
-            self.player.play()
+            self.speed_play(self.player)
             self.player.setPosition(v)
             self.player.pause()
             self.ui.play_pause.setIcon(self.play_ico)
@@ -1227,14 +1282,14 @@ class MainWindow(QMainWindow):
                 self.player.pause()
             else:
                 self.ui.play_pause.setIcon(self.pause_ico)
-                self.player.play()
+                self.speed_play(self.player)
         elif self.ui.tabWidget.currentIndex() == 1:
             if self.player_2.state() == 1:
                 self.ui.play_pause_2.setIcon(self.play_ico)
                 self.player_2.pause()
             else:
                 self.ui.play_pause_2.setIcon(self.pause_ico)
-                self.player_2.play()
+                self.speed_play(self.player)
 
     # 保存标签
     def saveLabel(self):
