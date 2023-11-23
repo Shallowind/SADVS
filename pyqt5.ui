@@ -843,7 +843,7 @@ QPushButton:pressed {
                        <number>0</number>
                       </property>
                       <item row="0" column="0">
-                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,0,1">
+                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,0,0">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -978,12 +978,28 @@ QSlider::handle:horizontal:disabled {
                          </layout>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="play_pause">
-                          <property name="enabled">
-                           <bool>false</bool>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">QPushButton {
+                         <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="0,0,10,0,1">
+                          <item>
+                           <widget class="QPushButton" name="prev">
+                            <property name="text">
+                             <string>PushButton</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="next">
+                            <property name="text">
+                             <string>PushButton</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="play_pause">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QPushButton {
     background-color: #455364; /* 默认颜色，浅灰色 */
     border: 1px solid #666666; /* 灰色的边框 */
     padding: 5px 10px;
@@ -997,15 +1013,74 @@ QPushButton:pressed {
     background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
 }
 </string>
-                          </property>
-                          <property name="text">
-                           <string/>
-                          </property>
-                          <property name="icon">
-                           <iconset>
-                            <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
-                          </property>
-                         </widget>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset>
+                              <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_3">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>40</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QComboBox" name="speed">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <family>微软雅黑</family>
+                              <pointsize>14</pointsize>
+                              <weight>50</weight>
+                              <bold>false</bold>
+                             </font>
+                            </property>
+                            <property name="currentText">
+                             <string>1.0×</string>
+                            </property>
+                            <property name="currentIndex">
+                             <number>1</number>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>0.5×</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>1.0×</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>2.0×</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>3.0×</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                        </layout>
                       </item>

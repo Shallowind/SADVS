@@ -105,35 +105,40 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names))
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names)+'汉字')
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-
+                n_value = 0
                 # Print results
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
+                    n_value += int(n.item())
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-
+                Globals.apple_num.append(n_value)
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
-                    label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
+                    name = Globals.yolov5_dict[names[c]]
+                    label = None if hide_labels else (name if hide_conf else f'{name} {conf:.2f}')
                     annotator.box_label(xyxy, label, color=colors(c, True))
-
+                    Globals.apple_xy.append(((int(xyxy[0].item()) + int(xyxy[2].item())) / 2,
+                                             (int(xyxy[1].item()) + int(xyxy[3].item())) / 2))
+            else:
+                Globals.apple_num.append(0)
             # Stream results
             im0 = annotator.result()
             im1 = im0.astype("uint8")
             show = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
             showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-
-            label_size = show_label.size()
-            label_size.setWidth(label_size.width() - 10)
-            label_size.setHeight(label_size.height() - 10)
-            scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-            pixmap = QPixmap.fromImage(scaled_image)
-            show_label.setPixmap(pixmap)
-            show_label.setAlignment(Qt.AlignCenter)
+            if show_window is not None:
+                label_size = show_label.size()
+                label_size.setWidth(label_size.width() - 10)
+                label_size.setHeight(label_size.height() - 10)
+                scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
+                pixmap = QPixmap.fromImage(scaled_image)
+                show_label.setPixmap(pixmap)
+                show_label.setAlignment(Qt.AlignCenter)
 
             # Save results (image with detections)
             if save_img:
