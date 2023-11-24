@@ -10,6 +10,8 @@ import json
 import numpy as np
 from pathlib import Path
 import torch
+from PyQt5.QtWidgets import QMessageBox
+
 from deep_sort.deep_sort import DeepSort
 from torchvision.transforms._functional_video import normalize
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
@@ -230,7 +232,6 @@ def run(
             det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0s[0].shape if use_camera else im0s.shape).round()
         time_deepsort_end = time.time()
 
-
         if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
             fps = vid_cap.get(cv2.CAP_PROP_FPS)
             print(f"正在处理第{idx // fps}秒的片段")
@@ -267,9 +268,8 @@ def run(
                     except KeyError:
                         continue
 
-                    # try:
-                    #     if id_to_labels[action] in select_labels:
-                    #         show_window.ui.action_list.addItem(f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+                    # try: if id_to_labels[action] in select_labels: show_window.ui.action_list.addItem(f"时间：{idx //
+                    # fps} 动作：{action}-{dict_text_persec[action]}")
 
         MainWindow.drawLineChart(show_window)
         MainWindow.drawPieChart(show_window)
@@ -290,7 +290,7 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names)+'汉字',font_size=20)
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字', font_size=20)
             if len(det):
 
                 for j, (*box, cls, trackid, vx, vy) in enumerate(yolo_pred[0]):
@@ -299,7 +299,7 @@ def run(
                         ava_label = ''
                     elif trackid in id_to_ava_labels.keys():
                         ava_label = id_to_ava_labels[trackid]
-                        #.split(' ')[0]
+                        # .split(' ')[0]
                         # 过滤动作标签
                         if id_to_labels[trackid] not in select_labels:
                             continue
@@ -327,7 +327,8 @@ def run(
             label_size = show_label.size()
             label_size.setWidth(label_size.width() - 10)
             label_size.setHeight(label_size.height() - 10)
-            scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
+            scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
             pixmap = QPixmap.fromImage(scaled_image)
             show_label.setPixmap(pixmap)
             show_label.setAlignment(Qt.AlignCenter)
@@ -359,6 +360,6 @@ def run(
         if not Globals.camera_running and use_camera:
             dataset.cap.release()  # 释放摄像头
             break
-    print("总用时: {:.3f} s".format(time.time() - a))
+    # print("总用时: {:.3f} s".format(time.time() - a))
     with open('pred_results.json', 'w') as json_file:
         json.dump(dict_text, json_file)
