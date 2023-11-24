@@ -56,7 +56,7 @@
   "donut": "甜甜圈",
   "cake": "蛋糕",
   "chair": "椅子",
-  "sofa": "沙发",
+  "couch": "沙发",
   "pottedplant": "盆栽",
   "bed": "床",
   "diningtable": "餐桌",

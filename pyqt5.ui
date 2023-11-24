@@ -19,6 +19,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -843,7 +846,7 @@ QPushButton:pressed {
                        <number>0</number>
                       </property>
                       <item row="0" column="0">
-                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,1,0,0">
+                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,0,1,0">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -879,10 +882,179 @@ QPushButton:pressed {
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="10,0,0,0">
+                         <spacer name="verticalSpacer_3">
+                          <property name="orientation">
+                           <enum>Qt::Vertical</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>5</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,10,0,0,0,0,0">
                           <property name="spacing">
                            <number>0</number>
                           </property>
+                          <item>
+                           <widget class="QPushButton" name="prev">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset>
+                              <normaloff>resources/op_icon/prev.png</normaloff>resources/op_icon/prev.png</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_3">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>10</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="play_pause">
+                            <property name="enabled">
+                             <bool>false</bool>
+                            </property>
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset>
+                              <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_5">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>10</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="next">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>25</height>
+                             </size>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true">QPushButton {
+    background-color: #455364; /* 默认颜色，浅灰色 */
+    border: 1px solid #666666; /* 灰色的边框 */
+}
+
+QPushButton:hover {
+    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
+}
+
+QPushButton:pressed {
+    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
+}
+</string>
+                            </property>
+                            <property name="text">
+                             <string/>
+                            </property>
+                            <property name="icon">
+                             <iconset>
+                              <normaloff>resources/op_icon/next.png</normaloff>resources/op_icon/next.png</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <spacer name="horizontalSpacer_4">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>10</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
                           <item>
                            <widget class="QSlider" name="video_slider">
                             <property name="sizePolicy">
@@ -901,6 +1073,11 @@ QPushButton:pressed {
                           </item>
                           <item>
                            <widget class="QLabel" name="video_time">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>--:--</string>
                             </property>
@@ -908,6 +1085,11 @@ QPushButton:pressed {
                           </item>
                           <item>
                            <widget class="QLabel" name="label">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>/</string>
                             </property>
@@ -915,18 +1097,84 @@ QPushButton:pressed {
                           </item>
                           <item>
                            <widget class="QLabel" name="video_time_all">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>--:--</string>
                             </property>
                            </widget>
                           </item>
+                          <item>
+                           <spacer name="horizontalSpacer_6">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>10</width>
+                              <height>20</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
+                          <item>
+                           <widget class="QComboBox" name="speed">
+                            <property name="font">
+                             <font>
+                              <family>微软雅黑</family>
+                             </font>
+                            </property>
+                            <property name="currentIndex">
+                             <number>1</number>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>0.5x</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>1.0x</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>2.0x</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>3.0x</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
                          </layout>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,0,0,0">
+                         <layout class="QHBoxLayout" name="horizontalLayout_13" stretch="0,0,0,0,0,0">
                           <property name="spacing">
                            <number>0</number>
                           </property>
+                          <item>
+                           <spacer name="horizontalSpacer_7">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                             <size>
+                              <width>105</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                           </spacer>
+                          </item>
                           <item>
                            <widget class="RangeSlider" name="cut_slider">
                             <property name="styleSheet">
@@ -956,6 +1204,11 @@ QSlider::handle:horizontal:disabled {
                           </item>
                           <item>
                            <widget class="QLabel" name="cut_time">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>--:--</string>
                             </property>
@@ -963,6 +1216,11 @@ QSlider::handle:horizontal:disabled {
                           </item>
                           <item>
                            <widget class="QLabel" name="label_2">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>/</string>
                             </property>
@@ -970,115 +1228,31 @@ QSlider::handle:horizontal:disabled {
                           </item>
                           <item>
                            <widget class="QLabel" name="cut_time_all">
+                            <property name="font">
+                             <font>
+                              <family>小米兰亭</family>
+                             </font>
+                            </property>
                             <property name="text">
                              <string>--:--</string>
                             </property>
                            </widget>
                           </item>
-                         </layout>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_17" stretch="0,0,10,0,1">
                           <item>
-                           <widget class="QPushButton" name="prev">
-                            <property name="text">
-                             <string>PushButton</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QPushButton" name="next">
-                            <property name="text">
-                             <string>PushButton</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QPushButton" name="play_pause">
-                            <property name="enabled">
-                             <bool>false</bool>
-                            </property>
-                            <property name="styleSheet">
-                             <string notr="true">QPushButton {
-    background-color: #455364; /* 默认颜色，浅灰色 */
-    border: 1px solid #666666; /* 灰色的边框 */
-    padding: 5px 10px;
-}
-
-QPushButton:hover {
-    background-color: #54687a; /* 鼠标悬停时的颜色，稍浅的灰色 */
-}
-
-QPushButton:pressed {
-    background-color: #455364; /* 鼠标点击时的颜色，稍深的灰色 */
-}
-</string>
-                            </property>
-                            <property name="text">
-                             <string/>
-                            </property>
-                            <property name="icon">
-                             <iconset>
-                              <normaloff>resources/play_ico.png</normaloff>resources/play_ico.png</iconset>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <spacer name="horizontalSpacer_3">
+                           <spacer name="horizontalSpacer_8">
                             <property name="orientation">
                              <enum>Qt::Horizontal</enum>
                             </property>
+                            <property name="sizeType">
+                             <enum>QSizePolicy::Fixed</enum>
+                            </property>
                             <property name="sizeHint" stdset="0">
                              <size>
-                              <width>40</width>
-                              <height>20</height>
+                              <width>66</width>
+                              <height>0</height>
                              </size>
                             </property>
                            </spacer>
-                          </item>
-                          <item>
-                           <widget class="QComboBox" name="speed">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="font">
-                             <font>
-                              <family>微软雅黑</family>
-                              <pointsize>14</pointsize>
-                              <weight>50</weight>
-                              <bold>false</bold>
-                             </font>
-                            </property>
-                            <property name="currentText">
-                             <string>1.0×</string>
-                            </property>
-                            <property name="currentIndex">
-                             <number>1</number>
-                            </property>
-                            <item>
-                             <property name="text">
-                              <string>0.5×</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>1.0×</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>2.0×</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>3.0×</string>
-                             </property>
-                            </item>
-                           </widget>
                           </item>
                          </layout>
                         </item>
@@ -2269,11 +2443,6 @@ QPushButton:pressed {
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="abn_identify">
-                <attribute name="title">
-                 <string> 异常行为检测 </string>
-                </attribute>
-               </widget>
               </widget>
              </item>
             </layout>
@@ -2721,7 +2890,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">

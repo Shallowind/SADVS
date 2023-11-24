@@ -156,8 +156,8 @@ class MainWindow(QMainWindow):
         plt.rcParams['font.family'] = 'Microsoft YaHei'
         self.figure, self.ax = plt.subplots()
         self.ax.set_facecolor('#19232d')
-        self.ax.set_xlabel('t', color='white')
-        self.ax.set_ylabel('Count', color='white')
+        self.ax.set_xlabel('时间', color='white')
+        self.ax.set_ylabel('数目', color='white')
         self.ax.tick_params(axis='both', colors='white')
         self.ax.spines['bottom'].set_color('white')
         self.ax.spines['top'].set_color('white')
@@ -211,7 +211,7 @@ class MainWindow(QMainWindow):
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.terminal.setStyleSheet("background-color: 000000")
         sys.stdout = ConsoleRedirector(self, self.ui.terminal)
-        # sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
+        sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
         print()
 
         self.video_tree = []
@@ -343,8 +343,8 @@ class MainWindow(QMainWindow):
             content = f.read()
         Globals.yolov5_dict = loads(content)
 
-
     def stopIdentify(self):
+        QMessageBox.information(self, "提示", "识别报告已保存到文件夹\nD:/VScode/motion-monitor-x/result")
         Globals.detection_run = False
         self.ui.start_identify.setEnabled(True)
         self.ui.stop_identify.setEnabled(False)
@@ -613,7 +613,7 @@ class MainWindow(QMainWindow):
         # 停止当前视频的播放
         self.player.pause()
         # 播放上一个视频
-        self.playSelectedVideo(None,None,video_paths[index])
+        self.playSelectedVideo(None, None, video_paths[index])
 
     def next_video(self):
         video_paths = self.get_video_files()
@@ -628,6 +628,7 @@ class MainWindow(QMainWindow):
         self.player.pause()
         # 播放上一个视频
         self.playSelectedVideo(None, None, video_paths[index])
+
     # 速度改变
     def speed_change(self):
         if self.ui.tabWidget.currentIndex() == 0:
@@ -637,7 +638,7 @@ class MainWindow(QMainWindow):
     # 倍速播放
     def speed_play(self, player):
         speed = self.ui.speed.currentText()
-        speed = float(speed.split("×")[0])
+        speed = float(speed.split("x")[0])
         player.setPlaybackRate(speed)
         player.play()
 
@@ -1220,6 +1221,8 @@ class MainWindow(QMainWindow):
             file_size = self.convert_bytes_to_readable(file_size)
             # 将信息设置到UI元素中
             info_text = f"总帧数: {total_frames}\n\n帧率: {frame_rate}\n\n时长: {hours}:{minutes}:{seconds}\n\n"
+            self.ui.video_time_all.setText(f"{minutes}:{seconds}")
+            self.ui.cut_time_all.setText(f"{minutes}:{seconds}")
             info_text += f"修改日期:{formatted_date} \n\n文件大小: {file_size}\n\n分辨率: {width}x{height}"
             self.ui.video_info.setPlainText(info_text)
 
@@ -1404,8 +1407,8 @@ class MainWindow(QMainWindow):
             self.ax.plot(last_10_data['t'], last_10_data['count'], marker='o', label=action)
 
         # 设置标签和标题
-        self.ax.set_xlabel('时间')
-        self.ax.set_ylabel('数目')
+        self.ax.set_xlabel('时间', color='white')
+        self.ax.set_ylabel('数目', color='white')
         self.ax.set_title('每秒动作数目趋势', color='white')
 
         # 添加图例
@@ -1477,7 +1480,7 @@ if __name__ == "__main__":
     app = QApplication([])
     # app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
     user = User_management()
-    user.ui.show()
+    user.show()
     app.exec()
 
     pyqt5 = MainWindow()

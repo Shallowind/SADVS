@@ -1,40 +1,72 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QMessageBox
-from PyQt5.QtCore import Qt
-from PyQt5 import uic
+import sys
+
 import qdarkstyle
-from qdarkstyle import LightPalette
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QPainter, QBitmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.uic import loadUi
 
 
-class User_management(QWidget):
+class User_management(QMainWindow):
     def __init__(self):
-        super().__init__()
-        self.ui = uic.loadUi("user_management.ui")
-        self.ui.resize(1000, 600)
-        self.ui.setWindowTitle("用户登录")
-        self.ui.show()  # 显示窗口
-        self.ui.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        super(User_management, self).__init__()
+
+        # 加载UI文件
+        self.dragPos = None
+        loadUi('user_management.ui', self)
+
+        # 设置窗口标志，去掉窗口边框
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 登录
-        self.ui.login.clicked.connect(self.Login)
+        self.signin.clicked.connect(self.close)
         # 退出
-        self.ui.quit.clicked.connect(self.close)
+        # self.quit.clicked.connect(self.close)
+        self.exit.clicked.connect(self.close)
+        self.widget_2.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        # self.widget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
-    def close(self):
-        del self.ui
-        return 0
+        # 设置窗口背景颜色为白色
+        self.setStyleSheet("background-color: #19232d;")
 
-    def begin(self):
-        del self.ui
-        return 1
+        # 设置窗口大小
+        # self.setGeometry(100, 100, 400, 200)
+
+    def mousePressEvent(self, event):
+        # 实现窗口拖动
+        if event.button() == Qt.LeftButton:
+            self.dragPos = event.globalPos()
+            event.accept()
+
     def Login(self):
-        if self.ui.username.text()  and self.ui.password.text():
+        if self.username.text() and self.password.text():
             self.begin()
         else:
             QMessageBox.warning(self, "警告", "用户名或密码不能为空")
 
-if __name__ == "__main__":
-    app = QApplication([])
-    user_management = User_management()
-    user_management.ui.show()
-    app.exec()
+    def close(self):
+        super(User_management, self).close()
+
+    def mouseMoveEvent(self, event):
+        # 实现窗口拖动
+        if hasattr(self, 'dragPos'):
+            if self.dragPos is not None:
+                newPos = self.mapToGlobal(event.pos() - self.dragPos)
+            else:
+                # 处理 self.dragPos 为 None 的情况
+                return
+
+            self.move(self.mapToGlobal(newPos))
+            self.dragPos = event.globalPos()
+            event.accept()
+
+
+if __name__ == '__main__':
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    app = QApplication(sys.argv)
+    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    window = User_management()
+    window.show()
+    sys.exit(app.exec_())
