@@ -108,6 +108,7 @@ class Annotator:
                 box_bottom = box_top + text_height + 1
                 # 绘制填充的矩形框
                 self.draw.rectangle((box_left, box_top + 5, box_right, box_bottom), fill=tuple(color))
+
                 # 绘制文本
                 self.draw.text((box_left, box_top), label, fill=tuple(txt_color),
                                font=self.font, spacing=max(self.lw - 1, 1))

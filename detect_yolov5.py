@@ -2,6 +2,7 @@ import argparse
 import os
 import platform
 import sys
+import math
 from pathlib import Path
 import torch
 from PyQt5 import QtGui
@@ -15,7 +16,7 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
 from utils.myutil import Globals
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
-
+from test2 import calculate_apple_maturity
 
 @smart_inference_mode()
 def run(
@@ -74,6 +75,7 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -95,6 +97,7 @@ def run(
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
 
         # Process predictions
+
         for i, det in enumerate(pred):  # per image
             seen += 1
             if webcam:  # batch_size >= 1
@@ -106,6 +109,9 @@ def run(
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
             annotator = Annotator(im0, line_width=line_thickness, example=str(names)+'汉字')
+            applexy = []
+            mianji = []
+            chsh = []
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
@@ -122,10 +128,21 @@ def run(
                     name = Globals.yolov5_dict[names[c]]
                     label = None if hide_labels else (name if hide_conf else f'{name} {conf:.2f}')
                     annotator.box_label(xyxy, label, color=colors(c, True))
-                    Globals.apple_xy.append(((int(xyxy[0].item()) + int(xyxy[2].item())) / 2,
-                                             (int(xyxy[1].item()) + int(xyxy[3].item())) / 2))
+                    applexy.append(((int(xyxy[0].item()) + int(xyxy[2].item())) / 2,
+                                             im0.shape[0] - (int(xyxy[1].item()) + int(xyxy[3].item())) / 2))
+                    radius = min(abs(int(xyxy[0].item()) - int(xyxy[2].item())) / 2,
+                                 abs(int(xyxy[1].item()) - int(xyxy[3].item())) / 2)
+
+                    mianji.append(math.pi * radius ** 2)
+
+
+                    chsh.append(calculate_apple_maturity(im0,int(xyxy[0].item()),int(xyxy[1].item()),
+                                    int(xyxy[2].item()),int(xyxy[3].item())))
             else:
                 Globals.apple_num.append(0)
+            Globals.apple_xy.append(applexy)
+            Globals.apple_mianji.append(mianji)
+            Globals.apple_cs.append(chsh)
             # Stream results
             im0 = annotator.result()
             im1 = im0.astype("uint8")
