@@ -1,72 +1,48 @@
-import sys
+import cv2
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+def calculate_apple_maturity(image,x1,y1,x2,y2):
 
-import qdarkstyle
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QPainter, QBitmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt5.uic import loadUi
+    image = image[y1:y2, x1:x2]
 
 
-class FramelessWindow(QMainWindow):
-    def __init__(self):
-        super(FramelessWindow, self).__init__()
+    radius = min(image.shape[0]/2, image.shape[1]/2)
+    mianji = math.pi * radius ** 2
+    # 将图像转换为HSV颜色空间
+    try:
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+    except:
+        return "低成熟度"
+    # 定义红色的范围
+    lower_red_range1 = np.array([0, 40, 40])
+    upper_red_range1 = np.array([10, 255, 255])
+    lower_red_range2 = np.array([170, 40, 40])
+    upper_red_range2 = np.array([180, 255, 255])
 
-        # 加载UI文件
-        self.dragPos = None
-        loadUi('user_management.ui', self)
+    # 创建红色的掩膜
+    red_mask1 = cv2.inRange(hsv_image, lower_red_range1, upper_red_range1)
+    red_mask2 = cv2.inRange(hsv_image, lower_red_range2, upper_red_range2)
 
-        # 设置窗口标志，去掉窗口边框
-        self.setWindowFlags(Qt.FramelessWindowHint)
+    # 合并红色的掩膜
+    red_mask = cv2.bitwise_or(red_mask1, red_mask2)
 
-        # 登录
-        self.signin.clicked.connect(self.Login)
-        # 退出
-        # self.quit.clicked.connect(self.close)
-        self.exit.clicked.connect(self.close)
-        self.widget_2.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-        # self.widget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+    red_area_size = cv2.countNonZero(red_mask)
 
-        # 设置窗口背景颜色为白色
-        self.setStyleSheet("background-color: #19232d;")
+    if red_area_size < mianji / 3:
+        return "低成熟度"
+    else:
+        # 获取红色区域内每个像素的颜色深度
+        red_color_depth = hsv_image[red_mask > 0, 2]
 
-        # 设置窗口大小
-        # self.setGeometry(100, 100, 400, 200)
+        # 计算所有红色位置的颜色深度综合
+        total_color_depth = np.sum(red_color_depth)
 
-    def mousePressEvent(self, event):
-        # 实现窗口拖动
-        if event.button() == Qt.LeftButton:
-            self.dragPos = event.globalPos()
-            event.accept()
+        # 将平均颜色深度映射到 [0, 1] 范围作为成熟度
+        maturity = total_color_depth / (255 * red_area_size)
 
-    def Login(self):
-        if self.username.text() and self.password.text():
-            self.begin()
+        if maturity < 0.5:
+            return "中成熟度"
         else:
-            QMessageBox.warning(self, "警告", "用户名或密码不能为空")
+            return "高成熟度"
 
-    def close(self):
-        super(FramelessWindow, self).close()
-
-    def mouseMoveEvent(self, event):
-        # 实现窗口拖动
-        if hasattr(self, 'dragPos'):
-            if self.dragPos is not None:
-                newPos = self.mapToGlobal(event.pos() - self.dragPos)
-            else:
-                # 处理 self.dragPos 为 None 的情况
-                return
-
-            self.move(self.mapToGlobal(newPos))
-            self.dragPos = event.globalPos()
-            event.accept()
-
-
-if __name__ == '__main__':
-    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
-    app = QApplication(sys.argv)
-    app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-    window = FramelessWindow()
-    window.show()
-    sys.exit(app.exec_())

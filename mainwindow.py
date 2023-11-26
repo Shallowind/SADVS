@@ -210,8 +210,8 @@ class MainWindow(QMainWindow):
         """)
         self.ui.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.ui.terminal.setStyleSheet("background-color: 000000")
-        sys.stdout = ConsoleRedirector(self, self.ui.terminal)
-        sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
+        # sys.stdout = ConsoleRedirector(self, self.ui.terminal)
+        # sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
         print()
 
         self.video_tree = []

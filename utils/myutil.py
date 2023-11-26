@@ -19,6 +19,8 @@ class Globals:
     yolov5_dict = {}
     apple_num =[]
     apple_xy = []
+    apple_mianji = []
+    apple_cs = []
 
 
 class ConsoleRedirector:
