@@ -214,6 +214,7 @@ class MainWindow(QMainWindow):
         # sys.stderr = ConsoleRedirector(self, self.ui.terminal, QColor(255, 0, 0))
         print()
 
+
         self.video_tree = []
         self.selected_folder = ""
         self.selected_path = ""
@@ -343,12 +344,14 @@ class MainWindow(QMainWindow):
             content = f.read()
         Globals.yolov5_dict = loads(content)
 
+    # 保存行为识别报告
     def stopIdentify(self):
         QMessageBox.information(self, "提示", "识别报告已保存到文件夹\nD:/VScode/motion-monitor-x/result")
         Globals.detection_run = False
         self.ui.start_identify.setEnabled(True)
         self.ui.stop_identify.setEnabled(False)
 
+    # 显示/关闭 终端
     def terminalcon(self):
         if self.ui.controlWidget.activity:
             self.ui.controlWidget.activity = False
@@ -356,6 +359,7 @@ class MainWindow(QMainWindow):
             self.ui.controlWidget.activity = True
         self.refresh_widgetlist()
 
+    # 显示/关闭 视频列表
     def listcon(self):
         if self.ui.original.activity:
             self.ui.original.activity = False
@@ -363,6 +367,7 @@ class MainWindow(QMainWindow):
             self.ui.original.activity = True
         self.refresh_widgetlist()
 
+    # 显示/关闭 工作区
     def workcon(self):
         if self.ui.works.activity:
             self.ui.works.activity = False
@@ -370,6 +375,7 @@ class MainWindow(QMainWindow):
             self.ui.works.activity = True
         self.refresh_widgetlist()
 
+    # 刷新视频列表/工作区/终端
     def refresh_widgetlist(self):
         if self.ui.original.activity:
             self.ui.original.setVisible(True)
@@ -460,6 +466,7 @@ class MainWindow(QMainWindow):
                     }
                 """)
 
+    # 显示软件使用信息
     def display_Use_Information(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -473,6 +480,7 @@ class MainWindow(QMainWindow):
         message_box.exec_()
         return
 
+    # 显示软件版本信息
     def display_Version_Information(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -486,6 +494,7 @@ class MainWindow(QMainWindow):
         message_box.exec_()
         return
 
+    # 显示模型简介
     def ModelView(self):
         message_box = QMessageBox()
         # 设置对话框的标题
@@ -500,6 +509,7 @@ class MainWindow(QMainWindow):
         message_box.exec_()
         return
 
+    # 改变默认视频文件、保存路径
     def changePath(self):
         try:
             with open('Default settings.txt', 'r', encoding='utf-8') as f:
@@ -511,19 +521,23 @@ class MainWindow(QMainWindow):
         except FileNotFoundError:
             print("文件不存在")
 
+    # 退出功能
     def Quit(self):
         del pyqt5.ui
 
+    # 启动自定义标签设置窗口
     def labelSetsSettings(self):
         self.labsettings_window = LabelsSettings(self)
         # self.settings_window.setWindowZOrder(Qt.TopMost)
         self.labsettings_window.ui.show()
+
 
     def saveCut(self):
         cut_thread = threading.Thread(target=self.cut_thread)
         cut_thread.daemon = True  # 主界面关闭时自动退出此线程
         cut_thread.start()
 
+    # 剪辑完成后的视频加入工作区
     def cut_completed(self):
         print("剪辑已完成！")
         result = QMessageBox.warning(self, "已完成", "剪辑已完成！\n是否加入工作区？", QMessageBox.Yes | QMessageBox.No,
@@ -546,6 +560,7 @@ class MainWindow(QMainWindow):
             item.setText(0, file_name)
             self.ui.work_list.addTopLevelItem(item)
 
+    # 剪辑视频线程
     def cut_thread(self):
         # folder_path = QFileDialog.getExistingDirectory()
         default_name = QFileInfo(self.selected_path).baseName()  # 获取文件名（不包括后缀）
@@ -569,6 +584,8 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(f"出现错误： {e}")
 
+
+    # 退出剪辑模式
     def exitMode(self):
         self.ui.cut_slider.setVisible(False)
         self.ui.cut_time.setVisible(False)
@@ -578,6 +595,7 @@ class MainWindow(QMainWindow):
         self.ui.save_cut.setVisible(False)
         self.ui.exit_mode.setVisible(False)
 
+    # 开始剪辑模式
     def cutMode(self):
         self.player.pause()
         self.ui.cut_slider.setVisible(True)
@@ -601,6 +619,7 @@ class MainWindow(QMainWindow):
         print(video_paths)
         return video_paths
 
+    # 获取文件夹上一个视频
     def prev_video(self):
         video_paths = self.get_video_files()
         if video_paths is None:
@@ -615,6 +634,7 @@ class MainWindow(QMainWindow):
         # 播放上一个视频
         self.playSelectedVideo(None, None, video_paths[index])
 
+    # 获取文件夹下一个视频
     def next_video(self):
         video_paths = self.get_video_files()
         if video_paths is None:
@@ -629,7 +649,7 @@ class MainWindow(QMainWindow):
         # 播放上一个视频
         self.playSelectedVideo(None, None, video_paths[index])
 
-    # 速度改变
+    # 倍速数值改变触发
     def speed_change(self):
         if self.ui.tabWidget.currentIndex() == 0:
             self.player.pause()
@@ -658,6 +678,7 @@ class MainWindow(QMainWindow):
                 self.player.pause()
                 self.ui.play_pause.setIcon(self.play_ico)
 
+    # 工作区右键菜单显示
     def worklist_show_context_menu(self, position):
         item = self.ui.work_list.itemAt(position)
         if item is None:
@@ -674,6 +695,7 @@ class MainWindow(QMainWindow):
         # 显示菜单
         menu.exec_(self.ui.work_list.mapToGlobal(position))
 
+    # 工作区文件重命名
     def worklist_rename(self, item):
         # 获取当前项的文本
         old_name = self.getFullPath(item)
@@ -686,6 +708,7 @@ class MainWindow(QMainWindow):
 
         item.setText(0, new_name)
 
+    # 工作区文件删除
     def worklist_delete(self, item):
         # 删除项
         if item.parent():
@@ -698,6 +721,7 @@ class MainWindow(QMainWindow):
             index = self.ui.work_list.indexOfTopLevelItem(item)
             self.ui.work_list.takeTopLevelItem(index)
 
+    # 显示文件夹和文件不同菜单
     def showContextMenu(self, position):
         item = self.ui.video_tree.itemAt(position)
         if item is not None:
@@ -710,6 +734,7 @@ class MainWindow(QMainWindow):
             # 在给定位置显示上下文菜单
             context_menu.exec_(self.ui.video_tree.mapToGlobal(position))
 
+    # 创建文件右键菜单
     def createFileMenu(self, item):
         context_menu = QMenu(self.ui.video_tree)
         context_menu.setStyleSheet("background-color: white")
@@ -728,6 +753,7 @@ class MainWindow(QMainWindow):
 
         return context_menu
 
+    # 创建文件夹右键菜单
     def createFolderMenu(self, item):
         context_menu = QMenu(self.ui.video_tree)
         context_menu.setStyleSheet("background-color: white")
@@ -749,22 +775,6 @@ class MainWindow(QMainWindow):
         action.triggered.connect(lambda: self.rename_file(item))
 
         return context_menu
-
-    def onContextMenuClick(self, item_text, item):
-        print(f"右键菜单项被点击: {item_text}")
-        selected_video_path = self.getFullPath(item)
-        current_folder_path = os.path.dirname(selected_video_path)
-        print(current_folder_path)
-        # self.rename_file(item, current_folder_path, selected_video_path, '777.txt')
-
-    def get_user_input(self, input):
-        root = Tk()
-        root.withdraw()  # 隐藏Tkinter根窗口
-        root.geometry("600x600")
-        # 弹出对话框并获取用户输入
-        user_input = simpledialog.askstring(input, "Please enter your input:")
-        # 处理用户输入
-        return user_input
 
     # 文件重命名
     def rename_file(self, item):
@@ -804,8 +814,8 @@ class MainWindow(QMainWindow):
         del item
         # self.ui.video_tree.remove(move_item)
         os.remove(file_path)
-        print("文件已成功删除！")
 
+    # 新建文件
     def create_file(self, item):
         filename = "new_file.txt"
         current_folder_path = self.getFullPath(item)
@@ -826,6 +836,7 @@ class MainWindow(QMainWindow):
 
         print("File created:", filename)
 
+    # 新建文件夹
     def create_folder(self, item):
         folder_name = 'wenjianjia'
         current_folder_path = self.getFullPath(item)
@@ -841,6 +852,7 @@ class MainWindow(QMainWindow):
         else:
             print("Folder already exists")
 
+    # 加入工作区
     def addWorkspace(self):
         selected_items = self.ui.video_tree.selectedItems()
         for item in selected_items:
@@ -854,6 +866,7 @@ class MainWindow(QMainWindow):
                     cloned_item.device = int(item.text(0))
                 self.ui.work_list.addTopLevelItem(cloned_item)
 
+    # 启动识别按钮点击
     def startIdentifyClicked(self):
         if self.settings_window is None:
             Globals.settings['saved'] = False
@@ -861,6 +874,7 @@ class MainWindow(QMainWindow):
             self.settings_window.ui.show()
             self.ui.setEnabled(False)  # 暂停主窗口活动
 
+    # 识别完成回复函数
     def startIdentifyThread(self):
         if Globals.settings['saved']:
             self.timer_cv.stop()
@@ -869,18 +883,23 @@ class MainWindow(QMainWindow):
             identify_thread.daemon = True  # 主界面关闭时自动退出此线程
             identify_thread.start()
 
+    # 启动模型开始识别
     def startIdentify(self):
+        # 开始识别
         Globals.detection_run = True
         self.ui.start_identify.setEnabled(False)
         self.ui.stop_identify.setEnabled(True)
+
         if self.selected_item.isCamera:
             if Globals.settings['model_select'] == 'yolov5':
+                # 使用yolov5模型进行相机检测
                 detect_yolov5.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                                   save_img=False, use_camera=True, show_window=self, classes=Globals.select_labels,
                                   max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
                                   iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
+                # 使用yolo_slowfast模型进行相机检测
                 detect.run(source=self.selected_item.device, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                            save_img=False, use_camera=True, show_window=self, select_labels=Globals.select_labels,
@@ -888,12 +907,14 @@ class MainWindow(QMainWindow):
                            iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
         else:
             if Globals.settings['model_select'] == 'yolov5':
+                # 使用yolov5模型进行图像检测
                 detect_yolov5.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                                   show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                                   save_img=True, show_window=self, classes=Globals.select_labels,
                                   max_det=int(Globals.settings['max_det']), conf_thres=Globals.settings['conf'],
                                   iou_thres=Globals.settings['iou'], line_thickness=Globals.settings['line_thickness'])
             elif Globals.settings['model_select'] == 'yolo_slowfast':
+                # 使用yolo_slowfast模型进行图像检测
                 detect.run(source=self.selected_item.path, weights=Globals.settings['pt_path'],
                            show_label=self.ui.camera_2, project=Globals.settings['save_path'],
                            save_img=True, show_window=self, select_labels=Globals.select_labels,
@@ -902,22 +923,29 @@ class MainWindow(QMainWindow):
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.ui.camera_2,
         # save_img=True, show_labellist=self.ui.action_list)
 
-    # 视频/设备切换时触发
+
+        # 视频/设备切换时触发
     def select_V_D(self):
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '视频列表':
             self.ui.player.setVisible(True)
             self.ui.camera.setVisible(False)
+
+            # 释放资源
             if self.capture is not None:
                 self.capture.release()
             self.timer_cv.stop()
             self.ui.video_tree.clear()
+
+            # 添加视频列表
             if self.selected_folder != "":
                 self.addFolderToTree(self.ui.video_tree, self.selected_folder)
         elif selected_option == '设备列表':
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
             self.ui.video_tree.clear()
+
+            # 添加设备列表
             if self.camera_id_list is not None:
                 for camera_id in self.camera_id_list:
                     item = QTreeWidgetItem(self.ui.video_tree)
@@ -925,30 +953,43 @@ class MainWindow(QMainWindow):
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
-    # 初始化检测摄像头线程
+
+        # 初始化检测摄像头线程
     def initialize_camera(self):
+        # 初始化pygame摄像头模块
         pygame.camera.init()
+        # 获取摄像头列表
         self.camera_id_list = pygame.camera.list_cameras()
         print("检测到设备：" + str(self.camera_id_list))
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '设备列表':
+            # 隐藏播放器、显示摄像头
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
+            # 清空视频树的显示内容
             self.ui.video_tree.clear()
             if self.camera_id_list is not None:
+                # 遍历摄像头列表
                 for camera_id in self.camera_id_list:
+                    # 创建新的树项
                     item = QTreeWidgetItem(self.ui.video_tree)
+                    # 设置该项为摄像头标志
                     item.isCamera = True
+                    # 设置该项的文本为摄像头，ID图标为摄像头图标
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
+
     # 文件树展开时调用
     def loadSubtree(self, item):
+        # 调整视频树的第一列大小为自适应
         self.ui.video_tree.resizeColumnToContents(0)
         selected_video_path = self.getFullPath(item)
+        # 为选中的文件夹项设置自定义角色数据为True
         item.setData(0, Qt.UserRole, True)
         self._addFilesToTree(item, selected_video_path, 0)
 
+    # 打开视频文件夹
     def openVideoFolder(self, path=""):
         # 选择文件夹
         print(path)
@@ -963,6 +1004,7 @@ class MainWindow(QMainWindow):
             self.addFolderToTree(self.ui.video_tree, folder_path)
         self.path = folder_path
 
+    # 文件数增加结点
     def addFolderToTree(self, tree_widget, folder_path):
         # 创建根节点
         root_item = QTreeWidgetItem(tree_widget)
@@ -971,6 +1013,7 @@ class MainWindow(QMainWindow):
         icon = QIcon("resources/folder_ico.ico")
         root_item.setIcon(0, icon)
         self._addFilesToTree(root_item, folder_path, 0)
+
 
     # 递归文件夹和文件，加入到文件树里
     def _addFilesToTree(self, parent_item, folder_path, deep):
@@ -1019,6 +1062,7 @@ class MainWindow(QMainWindow):
                 del dirs[:]
 
     def load_frame_dict(self, frame_path=None):
+        # 如果frame_path为空，则返回预设字典
         if not frame_path:
             return {
                 2: [("talk", 0.9), ("stand", 0.8)],
@@ -1026,10 +1070,13 @@ class MainWindow(QMainWindow):
             }
         else:
             frame_dict = {}
+            # 遍历frame_path的键值对，将键转换为浮点数后添加到frame_dict中
             for k in frame_path:
                 frame_dict[float(k)] = frame_path[k]
             return frame_dict
 
+
+    # 视频流数据判断
     def CameraVideo(self, item):
         selected_option = self.ui.v_d_comboBox.currentText()
         if selected_option == '视频列表':
@@ -1043,31 +1090,39 @@ class MainWindow(QMainWindow):
             self.capture = cv2.VideoCapture(int(item.text(0)))
             self.timer_cv.start()
 
+    # 预览工作区列表项
     def WorkListPreview(self, item):
         self.selected_item = item
         self.ui.start_identify.setEnabled(True)
         self.ui.start_identify.setEnabled(True)
         if item.isCamera:
+            # 如果项目是摄像头
             self.ui.player.setVisible(False)
             self.ui.camera.setVisible(True)
             self.capture = cv2.VideoCapture(0)
+            # 初始化摄像头捕捉对象
             self.timer_cv.start()
+            # 启动定时器
         else:
+            # 播放选定的视频，带声音
             self.playSelectedVideo(item, True)
             self.ui.player.setVisible(True)
             self.ui.camera.setVisible(False)
 
+    # 从OpenCV捕获摄像头获取一帧图像
     def updateFrame(self):
-        # 从OpenCV捕获摄像头获取一帧图像
         flag, image = self.capture.read()
         show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        # 将图像转换为QImage对象
         showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
         label = self.ui.camera
+        # 根据当前选中的选项卡索引调整标签
         if self.ui.tabWidget.currentIndex() == 0:
             label = self.ui.camera
         elif self.ui.tabWidget.currentIndex() == 1:
             label = self.ui.camera_2
         label_size = label.size()
+        # 缩小尺寸并保持宽高比
         label_size.setWidth(label_size.width() - 10)
         label_size.setHeight(label_size.height() - 10)
         scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
@@ -1075,6 +1130,8 @@ class MainWindow(QMainWindow):
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
 
+
+    # 播放选中视频
     def playSelectedVideo(self, item, isworklist, path=''):
         if self.capture is not None:
             self.capture.release()
@@ -1230,27 +1287,36 @@ class MainWindow(QMainWindow):
             # 处理异常情况
             self.ui.video_info.setPlainText(f"获取视频信息时发生错误: {str(e)}")
 
-    # 单位转换
+        # 单位转换
     def convert_bytes_to_readable(self, size_in_bytes):
         units = ["B", "KB", "MB", "GB", "TB"]
         unit_index = 0
+        # 初始化待转换的字节数
         size = size_in_bytes
+        # 循环条件为 size大于等于1024且单位索引小于单位列表长度减1
         while size >= 1024 and unit_index < len(units) - 1:
             size /= 1024
             unit_index += 1
         formatted_size = "{:.2f}".format(size)
+        # 返回格式化后的结果，包括单位
         return f"{formatted_size} {units[unit_index]}"
+
 
     # 视频实时位置获取
     def getPosition(self):
+        # 判断当前点击的选项卡索引
         if self.ui.tabWidget.currentIndex() == 0:
+            # 获取当前视频播放器的位置
             p = self.player.position()
+            # 更新视频滑块的值
             self.ui.video_slider.setValue(p)
+            # 在界面上显示时间
             self.displayTime(p)
         elif self.ui.tabWidget.currentIndex() == 1:
             p = self.player_2.position()
             self.ui.video_slider_2.setValue(p)
             self.displayTime(p)
+
 
     # 显示剩余时间
     def displayTime(self, ms):
@@ -1335,6 +1401,7 @@ class MainWindow(QMainWindow):
                         self.ui.search_result.addItem(f"时间：{t} 动作：{order}-{action_list[order]}")
             # self.ui.item_search.setText("")
 
+    # 绘制折线图
     def drawLineChart(self):
         # 如果全局变量 Globals.dict_text 为空，则返回
         if not Globals.dict_text:
@@ -1417,6 +1484,7 @@ class MainWindow(QMainWindow):
         # 重新绘制画布
         self.canvas.draw()
 
+    # 绘制饼图
     def drawPieChart(self):
         # 如果全局变量 Globals.dict_text 为空，则返回
         if not Globals.dict_text:
@@ -1467,11 +1535,14 @@ class MainWindow(QMainWindow):
         self.canvas2.draw()
 
     def tabChanged(self):
+        # 检查是否需要暂停播放器
         self.player.pause()
+        # 停止计时器
         self.timer_cv.stop()
+        # 检查是否已经捕获了视频流
         if self.capture is not None:
+            # 释放视频流捕获
             self.capture.release()
-
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
