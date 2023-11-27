@@ -17,10 +17,6 @@ class Globals:
     detection_run = False
     yolo_slowfast_dict = {}
     yolov5_dict = {}
-    apple_num =[]
-    apple_xy = []
-    apple_mianji = []
-    apple_cs = []
 
 
 class ConsoleRedirector:
