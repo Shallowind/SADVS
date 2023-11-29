@@ -3,10 +3,10 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 def calculate_apple_maturity(image,x1,y1,x2,y2):
-
+    # 切割识别框以便获得苹果信息
     image = image[y1:y2, x1:x2]
 
-
+    # 计算苹果面积
     radius = min(image.shape[0]/2, image.shape[1]/2)
     mianji = math.pi * radius ** 2
     # 将图像转换为HSV颜色空间

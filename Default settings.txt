@@ -1,1 +1,1 @@
-{"video_path": "F:/sm/Attachment/Attachment/0", "save_path": "F:/motion-monitor-x/result", "pt_path": "F:/motion-monitor-x/weights/yolov5s.pt", "model_select": "yolov5", "labels": "yolov5", "max_det": "20", "conf": 0.04, "iou": 0.7, "line_thickness": 2}
+{"video_path": "F:/motion-monitor-x", "save_path": "F:/motion-monitor-x/result", "pt_path": "F:/motion-monitor-x/weights/yolov5s.pt", "model_select": "yolo_slowfast", "labels": "yolo_slowfast", "max_det": "20", "conf": 0.04, "iou": 0.7, "line_thickness": 2}
