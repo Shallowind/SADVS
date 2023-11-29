@@ -2,6 +2,7 @@ import argparse
 import os
 import platform
 import sys
+import math
 from pathlib import Path
 import torch
 from PyQt5 import QtGui
@@ -15,7 +16,6 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
 from utils.myutil import Globals
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
-
 
 @smart_inference_mode()
 def run(
@@ -74,6 +74,7 @@ def run(
     # Run inference
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+
     for path, im, im0s, vid_cap, s in dataset:
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -95,6 +96,7 @@ def run(
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
 
         # Process predictions
+
         for i, det in enumerate(pred):  # per image
             seen += 1
             if webcam:  # batch_size >= 1
@@ -115,17 +117,16 @@ def run(
                     n = (det[:, 5] == c).sum()  # detections per class
                     n_value += int(n.item())
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
-                Globals.apple_num.append(n_value)
+
+                with open("F:/sm/111.txt", "a") as file:
+                        file.write(str(n_value) + "\n")
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
                     name = Globals.yolov5_dict[names[c]]
                     label = None if hide_labels else (name if hide_conf else f'{name} {conf:.2f}')
                     annotator.box_label(xyxy, label, color=colors(c, True))
-                    Globals.apple_xy.append(((int(xyxy[0].item()) + int(xyxy[2].item())) / 2,
-                                             (int(xyxy[1].item()) + int(xyxy[3].item())) / 2))
-            else:
-                Globals.apple_num.append(0)
+
             # Stream results
             im0 = annotator.result()
             im1 = im0.astype("uint8")

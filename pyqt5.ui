@@ -217,7 +217,7 @@ QPushButton:pressed {
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item row="0" column="1">
+           <item row="0" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,5">
              <item>
               <widget class="QWidget" name="widget_list" native="true">
@@ -1076,6 +1076,7 @@ QPushButton:pressed {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -1088,6 +1089,7 @@ QPushButton:pressed {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -1100,6 +1102,7 @@ QPushButton:pressed {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -1125,6 +1128,7 @@ QPushButton:pressed {
                             <property name="font">
                              <font>
                               <family>微软雅黑</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="currentIndex">
@@ -1207,6 +1211,7 @@ QSlider::handle:horizontal:disabled {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -1219,6 +1224,7 @@ QSlider::handle:horizontal:disabled {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -1231,6 +1237,7 @@ QSlider::handle:horizontal:disabled {
                             <property name="font">
                              <font>
                               <family>小米兰亭</family>
+                              <pointsize>12</pointsize>
                              </font>
                             </property>
                             <property name="text">
@@ -2890,7 +2897,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
@@ -2916,6 +2923,9 @@ QPushButton:pressed {
      <string>设备管理</string>
     </property>
     <addaction name="action"/>
+    <addaction name="action_2"/>
+    <addaction name="action_3"/>
+    <addaction name="action_4"/>
    </widget>
    <widget class="QMenu" name="model_manager">
     <property name="font">
@@ -2936,15 +2946,9 @@ QPushButton:pressed {
     <addaction name="Use_Information"/>
     <addaction name="Version_Information"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>异常设置</string>
-    </property>
-   </widget>
    <addaction name="system_set"/>
    <addaction name="device_manager"/>
    <addaction name="model_manager"/>
-   <addaction name="menu_2"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -3005,6 +3009,26 @@ QPushButton:pressed {
   <action name="Version_Information">
    <property name="text">
     <string>版本信息</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>删除设备</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>禁用设备</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>设备参数</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>警告模式设置</string>
    </property>
   </action>
  </widget>
