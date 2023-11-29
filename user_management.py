@@ -1,12 +1,10 @@
 import sqlite3
 import sys
-
 import qdarkstyle
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QBitmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.uic import loadUi
-
 
 def dict_factory(cursor, row):
     """

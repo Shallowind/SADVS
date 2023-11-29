@@ -28,15 +28,27 @@ class LabelsSettings(QWidget):
         self.translations = {}
         self.full_buttons = []
 
+        # 隐藏ui.open元素
         self.ui.open.setVisible(False)
+        # 隐藏ui.pushButton元素
         self.ui.pushButton.setVisible(False)
+        # 隐藏ui.fan元素
+        self.ui.fan.setVisible(False)
+        # 点击ui.pushButton_2时触发save函数
         self.ui.pushButton_2.clicked.connect(self.save)
+        # 选择不同标签集
         self.ui.sets_list.itemClicked.connect(self.select)
-        self.ui.models_list.itemClicked.connect(self.visit_sets)
-        self.ui.pushButton.clicked.connect(self.displays_selection)
-        self.ui.delete_2.clicked.connect(self.on_delete_clicked)
+        # 选择模型
         self.ui.open.clicked.connect(self.on_open_clicked)
+        self.ui.models_list.itemClicked.connect(self.visit_sets)
+        # 显示所选标签
+        self.ui.pushButton.clicked.connect(self.displays_selection)
+        # 删除标签集
+        self.ui.delete_2.clicked.connect(self.on_delete_clicked)
+
+        # 反选标签集
         self.ui.fan.clicked.connect(self.on_fan_clicked)
+
         # 设置顶部显示
         self.ui.labels_part_2.setAlignment(Qt.AlignTop)
 
@@ -46,6 +58,7 @@ class LabelsSettings(QWidget):
 
         self.modellist()
 
+    # 反选功能
     def on_fan_clicked(self):
         if self.checkboxes is None:
             return
@@ -55,13 +68,19 @@ class LabelsSettings(QWidget):
             else:
                 checkbox.setChecked(True)
 
+
     def visit_sets(self, item):
+        # 获取脚本的绝对目录路径
         script_directory = os.path.dirname(os.path.abspath(__file__))
-        # labels文件夹的路径
+        # 设置FullCollection_path为	labels文件夹的路径，通过拼接script_directory、'labels'和item的文本内容得到
         self.FullCollection_path = os.path.join(script_directory, 'labels', item.text())
+        # 设置反选按钮不可见
+        self.ui.fan.setVisible(False)
+        # 如果FullCollection_path存在，则打开文件
         if self.FullCollection_path:
             self.open_file()
 
+    # 显示所有识别模型
     def modellist(self):
         # 清空 listwidget，以便重新加载文件夹名
         self.ui.models_list.clear()
@@ -84,6 +103,7 @@ class LabelsSettings(QWidget):
         else:
             print("labels文件夹不存在或者不是一个文件夹")
 
+    # 文件重命名
     def rename(self, item, old_name):
         new_name = os.path.join(self.FullCollection_path, item.text() + '.pbtxt')
         item.setData(Qt.UserRole, new_name)
@@ -95,6 +115,7 @@ class LabelsSettings(QWidget):
             except OSError as e:
                 return
 
+    # 重命名标签集
     def rename_file(self):
         item = self.ui.sets_list.currentItem()  # 获取当前选中的项目
 
@@ -105,21 +126,24 @@ class LabelsSettings(QWidget):
                 QMessageBox.warning(self, "警告", "不能对此标签集进行重命名")
                 return
 
-
         old_name = item.data(Qt.UserRole)  # 获取该项目的旧名称
         # 将该项目设为可编辑状态并开始编辑
         item.setFlags(item.flags() | Qt.ItemIsEditable)
         self.ui.sets_list.editItem(item)
 
+        # 连接itemChanged信号到lambda函数，实现项目重命名
         self.ui.sets_list.itemChanged.connect(lambda item: self.rename(item, old_name))
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
-    def on_open_clicked(self):
-        self.FullCollection_path = None
-        self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
-        if self.FullCollection_path:
-            self.open_file()
 
+    def on_open_clicked(self):
+        self.FullCollection_path = None  # 重置全集路径为None
+        self.FullCollection_path = QtWidgets.QFileDialog.getExistingDirectory(self, "选择权重标签子集", "labels")
+        if self.FullCollection_path:  # 如果路径存在
+            self.open_file()  # 调用open_file()方法打开文件
+
+
+    # 加载模型
     def open_file(self):
         # 清空list
         self.translations = {}
@@ -151,68 +175,77 @@ class LabelsSettings(QWidget):
             item.setData(Qt.UserRole, file_path)
             self.ui.sets_list.addItem(item)
 
+    # 右键菜单
     def show_context_menu(self, position):
         item = self.ui.sets_list.itemAt(position)
+
         if item is not None:
             menu = QMenu(self.ui.sets_list)
-
+            # 重命名
             action = QAction("重命名", menu)
             action.triggered.connect(self.rename_file)
             menu.addAction(action)
-
+            # 新建
             action = QAction("新建", menu)
             action.triggered.connect(self.save)
             menu.addAction(action)
-
+            # 删除
             action = QAction("删除", menu)
             action.triggered.connect(self.on_delete_clicked)
             menu.addAction(action)
-
+            # 显示菜单
             menu.exec_(self.ui.sets_list.mapToGlobal(position))
 
+    # 删除标签集
     def on_delete_clicked(self):
-        selected_item = self.ui.sets_list.currentItem()
+        selected_item = self.ui.sets_list.currentItem()  # 获取当前选中的项
         if selected_item:
-            # 如果文件名与标签集名相同不可删除
-            filename, extension = os.path.splitext(os.path.basename(selected_item.data(Qt.UserRole)))
-            if os.path.basename(self.FullCollection_path) == filename:
-                QMessageBox.warning(self, "警告", "不能删除此标签集")
-                return
+            filename, extension = os.path.splitext(os.path.basename(selected_item.data(Qt.UserRole)))  # 获取文件名和扩展名
+            if os.path.basename(self.FullCollection_path) == filename:  # 判断文件名是否与标签集名相同
+                QMessageBox.warning(self, "警告", "不能删除此标签集")  # 显示警告提示框，提示不能删除此标签集
+                return  # 返回
 
-        if selected_item:
-            row = self.ui.sets_list.row(selected_item)
-            self.buttons = []
-            self.checkboxes = []
-            self.checkboxes_data = {}
-            while self.ui.labels_part_2.count():
-                item = self.ui.labels_part_2.takeAt(0)
-                widget = item.widget()
-                if widget is not None:
-                    widget.deleteLater()
-            item = self.ui.sets_list.takeItem(row)
-            del item
-            os.remove(selected_item.data(Qt.UserRole))
+        if selected_item:  # 如果有选中的项
+            row = self.ui.sets_list.row(selected_item)  # 获取选中项所在的行
+            self.buttons = []  # 初始化按钮列表
+            self.checkboxes = []  # 初始化复选框列表
+            self.checkboxes_data = {}  # 初始化复选框数据字典
+            while self.ui.labels_part_2.count():  # 如果labels_part_2控件中的项数大于0
+                item = self.ui.labels_part_2.takeAt(0)  # 获取第一个项
+                widget = item.widget()  # 获取项对应的控件
+                if widget is not None:  # 如果控件存在
+                    widget.deleteLater()  # 删除控件
+            item = self.ui.sets_list.takeItem(row)  # 删除指定行的项
+            del item  # 删除项对象
+            os.remove(selected_item.data(Qt.UserRole))  # 删除指定文件
 
+    # 新建标签实现
     def save(self):
         base = "新建标签子集"
         path = os.path.join(self.FullCollection_path, base + '.pbtxt')
         with open(path, "w", encoding="utf-8") as f:
+            # 遍历self.checkboxes中的每个checkbox
             for checkbox in self.checkboxes:
-                item = self.checkboxes_data[checkbox.text()]
+                # 如果checkbox被选中
                 if checkbox.isChecked():
+                    # 从self.checkboxes_data中获取checkbox.text()对应的数据，存储到item变量中
                     item = self.checkboxes_data[checkbox.text()]
+                    # 将item的名称部分用双引号包裹起来，作为item的name属性值，写入到文件f中
                     f.write(f"item {{\n  name: \"{item[1]}\"\n  id: {item[0]}\n}}\n")
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, path)
             if self.ui.sets_list.findItems(base, Qt.MatchExactly) != []:
+                # 将base对应的项从self.ui.sets_list中取出，并将其存储到item中
                 item = self.ui.sets_list.takeItem(self.ui.sets_list.row(item))
+            # 将item添加到self.ui.sets_list中
             self.ui.sets_list.addItem(item)
 
+    # 显示选中标签
     def displays_selection(self):
         for checkbox in self.checkboxes:
             if checkbox.isChecked():
-                print('选中的复选框：', checkbox.text())
+                print('选中的标签：', checkbox.text())
                 print(self.checkboxes_data[checkbox.text()])
 
     # 选择标签子集并显示
@@ -233,6 +266,7 @@ class LabelsSettings(QWidget):
             label_map, self.id = self.read_label_map(selected_item.data(Qt.UserRole))
             self.buttons = self.create_buttons(label_map)
             self.display_checkboxes(self.buttons)
+            self.ui.fan.setVisible(True)
 
     # 字典转按钮
     def create_buttons(self, dictionary):
@@ -261,7 +295,6 @@ class LabelsSettings(QWidget):
             self.ui.labels_part_2.addWidget(checkbox)
             self.checkboxes.append(checkbox)
 
-
     # 新建标签子集
     def save_to_file(self, button_data_list):
         with open("button_data.pbtxt", "w", encoding="utf-8") as f:
@@ -282,6 +315,7 @@ class LabelsSettings(QWidget):
                     class_id = int(line.strip().split(" ")[-1])
                     label_map[class_id] = name
                     class_ids.add(class_id)
+        # 返回字典映射和标签编号
         return label_map, class_ids
 
 
