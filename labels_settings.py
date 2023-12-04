@@ -2,23 +2,25 @@ import sys
 import os
 from json import loads
 import qdarkstyle
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCheckBox, QListWidgetItem, QMenu, QAction, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QCheckBox, QListWidgetItem, QMenu, QAction, QMessageBox, \
+    QMainWindow
 from PyQt5 import uic, QtWidgets
 from PyQt5.QtCore import Qt
 from qdarkstyle import LightPalette
-
+from labels_settings_ui import Ui_labels_settings
 from utils.myutil import Globals
 
-class LabelsSettings(QWidget):
+
+class LabelsSettings(Ui_labels_settings, QMainWindow):
     def __init__(self, modelset):
         super().__init__()
         self.modelset = modelset
-        self.ui = uic.loadUi("labels_settings.ui")
-        self.ui.resize(1000, 600)
-        self.ui.setWindowTitle("标签设置")
-        self.ui.show()  # 显示窗口
-        self.ui.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
-        # self.ui.closeEvent = self.closeEvent
+        self.setupUi(self)
+        self.resize(1000, 600)
+        self.setWindowTitle("标签设置")
+        self.show()  # 显示窗口
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+        # self.closeEvent = self.closeEvent
 
         self.buttons = []
         self.checkboxes = []
@@ -28,21 +30,21 @@ class LabelsSettings(QWidget):
         self.translations = {}
         self.full_buttons = []
 
-        self.ui.open.setVisible(False)
-        self.ui.pushButton.setVisible(False)
-        self.ui.pushButton_2.clicked.connect(self.save)
-        self.ui.sets_list.itemClicked.connect(self.select)
-        self.ui.models_list.itemClicked.connect(self.visit_sets)
-        self.ui.pushButton.clicked.connect(self.displays_selection)
-        self.ui.delete_2.clicked.connect(self.on_delete_clicked)
-        self.ui.open.clicked.connect(self.on_open_clicked)
-        self.ui.fan.clicked.connect(self.on_fan_clicked)
+        self.open.setVisible(False)
+        self.pushButton.setVisible(False)
+        self.pushButton_2.clicked.connect(self.save)
+        self.sets_list.itemClicked.connect(self.select)
+        self.models_list.itemClicked.connect(self.visit_sets)
+        self.pushButton.clicked.connect(self.displays_selection)
+        self.delete_2.clicked.connect(self.on_delete_clicked)
+        self.open.clicked.connect(self.on_open_clicked)
+        self.fan.clicked.connect(self.on_fan_clicked)
         # 设置顶部显示
-        self.ui.labels_part_2.setAlignment(Qt.AlignTop)
+        self.labels_part_2.setAlignment(Qt.AlignTop)
 
         # 右键菜单栏
-        self.ui.sets_list.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.sets_list.customContextMenuRequested.connect(self.show_context_menu)
+        self.sets_list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.sets_list.customContextMenuRequested.connect(self.show_context_menu)
 
         self.modellist()
 
@@ -64,7 +66,7 @@ class LabelsSettings(QWidget):
 
     def modellist(self):
         # 清空 listwidget，以便重新加载文件夹名
-        self.ui.models_list.clear()
+        self.models_list.clear()
 
         # 获取当前脚本所在目录的路径
         script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -80,7 +82,7 @@ class LabelsSettings(QWidget):
                 folder_path = os.path.join(labels_directory, folder_name)
                 if os.path.isdir(folder_path):
                     # 将文件夹名添加到listwidget
-                    self.ui.models_list.addItem(folder_name)
+                    self.models_list.addItem(folder_name)
         else:
             print("labels文件夹不存在或者不是一个文件夹")
 
@@ -96,7 +98,7 @@ class LabelsSettings(QWidget):
                 return
 
     def rename_file(self):
-        item = self.ui.sets_list.currentItem()  # 获取当前选中的项目
+        item = self.sets_list.currentItem()  # 获取当前选中的项目
 
         if item:
             # 如果文件名与标签集名相同不可删除
@@ -105,13 +107,12 @@ class LabelsSettings(QWidget):
                 QMessageBox.warning(self, "警告", "不能对此标签集进行重命名")
                 return
 
-
         old_name = item.data(Qt.UserRole)  # 获取该项目的旧名称
         # 将该项目设为可编辑状态并开始编辑
         item.setFlags(item.flags() | Qt.ItemIsEditable)
-        self.ui.sets_list.editItem(item)
+        self.sets_list.editItem(item)
 
-        self.ui.sets_list.itemChanged.connect(lambda item: self.rename(item, old_name))
+        self.sets_list.itemChanged.connect(lambda item: self.rename(item, old_name))
         item.setFlags(item.flags() & ~Qt.ItemIsEditable)
 
     def on_open_clicked(self):
@@ -123,10 +124,10 @@ class LabelsSettings(QWidget):
     def open_file(self):
         # 清空list
         self.translations = {}
-        self.ui.sets_list.clear()
+        self.sets_list.clear()
         # 清空工作区
-        while self.ui.labels_part_2.count():
-            item = self.ui.labels_part_2.takeAt(0)
+        while self.labels_part_2.count():
+            item = self.labels_part_2.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
@@ -149,12 +150,12 @@ class LabelsSettings(QWidget):
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, file_path)
-            self.ui.sets_list.addItem(item)
+            self.sets_list.addItem(item)
 
     def show_context_menu(self, position):
-        item = self.ui.sets_list.itemAt(position)
+        item = self.sets_list.itemAt(position)
         if item is not None:
-            menu = QMenu(self.ui.sets_list)
+            menu = QMenu(self.sets_list)
 
             action = QAction("重命名", menu)
             action.triggered.connect(self.rename_file)
@@ -168,10 +169,10 @@ class LabelsSettings(QWidget):
             action.triggered.connect(self.on_delete_clicked)
             menu.addAction(action)
 
-            menu.exec_(self.ui.sets_list.mapToGlobal(position))
+            menu.exec_(self.sets_list.mapToGlobal(position))
 
     def on_delete_clicked(self):
-        selected_item = self.ui.sets_list.currentItem()
+        selected_item = self.sets_list.currentItem()
         if selected_item:
             # 如果文件名与标签集名相同不可删除
             filename, extension = os.path.splitext(os.path.basename(selected_item.data(Qt.UserRole)))
@@ -180,16 +181,16 @@ class LabelsSettings(QWidget):
                 return
 
         if selected_item:
-            row = self.ui.sets_list.row(selected_item)
+            row = self.sets_list.row(selected_item)
             self.buttons = []
             self.checkboxes = []
             self.checkboxes_data = {}
-            while self.ui.labels_part_2.count():
-                item = self.ui.labels_part_2.takeAt(0)
+            while self.labels_part_2.count():
+                item = self.labels_part_2.takeAt(0)
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
-            item = self.ui.sets_list.takeItem(row)
+            item = self.sets_list.takeItem(row)
             del item
             os.remove(selected_item.data(Qt.UserRole))
 
@@ -205,9 +206,9 @@ class LabelsSettings(QWidget):
 
             item = QListWidgetItem(base)
             item.setData(Qt.UserRole, path)
-            if self.ui.sets_list.findItems(base, Qt.MatchExactly) != []:
-                item = self.ui.sets_list.takeItem(self.ui.sets_list.row(item))
-            self.ui.sets_list.addItem(item)
+            if self.sets_list.findItems(base, Qt.MatchExactly) != []:
+                item = self.sets_list.takeItem(self.sets_list.row(item))
+            self.sets_list.addItem(item)
 
     def displays_selection(self):
         for checkbox in self.checkboxes:
@@ -217,15 +218,15 @@ class LabelsSettings(QWidget):
 
     # 选择标签子集并显示
     def select(self):
-        selected_item = self.ui.sets_list.currentItem()
+        selected_item = self.sets_list.currentItem()
         if selected_item:
             # 清空工作区
             self.id = []
             self.buttons = []
             self.checkboxes = []
             self.checkboxes_data = {}
-            while self.ui.labels_part_2.count():
-                item = self.ui.labels_part_2.takeAt(0)
+            while self.labels_part_2.count():
+                item = self.labels_part_2.takeAt(0)
                 widget = item.widget()
                 if widget is not None:
                     widget.deleteLater()
@@ -258,9 +259,8 @@ class LabelsSettings(QWidget):
                 checkbox.setChecked(False)
 
             self.checkboxes_data[checkbox_name] = button.data
-            self.ui.labels_part_2.addWidget(checkbox)
+            self.labels_part_2.addWidget(checkbox)
             self.checkboxes.append(checkbox)
-
 
     # 新建标签子集
     def save_to_file(self, button_data_list):
