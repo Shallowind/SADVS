@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPainter, QBitmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.uic import loadUi
+from user_management_ui import Ui_user_management
 
 
 def dict_factory(cursor, row):
@@ -18,13 +19,13 @@ def dict_factory(cursor, row):
     return d
 
 
-class User_management(QMainWindow):
+class User_management(Ui_user_management,QMainWindow):
     def __init__(self):
         super(User_management, self).__init__()
 
         # 加载UI文件
         self.dragPos = None
-        loadUi('user_management.ui', self)
+        self.setupUi(self)
 
         # 设置窗口标志，去掉窗口边框
         self.setWindowFlags(Qt.FramelessWindowHint)

@@ -111,15 +111,12 @@ def run(
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-                n_value = 0
+
                 # Print results
                 for c in det[:, 5].unique():
                     n = (det[:, 5] == c).sum()  # detections per class
-                    n_value += int(n.item())
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
-                with open("F:/sm/111.txt", "a") as file:
-                        file.write(str(n_value) + "\n")
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
