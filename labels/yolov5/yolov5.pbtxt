@@ -11,11 +11,11 @@ item {
   id: 2  
 }  
 item {  
-  name: "motorbike"  
+  name: "motorcycle"  
   id: 3  
 }  
 item {  
-  name: "aeroplane"  
+  name: "airplane"  
   id: 4  
 }  
 item {  
@@ -231,7 +231,7 @@ item {
   id: 57  
 }  
 item {  
-  name: "pottedplant"  
+  name: "potted plant"  
   id: 58  
 }  
 item {  
@@ -239,7 +239,7 @@ item {
   id: 59  
 }
 item {  
-  name: "diningtable"  
+  name: "dining table"  
   id: 60  
 }  
 item {  
@@ -247,7 +247,7 @@ item {
   id: 61  
 }  
 item {  
-  name: "tvmonitor"  
+  name: "tv"  
   id: 62  
 }  
 item {  

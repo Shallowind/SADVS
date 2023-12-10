@@ -52,9 +52,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.signal.connect(self.cut_completed)
         # 播放器
         self.vdplayer = Video()
-        self.vdplayer.setVideoOutput(self.player, self.video_slider)
-        self.vdplayer_2 = QMediaPlayer()
-        self.vdplayer_2.setVideoOutput(self.player_2)
+        self.vdplayer.setVideoOutput(self.player, self.video_slider, self.video_time, self.cut_time)
+        self.vdplayer_2 = Video()
+        self.vdplayer_2.setVideoOutput(self.camera_2, self.video_slider_2, self.video_time_2)
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -568,11 +568,14 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         target, fileType = QFileDialog.getSaveFileName(self, "保存文件", default_name, f"*.{default_extension}")
         source = self.selected_path.strip()
         target = target.strip()
-        start_time_ms = self.lopo  # 获取开始剪切时间（毫秒）
-        stop_time_ms = self.hipo  # 获取剪切的结束时间（毫秒）
+        # 获得视频时长
+        all_seconds = self.vdplayer.player.get(cv2.CAP_PROP_FRAME_COUNT) / self.vdplayer.player.get(cv2.CAP_PROP_FPS)
 
-        start_time_sec = start_time_ms / 1000.0
-        stop_time_sec = stop_time_ms / 1000.0
+        start_time_sec = self.lopo / 100 * all_seconds   # 获取开始剪切时间（毫秒）
+        stop_time_sec = self.hipo / 100 * all_seconds # 获取剪切的结束时间（毫秒）
+
+        print(f"开始剪切时间：{start_time_sec}")
+        print(f"结束剪切时间：{stop_time_sec}")
         try:
             print("剪辑进行中，请耐心等待...")
             video = VideoFileClip(source)  # 视频文件加载
@@ -597,6 +600,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     # 开始剪辑模式
     def cutMode(self):
         self.vdplayer.pause()
+        self.play_pause.setIcon(self.play_ico)
         self.cut_slider.setVisible(True)
         self.cut_time.setVisible(True)
         self.label_2.setVisible(True)
@@ -660,15 +664,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.tabWidget.currentIndex() == 0:
             if low_value != self.lopo:
                 self.lopo = low_value
-                self.speed_play(self.vdplayer)
                 self.vdplayer.setPosition(low_value)
-                self.vdplayer.pause()
+                # self.vdplayer.play()
+                # self.speed_play(self.vdplayer)
+                # self.vdplayer.pause()
                 self.play_pause.setIcon(self.play_ico)
             elif high_value != self.hipo:
                 self.hipo = high_value
-                self.speed_play(self.vdplayer)
                 self.vdplayer.setPosition(high_value)
-                self.vdplayer.pause()
+                # self.vdplayer.play()
+                # self.speed_play(self.vdplayer)
+                # self.vdplayer.pause()
                 self.play_pause.setIcon(self.play_ico)
 
     # 工作区右键菜单显示
@@ -1161,6 +1167,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             play_pause = self.play_pause
             if os.path.isfile(selected_video_path) and file_extension:
                 player.setMedia(selected_video_path)
+                self.getVideoinfo(selected_video_path)
                 # player.setMedia(QMediaContent(QUrl.fromLocalFile(selected_video_path)))
                 # 根据文件后缀选择不同处理方式
                 if file_extension == ".avi" or file_extension == ".mp4":
@@ -1177,13 +1184,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 else:
                     self.cut_mode.setEnabled(False)
                     play_pause.setEnabled(False)
-                self.getVideoinfo(selected_video_path)
+
         elif self.tabWidget.currentIndex() == 1:
             video_path = selected_video_path
-            cap = cv2.VideoCapture(video_path)
-            if cap.isOpened():
+            self.vdplayer_2.setMedia(video_path)
+            if self.vdplayer_2.player.isOpened():
                 # 读取第一帧
-                flag, image = cap.read()
+                flag, image = self.vdplayer_2.player.read()
                 if flag:
                     show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                     showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
@@ -1194,9 +1201,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     pixmap = QPixmap.fromImage(scaled_image)
                     self.camera_2.setPixmap(pixmap)
                     self.camera_2.setAlignment(Qt.AlignCenter)
-            cap.release()
-            player = self.vdplayer_2
-
+            else:
+                self.vdplayer_2.play()
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
         path_components = [item.text(0)]
@@ -1208,20 +1214,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 将路径组件连接起来
         full_path = os.path.join(self.selected_folder, *path_components)
         return full_path
-
-    # 视频总时长获取
-    def getDuration(self, d):
-        if self.tabWidget.currentIndex() == 0:
-            self.video_slider.setRange(0, d)
-            self.cut_slider.setRange(0, d)
-            self.cut_slider.setHighToMaximum()
-            self.lopo = 0
-            self.hipo = self.cut_slider.maximum()
-            self.video_slider.setEnabled(True)
-        elif self.tabWidget.currentIndex() == 1:
-            self.video_slider_2.setRange(0, d)
-            self.video_slider_2.setEnabled(True)
-        self.displayTime(d)
 
     # 视频详细数据获取
     def getVideoinfo(self, selected_video_path):
@@ -1265,7 +1257,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         except Exception as e:
             # 处理异常情况
-            self.video_info.setPlainText(f"获取视频信息时发生错误: {str(e)}")
+            if Video.is_image_file(selected_video_path):
+                # 获取图像信息
+                img = cv2.imread(selected_video_path)
+                height, width, channels = img.shape
+
+                # 添加分辨率信息
+                resolution_info = f"分辨率: {width} x {height}"
+                info_text = f"{resolution_info}  \n通道: {channels}"
+
+                self.video_info.setPlainText(info_text)
+            else:
+                self.video_info.setPlainText(f"获取视频信息时发生错误")
 
         # 单位转换
     def convert_bytes_to_readable(self, size_in_bytes):
@@ -1281,23 +1284,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 返回格式化后的结果，包括单位
         return f"{formatted_size} {units[unit_index]}"
 
-
-    # 视频实时位置获取
-    def getPosition(self):
-        # 判断当前点击的选项卡索引
-        if self.tabWidget.currentIndex() == 0:
-            # 获取当前视频播放器的位置
-            p = self.vdplayer.position()
-            # 更新视频滑块的值
-            self.video_slider.setValue(p)
-            # 在界面上显示时间
-            self.displayTime(p)
-        elif self.tabWidget.currentIndex() == 1:
-            p = self.vdplayer_2.position()
-            self.video_slider_2.setValue(p)
-            self.displayTime(p)
-
-
     # 显示剩余时间
     def displayTime(self, ms):
         # print(ms)
@@ -1310,20 +1296,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif self.tabWidget.currentIndex() == 1:
             self.video_time_2.setText('{}:{}'.format(minutes, seconds))
             self.action_list.clear()
-
-    # 用进度条更新视频位置
-    def updatePosition(self, v):
-        if self.tabWidget.currentIndex() == 0:
-            self.displayTime(self.video_slider.maximum() - v)
-            # self.speed_play(self.vdplayer)
-            self.vdplayer.play()
-            # self.vdplayer.setPosition(v)
-            self.vdplayer.set_frame(self.video_slider)
-            # self.playPause()
-            # self.play_pause.setIcon(self.play_ico)
-        elif self.tabWidget.currentIndex() == 1:
-            self.displayTime(self.video_slider_2.maximum() - v)
-            self.vdplayer_2.setPosition(v)
 
     # 暂停/播放
     def playPause(self):
