@@ -611,7 +611,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         path = os.path.dirname(self.selected_path)
         # 从当前文件夹中获取所有视频文件
         try:
-            video_files = [f for f in os.listdir(path)]
+            video_files = [f for f in os.listdir(path) if f.lower().endswith(('.mp4', '.avi', '.mov', '.jpg', '.png'))]
         except FileNotFoundError:
             return None
         # 构建完整的视频文件路径列表
@@ -889,7 +889,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Globals.detection_run = True
         self.start_identify.setEnabled(False)
         self.stop_identify.setEnabled(True)
-
+        
         if self.selected_item.isCamera:
             if Globals.settings['model_select'] == 'yolov5':
                 # 使用yolov5模型进行相机检测
