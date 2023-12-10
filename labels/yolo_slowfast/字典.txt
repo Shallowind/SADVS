@@ -10,7 +10,7 @@
 "jump/leap": "跳跃/飞跃",
 "lie/sleep": "躺下/睡觉",
 "martial art": "武术",
-"run": "跑步",
+"run/jog": "跑步/慢跑",
 "sit": "坐下",
 "stand": "站立",
 "swim": "游泳",

@@ -210,7 +210,7 @@ def run(
     video_model = slowfast_r50_detection(True).eval().to(device)  # 创建视频模型
     id_to_ava_labels = {}
     id_to_labels = {}
-    ava_labelnames, _ = AvaLabeledVideoFramePaths.read_label_map("selfutils/temp.pbtxt")  # 读取标签映射
+    ava_labelnames, _ = AvaLabeledVideoFramePaths.read_label_map("selfutils/ava_action_list.pbtxt")  # 读取标签映射
     seen, windows, dt = 0, [], (Profile(), Profile(), Profile())  # 初始化变量 seen、windows、dt
     stack = []  # 创建空列表 stack
     color_map = [[random.randint(0, 255) for _ in range(3)] for _ in range(80)]  # 创建颜色映射表 color_map
@@ -322,7 +322,7 @@ def run(
 
 
             if show_window is not None:
-                show_window.ui.action_list.clear()
+                show_window.action_list.clear()
                 # 清空动作标签列表
 
                 # 遍历每帧的输出
@@ -332,13 +332,13 @@ def run(
                         # 如果动作标签在选择的标签列表中
                         if id_to_labels[action] in select_labels:
                             # 在动作标签列表中添加条目
-                            show_window.ui.action_list.addItem(
+                            show_window.action_list.addItem(
                                 f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
                     except KeyError:
                         # 继续循环，跳过不存在的动作标签
                         continue
 
-                    # try: if id_to_labels[action] in select_labels: show_window.ui.action_list.addItem(f"时间：{idx //
+                    # try: if id_to_labels[action] in select_labels: show_window.action_list.addItem(f"时间：{idx //
                     # fps} 动作：{action}-{dict_text_persec[action]}")
 
 
