@@ -204,7 +204,7 @@ QPushButton:pressed {
         </property>
         <item>
          <widget class="QWidget" name="useSpace" native="true">
-          <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0">
+          <layout class="QGridLayout" name="gridLayout_16" columnstretch="0">
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -846,32 +846,12 @@ QPushButton:pressed {
                        <number>0</number>
                       </property>
                       <item row="0" column="0">
-                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,9,0,1,0">
+                       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="9,0,1,0">
                         <property name="spacing">
                          <number>0</number>
                         </property>
                         <item>
-                         <widget class="QVideoWidget" name="player" native="true">
-                          <property name="enabled">
-                           <bool>true</bool>
-                          </property>
-                          <property name="autoFillBackground">
-                           <bool>false</bool>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">
-        background: rgb(0, 0, 0);</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLabel" name="camera">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
+                         <widget class="QLabel" name="player">
                           <property name="styleSheet">
                            <string notr="true">
         background: rgb(0, 0, 0);</string>
