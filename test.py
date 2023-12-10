@@ -10,19 +10,17 @@ from PyQt5.QtWidgets import QProgressBar, QApplication, QLabel, QWidget
 class Video(QWidget):
     def __init__(self):
         super(Video, self).__init__()
-        # self.ui.pushButton.clicked.connect(self.play)
-        # self.ui.pushButton_2.clicked.connect(self.play_pause)
-        self.player = cv2.VideoCapture(0)
-        # self.ui.horizontalSlider.valueChanged.connect(self.set_frame)
+        self.player = None
+        self.video_slider = None
         self.video_path = ""
         self.output = None
-        self.fps = self.player.get(cv2.CAP_PROP_FPS)
+        self.fps = 25
         self.playing = False  # 用于表示当前播放状态
-        # self.update_interval = 100  # 更新进度条的时间间隔，单位毫秒
+        self.update_interval = 100  # 更新进度条的时间间隔，单位毫秒
 
-        # # 设置定时器，定期更新进度条
-        # self.timer = QTimer(self)
-        # self.timer.timeout.connect(self.update_progress_bar)
+        # 设置定时器，定期更新进度条
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_progress_bar)
         # self.ui.comboBox.currentIndexChanged.connect(self.speed_change)
 
     def state(self):
@@ -31,16 +29,19 @@ class Video(QWidget):
         else:
             return 0
 
-    def setVideoOutput(self, output):
+    def setVideoOutput(self, output, video_slider):
         self.output = output
+        self.video_slider = video_slider
+        self.video_slider.valueChanged.connect(self.set_frame)
 
     def speed_change(self, speed):
         # 改变帧率
         self.fps = int(self.player.get(cv2.CAP_PROP_FPS) * float(speed))
 
-    def play_pause(self):
+    def pause(self):
         # 切换播放状态
-        self.playing = not self.playing
+        self.timer.stop()
+        self.playing = False
 
     def update_progress_bar(self):
         # 获取当前帧数
@@ -53,11 +54,11 @@ class Video(QWidget):
         progress_percentage = int((current_frame / total_frames) * 100)
 
         # 更新进度条的值
-        self.ui.horizontalSlider.setValue(progress_percentage)
+        self.video_slider.setValue(progress_percentage)
 
-    def set_frame(self, video_slider):
+    def set_frame(self):
         # 获取滑块的比例值（0到1之间）
-        slider_value = video_slider.value() / video_slider.maximum()
+        slider_value = self.video_slider.value() / self.video_slider.maximum()
 
         # 获取总帧数
         total_frames = int(self.player.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -69,6 +70,7 @@ class Video(QWidget):
         self.player.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
 
     def play(self):
+        self.timer.start(self.update_interval)
         self.playing = True
         while True:
             if self.playing:
@@ -78,10 +80,7 @@ class Video(QWidget):
                 else:
                     break
 
-            k = cv2.waitKey(int(1000 / self.fps))
-            if k == Qt.Key_Space:
-                self.play_pause()
-
+            cv2.waitKey(int(1000 / self.fps))
 
     def setMedia(self, video_path=None):
         if video_path:
