@@ -52,7 +52,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.signal.connect(self.cut_completed)
         # 播放器
         self.vdplayer = Video()
-        self.vdplayer.setVideoOutput(self.player)
+        self.vdplayer.setVideoOutput(self.player, self.video_slider)
         self.vdplayer_2 = QMediaPlayer()
         self.vdplayer_2.setVideoOutput(self.player_2)
         # 选择文件夹
@@ -101,12 +101,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.work_list.setContextMenuPolicy(Qt.CustomContextMenu)
         self.work_list.customContextMenuRequested.connect(self.worklist_show_context_menu)
         # 进度条
-        self.vdplayer.durationChanged.connect(self.getDuration)
-        self.vdplayer.positionChanged.connect(self.getPosition)
-        self.vdplayer_2.durationChanged.connect(self.getDuration)
-        self.vdplayer_2.positionChanged.connect(self.getPosition)
-        self.video_slider.sliderMoved.connect(self.updatePosition)
-        self.video_slider_2.sliderMoved.connect(self.updatePosition)
+        # self.vdplayer.durationChanged.connect(self.getDuration)
+        # self.vdplayer.positionChanged.connect(self.getPosition)
+        # self.vdplayer_2.durationChanged.connect(self.getDuration)
+        # self.vdplayer_2.positionChanged.connect(self.getPosition)
+        # self.video_slider.sliderMoved.connect(self.updatePosition)
+        # self.video_slider_2.sliderMoved.connect(self.updatePosition)
         self.cut_slider.sliderMoved.connect(self.echo)
         self.cut_slider.setVisible(False)
         self.cut_time.setVisible(False)
@@ -1330,10 +1330,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.tabWidget.currentIndex() == 0:
             if self.vdplayer.state() == 1:
                 self.play_pause.setIcon(self.play_ico)
-                self.vdplayer.play_pause()
+                self.vdplayer.pause()
             else:
                 self.play_pause.setIcon(self.pause_ico)
-                self.vdplayer.play_pause()
+                self.vdplayer.play()
         elif self.tabWidget.currentIndex() == 1:
             if self.vdplayer_2.state() == 1:
                 self.play_pause_2.setIcon(self.play_ico)
