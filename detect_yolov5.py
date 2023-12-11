@@ -17,6 +17,7 @@ from utils.myutil import Globals
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
 
+
 @smart_inference_mode()
 def run(
         weights='yolov5s.pt',  # 模型路径或triton URL
@@ -55,7 +56,8 @@ def run(
     # 增加路径
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # 如果路径已存在，则忽略错误
     # 创建目录
-    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # 如果save_txt为True，则创建web_dir/labels目录，否则创建web_dir目录
+    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True,
+                                                          exist_ok=True)  # 如果save_txt为True，则创建web_dir/labels目录，否则创建web_dir目录
     # 判断source是否为数字
     webcam = source.isnumeric()
     # 选择设备
@@ -96,13 +98,13 @@ def run(
 
         # 非极大值抑制
         with dt[2]:
-            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)  # 对预测结果进行非极大值抑制处理
+            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms,
+                                       max_det=max_det)  # 对预测结果进行非极大值抑制处理
 
         # 第二阶段分类器（可选）
         # pred = utils.general.apply_classifier(pred, classifier_model, im, im0s)
 
         # 处理预测结果
-
 
         for i, det in enumerate(pred):  # 对于每张图片
             seen += 1  # 增加计数器
@@ -114,7 +116,7 @@ def run(
             p = Path(p)  # 将路径转换为Path对象
             save_path = str(save_dir / p.name)  # 获取保存路径
             s += '%gx%g ' % im.shape[2:]  # 拼接字符串
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names)+'汉字')  # 创建标注器对象
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字')  # 创建标注器对象
 
             if len(det):
                 # 如果检测结果不为空，则对框进行重新缩放，将图像大小从img_size调整为im0大小
@@ -132,20 +134,32 @@ def run(
                     label = None if hide_labels else (name if hide_conf else f'{name} {conf:.2f}')
                     annotator.box_label(xyxy, label, color=colors(c, True))
 
-
             # Stream results
             im0 = annotator.result()
             im1 = im0.astype("uint8")
             show = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
-            showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
+            showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
             if show_window is not None:
-                label_size = show_label.size()
-                label_size.setWidth(label_size.width() - 10)
-                label_size.setHeight(label_size.height() - 10)
-                scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-                pixmap = QPixmap.fromImage(scaled_image)
-                show_label.setPixmap(pixmap)
-                show_label.setAlignment(Qt.AlignCenter)
+                # label_size = show_label.size()
+                # label_size.setWidth(label_size.width() - 10)
+                # label_size.setHeight(label_size.height() - 10)
+                # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # pixmap = QPixmap.fromImage(scaled_image)
+                # show_label.setPixmap(pixmap)
+                # show_label.setAlignment(Qt.AlignCenter)
+
+                scale_factor = min(show_window.player_2.width() / showImage.width(),
+                                   show_window.player_2.height() / showImage.height())
+
+                # 计算新的宽度和高度
+                new_width = int(showImage.width() * scale_factor)
+                new_height = int(showImage.height() * scale_factor)
+
+                # 设置新的最大大小
+                show_window.camera_2.setMaximumSize(new_width, new_height)
+
+                show_window.camera_2.setPixmap(QPixmap(showImage))
+                show_window.camera_2.setScaledContents(True)
 
             # 如果需要保存图像
             if save_img:

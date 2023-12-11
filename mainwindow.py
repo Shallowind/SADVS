@@ -29,6 +29,7 @@ from model_settings import ModelSettings
 from user_management import User_management
 from utils.myutil import Globals, ConsoleRedirector
 from mainwindow_ui import Ui_MainWindow
+
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
 
@@ -52,9 +53,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.signal.connect(self.cut_completed)
         # 播放器
         self.vdplayer = QMediaPlayer()
-        self.vdplayer.setVideoOutput(self.player)
+        self.vdplayer.setVideoOutput([self.player, self.player_1])
         self.vdplayer_2 = QMediaPlayer()
-        self.vdplayer_2.setVideoOutput(self.player_2)
+        self.vdplayer_2.setVideoOutput([self.camera_2, self.player_2])
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -213,7 +214,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # sys.stdout = ConsoleRedirector(self, self.terminal)
         # sys.stderr = ConsoleRedirector(self, self.terminal, QColor(255, 0, 0))
         print()
-
 
         self.videotree = []
         self.selected_folder = ""
@@ -531,7 +531,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # self.settings_window.setWindowZOrder(Qt.TopMost)
         self.labsettings_window.show()
 
-
     def saveCut(self):
         cut_thread = threading.Thread(target=self.cut_thread)
         cut_thread.daemon = True  # 主界面关闭时自动退出此线程
@@ -583,7 +582,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.signal.emit()
         except Exception as e:
             print(f"出现错误： {e}")
-
 
     # 退出剪辑模式
     def exitMode(self):
@@ -889,7 +887,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         Globals.detection_run = True
         self.start_identify.setEnabled(False)
         self.stop_identify.setEnabled(True)
-        
+
         if self.selected_item.isCamera:
             if Globals.settings['model_select'] == 'yolov5':
                 # 使用yolov5模型进行相机检测
@@ -923,8 +921,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.camera_2,
         # save_img=True, show_labellist=self.action_list)
 
-
         # 视频/设备切换时触发
+
     def select_V_D(self):
         selected_option = self.v_d_comboBox.currentText()
         if selected_option == '视频列表':
@@ -953,8 +951,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
-
         # 初始化检测摄像头线程
+
     def initialize_camera(self):
         # 初始化pygame摄像头模块
         pygame.camera.init()
@@ -978,7 +976,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # 设置该项的文本为摄像头，ID图标为摄像头图标
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
-
 
     # 文件树展开时调用
     def loadSubtree(self, item):
@@ -1013,7 +1010,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         icon = QIcon("resources/folder_ico.ico")
         root_item.setIcon(0, icon)
         self._addFilesToTree(root_item, folder_path, 0)
-
 
     # 递归文件夹和文件，加入到文件树里
     def _addFilesToTree(self, parent_item, folder_path, deep):
@@ -1075,7 +1071,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 frame_dict[float(k)] = frame_path[k]
             return frame_dict
 
-
     # 视频流数据判断
     def CameraVideo(self, item):
         selected_option = self.v_d_comboBox.currentText()
@@ -1129,7 +1124,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         pixmap = QPixmap.fromImage(scaled_image)
         label.setPixmap(pixmap)
         label.setAlignment(Qt.AlignCenter)
-
 
     # 播放选中视频
     def playSelectedVideo(self, item, isworklist, path=''):
@@ -1288,6 +1282,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.video_info.setPlainText(f"获取视频信息时发生错误: {str(e)}")
 
         # 单位转换
+
     def convert_bytes_to_readable(self, size_in_bytes):
         units = ["B", "KB", "MB", "GB", "TB"]
         unit_index = 0
@@ -1300,7 +1295,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         formatted_size = "{:.2f}".format(size)
         # 返回格式化后的结果，包括单位
         return f"{formatted_size} {units[unit_index]}"
-
 
     # 视频实时位置获取
     def getPosition(self):
@@ -1316,7 +1310,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             p = self.vdplayer_2.position()
             self.video_slider_2.setValue(p)
             self.displayTime(p)
-
 
     # 显示剩余时间
     def displayTime(self, ms):
@@ -1543,6 +1536,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.capture is not None:
             # 释放视频流捕获
             self.capture.release()
+
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)

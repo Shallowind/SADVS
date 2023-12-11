@@ -209,7 +209,7 @@ class Ui_model_settings(object):
         self.verticalLayout_3.addWidget(self.iou_doubleSpinBox)
         self.line_thickness = QtWidgets.QSpinBox(model_settings)
         self.line_thickness.setMinimum(1)
-        self.line_thickness.setMaximum(4)
+        self.line_thickness.setMaximum(10)
         self.line_thickness.setObjectName("line_thickness")
         self.verticalLayout_3.addWidget(self.line_thickness)
         self.verticalLayout_3.setStretch(0, 1)
