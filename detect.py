@@ -61,7 +61,6 @@ def func_slowfast(vid_cap, idx, stack, yolo_pred, img_size, device, video_model)
         return slowfaster_preds
 
 
-
 def my_uniform_temporal_subsample(
         x: torch.Tensor, num_samples: int, temporal_dim: int = -3
 ) -> torch.Tensor:
@@ -86,6 +85,7 @@ def my_uniform_temporal_subsample(
     indices = indices.cuda()
     return torch.index_select(x, temporal_dim, indices)
 
+
 # 对跟踪器进行更新，并返回更新后的结果。
 def deepsort_update(Tracker, pred, xywh, np_img):
     outputs = Tracker.update(xywh, pred[:, 4:5], pred[:, 5].tolist(), cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB))
@@ -97,7 +97,6 @@ def to_tensor(img):
     img = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     # 在张量上增加一个维度，以便于处理
     return img.unsqueeze(0)
-
 
 
 def ava_inference_transform(
@@ -173,7 +172,7 @@ def run(
         project='result',  # 结果保存到project/name
         name='',  # 结果保存到project/name
         exist_ok=True,  # 已存在的project/name可以，不需要自增
-        line_thickness=2,  # 边框厚度（像素）
+        line_thickness=5,  # 边框厚度（像素）
         hide_labels=False,  # 隐藏标签
         hide_conf=False,  # 隐藏置信度
         half=False,  # 使用FP16半精度推理
@@ -184,7 +183,6 @@ def run(
         show_window=None,  # 显示窗口
         select_labels=None  # 选择标签
 ):
-
     source = str(source)  # 将source转换为字符串类型
     # 目录操作
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # 增加路径序号
@@ -204,7 +202,6 @@ def run(
         dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)  # 加载图像数据
     vid_path, vid_writer = [None] * bs, [None] * bs  # 初始化视频路径和视频写入器的列表
 
-
     # 运行推理
     model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # 模型热身
     video_model = slowfast_r50_detection(True).eval().to(device)  # 创建视频模型
@@ -221,6 +218,8 @@ def run(
     a = time.time()  # 记录当前时间到变量 a
 
     for path, im, im0s, vid_cap, s in dataset:
+        if not Globals.detection_run:
+            return
         # 对于数据集中的每个路径、图像、原始图像、视频捕获和帧编号进行循环
         if not Globals.detection_run:
             # 如果全局变量detection_run为False，则跳出循环
@@ -244,7 +243,6 @@ def run(
                 # 如果im的形状长度为3
                 im = im[None]  # expand for batch dim
                 # 在batch维度上扩展im
-
 
         # 推理
         with dt[1]:
@@ -288,7 +286,6 @@ def run(
         # 记录结束进行deepsort的时间
         time_deepsort_end = time.time()
 
-
         # 判断是否为每秒一帧的图像
         if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
             # 获取当前视频的帧率
@@ -304,22 +301,26 @@ def run(
             # 打印当前片段对应的字幕
             print(dict_text_persec)
 
-
             if yolo_pred[0].shape[0]:  # 如果yolo_pred的第一个维度的长度大于0
                 inputs, inp_boxes, _ = ava_inference_transform(clip, yolo_pred[0][:, 0:4],
-                                                               crop_size=dataset.img_size[0])  # 对clip进行ava_inference_transform，返回inputs, inp_boxes以及_
-                inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0], 1), inp_boxes], dim=1)  # 在维度1上将torch.zeros(inp_boxes.shape[0], 1)和inp_boxes进行拼接，赋值给inp_boxes
+                                                               crop_size=dataset.img_size[
+                                                                   0])  # 对clip进行ava_inference_transform，返回inputs, inp_boxes以及_
+                inp_boxes = torch.cat([torch.zeros(inp_boxes.shape[0], 1), inp_boxes],
+                                      dim=1)  # 在维度1上将torch.zeros(inp_boxes.shape[0], 1)和inp_boxes进行拼接，赋值给inp_boxes
                 if isinstance(inputs, list):  # 如果inputs是list类型
-                    inputs = [inp.unsqueeze(0).to(device) for inp in inputs]  # 对inputs中的每个元素inp进行unsqueeze(0)，然后转为device类型，将结果赋值给inputs
+                    inputs = [inp.unsqueeze(0).to(device) for inp in
+                              inputs]  # 对inputs中的每个元素inp进行unsqueeze(0)，然后转为device类型，将结果赋值给inputs
                 else:
                     inputs = inputs.unsqueeze(0).to(device)  # 对inputs进行unsqueeze(0)，然后转为device类型，将结果赋值给inputs
                 with torch.no_grad():  # 不进行梯度计算
-                    slowfaster_preds = video_model(inputs, inp_boxes.to(device))  # 对inputs和inp_boxes进行video_model，不进行梯度计算，将结果赋值给slowfaster_preds
+                    slowfaster_preds = video_model(inputs, inp_boxes.to(
+                        device))  # 对inputs和inp_boxes进行video_model，不进行梯度计算，将结果赋值给slowfaster_preds
                     slowfaster_preds = slowfaster_preds.cpu()  # 将slowfaster_preds转为cpu类型，将结果赋值给slowfaster_preds
-                for tid, avalabel in zip(yolo_pred[0][:, 5].tolist(), np.argmax(slowfaster_preds, axis=1).tolist()):  # 对yolo_pred的第一个维度的第5列进行tolist，以及np.argmax(slowfaster_preds, axis=1).tolist()进行迭代，将迭代出的值分别赋值给tid和avalabel
-                    id_to_ava_labels[tid] = ava_labelnames[avalabel + 1]  # 将ava_labelnames[avalabel + 1]赋值给id_to_ava_labels[tid]
+                for tid, avalabel in zip(yolo_pred[0][:, 5].tolist(), np.argmax(slowfaster_preds,
+                                                                                axis=1).tolist()):  # 对yolo_pred的第一个维度的第5列进行tolist，以及np.argmax(slowfaster_preds, axis=1).tolist()进行迭代，将迭代出的值分别赋值给tid和avalabel
+                    id_to_ava_labels[tid] = ava_labelnames[
+                        avalabel + 1]  # 将ava_labelnames[avalabel + 1]赋值给id_to_ava_labels[tid]
                     id_to_labels[tid] = avalabel + 1  # 将avalabel + 1赋值给id_to_labels[tid]
-
 
             if show_window is not None:
                 show_window.action_list.clear()
@@ -341,7 +342,6 @@ def run(
                     # try: if id_to_labels[action] in select_labels: show_window.action_list.addItem(f"时间：{idx //
                     # fps} 动作：{action}-{dict_text_persec[action]}")
 
-
         MainWindow.drawLineChart(show_window)
         MainWindow.drawPieChart(show_window)
         del dict_text_persec
@@ -361,7 +361,7 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字', font_size=20)
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字', font_size=int(max(im0.shape[1], im0.shape[0])/50))
             if len(det):
                 # 遍历所有识别框
                 for j, (*box, cls, trackid, vx, vy) in enumerate(yolo_pred[0]):
@@ -392,21 +392,33 @@ def run(
                     annotator.box_label(box, text, color=color)
                     # 根据box、text和color绘制标注框和文本
 
-
             # 将注释结果转换为图像，并将图像缩小后显示在标签上
             im0 = annotator.result()
             im1 = im0.astype("uint8")
             show = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
-            showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
+            showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
 
-            label_size = show_label.size()
-            label_size.setWidth(label_size.width() - 10)
-            label_size.setHeight(label_size.height() - 10)
-            scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            # label_size = show_label.size()
+            # label_size.setWidth(label_size.width() - 10)
+            # label_size.setHeight(label_size.height() - 10)
+            # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            #
+            # pixmap = QPixmap.fromImage(scaled_image)
+            # show_label.setPixmap(pixmap)
+            # show_label.setAlignment(Qt.AlignCenter)
 
-            pixmap = QPixmap.fromImage(scaled_image)
-            show_label.setPixmap(pixmap)
-            show_label.setAlignment(Qt.AlignCenter)
+            scale_factor = min(show_window.player_2.width() / showImage.width(),
+                               show_window.player_2.height() / showImage.height())
+
+            # 计算新的宽度和高度
+            new_width = int(showImage.width() * scale_factor)
+            new_height = int(showImage.height() * scale_factor)
+
+            # 设置新的最大大小
+            show_window.camera_2.setMaximumSize(new_width, new_height)
+
+            show_window.camera_2.setPixmap(QPixmap(showImage))
+            show_window.camera_2.setScaledContents(True)
 
             # 保存结果（包含检测结果的图像）
             if save_img:
@@ -424,7 +436,8 @@ def run(
                         else:  # 如果是流媒体
                             fps, w, h = 30, im0.shape[1], im0.shape[0]  # 设置默认的帧率、宽度和高度
                         save_path = str(Path(save_path).with_suffix('.mp4'))  # 强制将结果视频的后缀设置为'.mp4'
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))  # 创建视频写入器
+                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps,
+                                                        (w, h))  # 创建视频写入器
                     vid_writer[i].write(im0)  # 将图像写入视频
 
         # 打印时间（只进行推断）
@@ -440,4 +453,3 @@ def run(
     with open('pred_results.json', 'w') as json_file:
         # 将dict_text字典写入json_file文件中
         json.dump(dict_text, json_file)
-

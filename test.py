@@ -160,21 +160,47 @@ class Video(QWidget):
         self.fps = self.player.get(cv2.CAP_PROP_FPS)
 
     def show_frame(self, frame):
-        # 将BGR图像转换为RGB格式
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        show = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # 将图像转换为QImage对象
+        showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
+        # # 缩小尺寸并保持宽高比
+        # label_size = self.output.size()
+        # label_size.setWidth(label_size.width() - 10)
+        # label_size.setHeight(label_size.height() - 10)
+        # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        #
+        # pixmap = QPixmap.fromImage(scaled_image)
+        # self.output.setPixmap(pixmap)
+        # self.output.setAlignment(Qt.AlignCenter)
 
-        # 将图像编码为二进制格式
-        h, w, ch = rgb_frame.shape
-        bytes_per_line = ch * w
-        qt_image = QImage(rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        scale_factor = min(self.output[1].width() / showImage.width(),
+                           self.output[1].height() / showImage.height())
 
-        # 调整图像大小以适应 QLabel
-        qt_image = qt_image.scaled(self.output.width(), self.output.height(), Qt.KeepAspectRatio)
+        # 计算新的宽度和高度
+        new_width = int(showImage.width() * scale_factor)
+        new_height = int(showImage.height() * scale_factor)
 
-        # 创建 QPixmap，并在 QLabel 中居中显示图像
-        pixmap = QPixmap.fromImage(qt_image)
-        self.output.setPixmap(pixmap)
+        # 设置新的最大大小
+        self.output[0].setMaximumSize(new_width, new_height)
 
-        # 设置 QLabel 的对齐方式为居中
-        self.output.setAlignment(Qt.AlignCenter)
+        self.output[0].setPixmap(QPixmap(showImage))
+        self.output[0].setScaledContents(True)
+
+        # # 将BGR图像转换为RGB格式
+        # rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #
+        # # 将图像编码为二进制格式
+        # h, w, ch = rgb_frame.shape
+        # bytes_per_line = ch * w
+        # qt_image = QImage(rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
+        #
+        # # 调整图像大小以适应 QLabel
+        # qt_image = qt_image.scaled(self.output.width(), self.output.height(), Qt.KeepAspectRatio)
+        #
+        # # 创建 QPixmap，并在 QLabel 中居中显示图像
+        # pixmap = QPixmap.fromImage(qt_image)
+        # self.output.setPixmap(pixmap)
+        #
+        # # 设置 QLabel 的对齐方式为居中
+        # self.output.setAlignment(Qt.AlignCenter)
 

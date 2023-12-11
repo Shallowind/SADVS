@@ -29,8 +29,10 @@ from model_settings import ModelSettings
 from user_management import User_management
 from utils.myutil import Globals, ConsoleRedirector
 from mainwindow_ui import Ui_MainWindow
+
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 from test import Video
+
 
 class MainWindow(Ui_MainWindow, QMainWindow):
     signal = pyqtSignal()
@@ -52,9 +54,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.signal.connect(self.cut_completed)
         # 播放器
         self.vdplayer = Video()
-        self.vdplayer.setVideoOutput(self.player, self.video_slider, self.video_time, self.cut_time)
+        self.vdplayer.setVideoOutput([self.player, self.player_1], self.video_slider, self.video_time, self.cut_time)
         self.vdplayer_2 = Video()
-        self.vdplayer_2.setVideoOutput(self.camera_2, self.video_slider_2, self.video_time_2)
+        self.vdplayer_2.setVideoOutput([self.camera_2, self.player_2], self.video_slider_2, self.video_time_2)
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -212,7 +214,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # sys.stdout = ConsoleRedirector(self, self.terminal)
         # sys.stderr = ConsoleRedirector(self, self.terminal, QColor(255, 0, 0))
         print()
-
 
         self.videotree = []
         self.selected_folder = ""
@@ -530,7 +531,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # self.settings_window.setWindowZOrder(Qt.TopMost)
         self.labsettings_window.show()
 
-
     def saveCut(self):
         cut_thread = threading.Thread(target=self.cut_thread)
         cut_thread.daemon = True  # 主界面关闭时自动退出此线程
@@ -571,8 +571,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 获得视频时长
         all_seconds = self.vdplayer.player.get(cv2.CAP_PROP_FRAME_COUNT) / self.vdplayer.player.get(cv2.CAP_PROP_FPS)
 
-        start_time_sec = self.lopo / 100 * all_seconds   # 获取开始剪切时间（毫秒）
-        stop_time_sec = self.hipo / 100 * all_seconds # 获取剪切的结束时间（毫秒）
+        start_time_sec = self.lopo / 100 * all_seconds  # 获取开始剪切时间（毫秒）
+        stop_time_sec = self.hipo / 100 * all_seconds  # 获取剪切的结束时间（毫秒）
 
         print(f"开始剪切时间：{start_time_sec}")
         print(f"结束剪切时间：{stop_time_sec}")
@@ -585,7 +585,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.signal.emit()
         except Exception as e:
             print(f"出现错误： {e}")
-
 
     # 退出剪辑模式
     def exitMode(self):
@@ -922,8 +921,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # detect.run(source=self.selected_path, weights=model_path, show_label=self.camera_2,
         # save_img=True, show_labellist=self.action_list)
 
-
         # 视频/设备切换时触发
+
     def select_V_D(self):
         selected_option = self.v_d_comboBox.currentText()
         if selected_option == '视频列表':
@@ -947,8 +946,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
 
-
         # 初始化检测摄像头线程
+
     def initialize_camera(self):
         # 初始化pygame摄像头模块
         pygame.camera.init()
@@ -969,7 +968,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     # 设置该项的文本为摄像头，ID图标为摄像头图标
                     item.setText(0, str(camera_id))
                     item.setIcon(0, self.camera_icon)
-
 
     # 文件树展开时调用
     def loadSubtree(self, item):
@@ -1004,7 +1002,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         icon = QIcon("resources/folder_ico.ico")
         root_item.setIcon(0, icon)
         self._addFilesToTree(root_item, folder_path, 0)
-
 
     # 递归文件夹和文件，加入到文件树里
     def _addFilesToTree(self, parent_item, folder_path, deep):
@@ -1066,7 +1063,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 frame_dict[float(k)] = frame_path[k]
             return frame_dict
 
-
     # 视频流数据判断
     def CameraVideo(self, item):
         selected_option = self.v_d_comboBox.currentText()
@@ -1096,21 +1092,39 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         flag, image = self.capture.read()
         show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         # 将图像转换为QImage对象
-        showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
+
+        showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
+
         label = self.player
+        widget = self.player_2
         # 根据当前选中的选项卡索引调整标签
         if self.tabWidget.currentIndex() == 0:
             label = self.player
+            widget = self.player_1
         elif self.tabWidget.currentIndex() == 1:
             label = self.camera_2
+            widget = self.player_2
         label_size = label.size()
         # 缩小尺寸并保持宽高比
-        label_size.setWidth(label_size.width() - 10)
-        label_size.setHeight(label_size.height() - 10)
-        scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-        pixmap = QPixmap.fromImage(scaled_image)
-        label.setPixmap(pixmap)
-        label.setAlignment(Qt.AlignCenter)
+        # label_size.setWidth(label_size.width() - 10)
+        # label_size.setHeight(label_size.height() - 10)
+        # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # pixmap = QPixmap.fromImage(scaled_image)
+        # label.setPixmap(pixmap)
+        # label.setAlignment(Qt.AlignCenter)
+
+        scale_factor = min(self.widget.width() / showImage.width(),
+                           self.widget.height() / showImage.height())
+
+        # 计算新的宽度和高度
+        new_width = int(showImage.width() * scale_factor)
+        new_height = int(showImage.height() * scale_factor)
+
+        # 设置新的最大大小
+        self.label.setMaximumSize(new_width, new_height)
+
+        self.label.setPixmap(QPixmap(showImage))
+        self.label.setScaledContents(True)
 
     def setMedia(self, video_path):
         self.vdplayer = cv2.VideoCapture(video_path)
@@ -1193,16 +1207,30 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 flag, image = self.vdplayer_2.player.read()
                 if flag:
                     show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                    showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-                    label_size = self.camera_2.size()
-                    label_size.setWidth(label_size.width() - 10)
-                    label_size.setHeight(label_size.height() - 10)
-                    scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-                    pixmap = QPixmap.fromImage(scaled_image)
-                    self.camera_2.setPixmap(pixmap)
-                    self.camera_2.setAlignment(Qt.AlignCenter)
+                    showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
+                    # label_size = self.camera_2.size()
+                    # label_size.setWidth(label_size.width() - 10)
+                    # label_size.setHeight(label_size.height() - 10)
+                    # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    # pixmap = QPixmap.fromImage(scaled_image)
+                    # self.camera_2.setPixmap(pixmap)
+                    # self.camera_2.setAlignment(Qt.AlignCenter)
+                    # 计算缩放比例
+                    scale_factor = min(self.player_2.width() / showImage.width(),
+                                       self.player_2.height() / showImage.height())
+
+                    # 计算新的宽度和高度
+                    new_width = int(showImage.width() * scale_factor)
+                    new_height = int(showImage.height() * scale_factor)
+
+                    # 设置新的最大大小
+                    self.camera_2.setMaximumSize(new_width, new_height)
+
+                    self.camera_2.setPixmap(QPixmap(showImage))
+                    self.camera_2.setScaledContents(True)
             else:
                 self.vdplayer_2.play()
+
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
         path_components = [item.text(0)]
@@ -1271,6 +1299,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.video_info.setPlainText(f"获取视频信息时发生错误")
 
         # 单位转换
+
     def convert_bytes_to_readable(self, size_in_bytes):
         units = ["B", "KB", "MB", "GB", "TB"]
         unit_index = 0
@@ -1497,6 +1526,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         if self.capture is not None:
             # 释放视频流捕获
             self.capture.release()
+
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
