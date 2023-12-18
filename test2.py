@@ -1079,7 +1079,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.start_identify.setEnabled(True)
         if item.isCamera:
             # 如果项目是摄像头
-            self.capture = cv2.VideoCapture(0)
+            self.capture = cv2.VideoCapture(int(item.text(0)))
             # 初始化摄像头捕捉对象
             self.timer_cv.start()
             # 启动定时器
