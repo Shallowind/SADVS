@@ -1113,18 +1113,18 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # label.setPixmap(pixmap)
         # label.setAlignment(Qt.AlignCenter)
 
-        scale_factor = min(self.widget.width() / showImage.width(),
-                           self.widget.height() / showImage.height())
+        scale_factor = min(widget.width() / showImage.width(),
+                           widget.height() / showImage.height())
 
         # 计算新的宽度和高度
         new_width = int(showImage.width() * scale_factor)
         new_height = int(showImage.height() * scale_factor)
 
         # 设置新的最大大小
-        self.label.setMaximumSize(new_width, new_height)
+        label.setMaximumSize(new_width, new_height)
 
-        self.label.setPixmap(QPixmap(showImage))
-        self.label.setScaledContents(True)
+        label.setPixmap(QPixmap(showImage))
+        label.setScaledContents(True)
 
     def setMedia(self, video_path):
         self.vdplayer = cv2.VideoCapture(video_path)
