@@ -51,7 +51,7 @@ class Ui_user_management(object):
         self.label_3.setMaximumSize(QtCore.QSize(200, 200))
         self.label_3.setStyleSheet("")
         self.label_3.setText("")
-        self.label_3.setPixmap(QtGui.QPixmap("resources/logo.png"))
+        self.label_3.setPixmap(QtGui.QPixmap("resources/logo_new.png"))
         self.label_3.setScaledContents(True)
         self.label_3.setWordWrap(False)
         self.label_3.setObjectName("label_3")
