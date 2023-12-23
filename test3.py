@@ -1,29 +1,31 @@
-from PyQt5.QtCore import QObject, pyqtSignal, Qt
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtWidgets import QLabel, QApplication
 
-class YourClass(QObject):
-    # 为了发射信号，我们需要创建一个信号对象
-    playerSizeChanged = pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
+class VideoLabel(QLabel):
+    doubleClicked = pyqtSignal()  # 定义一个双击信号
 
-        # 假设 self.player_2 是一个QWidget对象，连接其大小变化信号到槽函数
-        self.player_2.installEventFilter(self)
+    def __init__(self, parent=None):
+        super(VideoLabel, self).__init__(parent)
+        self.setAlignment(Qt.AlignCenter)
 
-    def eventFilter(self, obj, event):
-        if obj == self.player_2 and event.type() == Qt.Resize:
-            # 当 self.player_2 大小变化时，发射信号
-            self.playerSizeChanged.emit()
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.doubleClicked.emit()  # 发射双击信号
 
-        return super().eventFilter(obj, event)
 
-    def handlePlayerSizeChange(self):
-        # 在这里放上述的缩放计算和设置新的最大大小的代码
-        scale_factor = min(self.player_2.width() / showImage.width(), self.player_2.height() / showImage.height())
-        new_width = int(showImage.width() * scale_factor)
-        new_height = int(showImage.height() * scale_factor)
-        self.camera_2.setMaximumSize(new_width, new_height)
+if __name__ == "__main__":
+    import sys
 
-# 在你的初始化代码中
-your_instance = YourClass()
-your_instance.playerSizeChanged.connect(your_instance.handlePlayerSizeChange)
+    app = QApplication(sys.argv)
+    label = VideoLabel('123')
+
+
+    def handle_double_click():
+        print("Label double-clicked")
+
+
+    label.doubleClicked.connect(handle_double_click)  # 连接信号到槽函数
+
+    label.show()
+    sys.exit(app.exec_())

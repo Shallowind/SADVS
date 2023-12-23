@@ -1,1 +1,1 @@
-{"video_path": "D:/VScode/motion-monitor-x", "save_path": "D:/VScode/motion-monitor-x/result", "pt_path": "D:/VScode/motion-monitor-x/weights/yolov5s.pt", "model_select": "yolov5", "labels": "yolov5", "max_det": "20", "conf": 0.4, "iou": 0.7, "line_thickness": 5}
+{"video_path": "D:/VScode/motion-monitor-x", "save_path": "D:/VScode/motion-monitor-x/result", "pt_path": "D:/VScode/motion-monitor-x/weights/yolov5s.pt", "model_select": "yolov5", "labels": "yolov5", "max_det": "100", "conf": 0.4, "iou": 0.7, "line_thickness": 5}
