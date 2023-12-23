@@ -5,6 +5,7 @@ import sys
 import threading
 # import ffmpeg
 from datetime import datetime
+from time import sleep
 from tkinter import Tk, simpledialog
 from json import loads
 import cv2
@@ -16,7 +17,7 @@ from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QSplitter, QTreeWidgetItem, QListView, QTreeWidget, QMainWindow, \
-    QMenu, QAction, QMessageBox
+    QMenu, QAction, QMessageBox, QSizePolicy
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -53,10 +54,29 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.signal.connect(self.cut_completed)
         # 播放器
-        self.vdplayer = Video()
-        self.vdplayer.setVideoOutput([self.player, self.player_1], self.video_slider, self.video_time, self.cut_time)
+        self.vdplayer_1 = Video()
+        self.vdplayer = self.vdplayer_1
+        self.vdplayer_1.setVideoOutput([self.player_show_1, self.player_widget_1], self.video_slider, self.video_time,
+                                       self.cut_time)
         self.vdplayer_2 = Video()
-        self.vdplayer_2.setVideoOutput([self.camera_2, self.player_2], self.video_slider_2, self.video_time_2)
+        self.vdplayer_2.setVideoOutput([self.player_show_2, self.player_widget_2], self.video_slider_2, self.video_time,
+                                       self.cut_time)
+        self.vdplayer_3 = Video()
+        self.vdplayer_3.setVideoOutput([self.player_show_3, self.player_widget_3], self.video_slider_3, self.video_time,
+                                       self.cut_time)
+        self.vdplayer_4 = Video()
+        self.vdplayer_4.setVideoOutput([self.player_show_4, self.player_widget_4], self.video_slider_5, self.video_time,
+                                       self.cut_time)
+        self.change_video_widget_enabled = False
+        self.widget_1.doubleClicked.connect(lambda: self.change_video_widget(1))
+        self.widget_1.mousePressed.connect(lambda: self.change_select_video_widget(1))
+        self.widget_2.doubleClicked.connect(lambda: self.change_video_widget(2))
+        self.widget_2.mousePressed.connect(lambda: self.change_select_video_widget(2))
+        self.widget_3.doubleClicked.connect(lambda: self.change_video_widget(3))
+        self.widget_3.mousePressed.connect(lambda: self.change_select_video_widget(3))
+        self.widget_4.doubleClicked.connect(lambda: self.change_video_widget(4))
+        self.widget_4.mousePressed.connect(lambda: self.change_select_video_widget(4))
+
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -105,8 +125,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 进度条
         # self.vdplayer.durationChanged.connect(self.getDuration)
         # self.vdplayer.positionChanged.connect(self.getPosition)
-        # self.vdplayer_2.durationChanged.connect(self.getDuration)
-        # self.vdplayer_2.positionChanged.connect(self.getPosition)
+        # self.idplayer.durationChanged.connect(self.getDuration)
+        # self.idplayer.positionChanged.connect(self.getPosition)
         # self.video_slider.sliderMoved.connect(self.updatePosition)
         # self.video_slider_2.sliderMoved.connect(self.updatePosition)
         self.cut_slider.sliderMoved.connect(self.echo)
@@ -344,6 +364,42 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             content = f.read()
         Globals.yolov5_dict = loads(content)
 
+    def change_select_video_widget(self, num):
+        if num == 1:
+            self.vdplayer = self.vdplayer_1
+        elif num == 2:
+            self.vdplayer = self.vdplayer_2
+        elif num == 3:
+            self.vdplayer = self.vdplayer_3
+        elif num == 4:
+            self.vdplayer = self.vdplayer_4
+
+    def change_video_widget(self, num):
+        if self.change_video_widget_enabled:
+            self.change_video_widget_enabled = False
+            self.widget_1.setVisible(True)
+            self.widget_2.setVisible(True)
+            self.widget_3.setVisible(True)
+            self.widget_4.setVisible(True)
+        else:
+            self.change_video_widget_enabled = True
+            if num == 1:
+                self.widget_2.setVisible(False)
+                self.widget_4.setVisible(False)
+                self.widget_3.setVisible(False)
+            elif num == 2:
+                self.widget_1.setVisible(False)
+                self.widget_3.setVisible(False)
+                self.widget_4.setVisible(False)
+            elif num == 3:
+                self.widget_1.setVisible(False)
+                self.widget_2.setVisible(False)
+                self.widget_4.setVisible(False)
+            elif num == 4:
+                self.widget_1.setVisible(False)
+                self.widget_2.setVisible(False)
+                self.widget_3.setVisible(False)
+
     # 保存行为识别报告
     def stopIdentify(self):
         QMessageBox.information(self, "提示", "识别报告已保存到文件夹\nD:/VScode/motion-monitor-x/result")
@@ -569,7 +625,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         source = self.selected_path.strip()
         target = target.strip()
         # 获得视频时长
-        all_seconds = self.vdplayer.player.get(cv2.CAP_PROP_FRAME_COUNT) / self.vdplayer.player.get(cv2.CAP_PROP_FPS)
+        all_seconds = self.vdplayer.player.get(cv2.CAP_PROP_FRAME_COUNT) / self.vdplayer.player.get(
+            cv2.CAP_PROP_FPS)
 
         start_time_sec = self.lopo / 100 * all_seconds  # 获取开始剪切时间（毫秒）
         stop_time_sec = self.hipo / 100 * all_seconds  # 获取剪切的结束时间（毫秒）
@@ -1095,12 +1152,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
 
-        label = self.player
+        label = self.player_show_1
         widget = self.player_2
         # 根据当前选中的选项卡索引调整标签
         if self.tabWidget.currentIndex() == 0:
-            label = self.player
-            widget = self.player_1
+            label = self.player_show_1
+            widget = self.player_widget_1
         elif self.tabWidget.currentIndex() == 1:
             label = self.camera_2
             widget = self.player_2
@@ -1201,10 +1258,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         elif self.tabWidget.currentIndex() == 1:
             video_path = selected_video_path
-            self.vdplayer_2.setMedia(video_path)
-            if self.vdplayer_2.player.isOpened():
+            self.idplayer.setMedia(video_path)
+            if self.idplayer.player.isOpened():
                 # 读取第一帧
-                flag, image = self.vdplayer_2.player.read()
+                flag, image = self.idplayer.player.read()
                 if flag:
                     show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                     showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
@@ -1229,7 +1286,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self.camera_2.setPixmap(QPixmap(showImage))
                     self.camera_2.setScaledContents(True)
             else:
-                self.vdplayer_2.play()
+                self.idplayer.play()
 
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
@@ -1336,9 +1393,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.play_pause.setIcon(self.pause_ico)
                 self.vdplayer.play()
         elif self.tabWidget.currentIndex() == 1:
-            if self.vdplayer_2.state() == 1:
+            if self.idplayer.state() == 1:
                 self.play_pause_2.setIcon(self.play_ico)
-                self.vdplayer_2.pause()
+                self.idplayer.pause()
             else:
                 self.play_pause_2.setIcon(self.pause_ico)
                 self.speed_play(self.vdplayer)
