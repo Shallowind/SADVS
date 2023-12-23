@@ -31,12 +31,12 @@ class Video(QWidget):
         current_time = self.player.get(cv2.CAP_PROP_POS_MSEC)
         self.displayTime(current_time)
 
-
     def displayTime(self, ms):
         # print(ms)
         minutes = int(ms / 60000)
         seconds = int((ms % 60000) / 1000)
-        self.video_time.setText('{}:{}'.format(minutes, seconds))
+        if self.video_time is not None:
+            self.video_time.setText('{}:{}'.format(minutes, seconds))
         if self.cut_time is not None:
             self.cut_time.setText('{}:{}'.format(minutes, seconds))
 
@@ -46,12 +46,15 @@ class Video(QWidget):
         else:
             return 0
 
-    def setVideoOutput(self, output, video_slider, video_time, cut_time=None):
+    def setVideoOutput(self, output, video_slider=None, video_time=None, cut_time=None):
         self.output = output
-        self.video_slider = video_slider
-        self.video_slider.valueChanged.connect(self.set_frame)
-        self.video_time = video_time
-        self.cut_time = cut_time
+        if video_slider:
+            self.video_slider = video_slider
+            self.video_slider.valueChanged.connect(self.set_frame)
+        if video_time:
+            self.video_time = video_time
+        if cut_time:
+            self.cut_time = cut_time
 
     def speed_change(self, speed):
         # 改变帧率
@@ -98,7 +101,8 @@ class Video(QWidget):
             return
 
     def play(self):
-        self.timer.start(self.update_interval)
+        if self.video_slider:
+            self.timer.start(self.update_interval)
         self.playing = True
         # 图片文件
         if self.is_image_file(self.video_path):
@@ -163,15 +167,6 @@ class Video(QWidget):
         show = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # 将图像转换为QImage对象
         showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-        # # 缩小尺寸并保持宽高比
-        # label_size = self.output.size()
-        # label_size.setWidth(label_size.width() - 10)
-        # label_size.setHeight(label_size.height() - 10)
-        # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        #
-        # pixmap = QPixmap.fromImage(scaled_image)
-        # self.output.setPixmap(pixmap)
-        # self.output.setAlignment(Qt.AlignCenter)
 
         scale_factor = min(self.output[1].width() / showImage.width(),
                            self.output[1].height() / showImage.height())
@@ -185,22 +180,3 @@ class Video(QWidget):
 
         self.output[0].setPixmap(QPixmap(showImage))
         self.output[0].setScaledContents(True)
-
-        # # 将BGR图像转换为RGB格式
-        # rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #
-        # # 将图像编码为二进制格式
-        # h, w, ch = rgb_frame.shape
-        # bytes_per_line = ch * w
-        # qt_image = QImage(rgb_frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
-        #
-        # # 调整图像大小以适应 QLabel
-        # qt_image = qt_image.scaled(self.output.width(), self.output.height(), Qt.KeepAspectRatio)
-        #
-        # # 创建 QPixmap，并在 QLabel 中居中显示图像
-        # pixmap = QPixmap.fromImage(qt_image)
-        # self.output.setPixmap(pixmap)
-        #
-        # # 设置 QLabel 的对齐方式为居中
-        # self.output.setAlignment(Qt.AlignCenter)
-
