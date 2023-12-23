@@ -6,6 +6,7 @@ import time
 import threading
 import random
 import json
+from datetime import datetime
 
 import numpy as np
 from pathlib import Path
@@ -27,7 +28,7 @@ from models.common import DetectMultiBackend
 from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
 from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
-from utils.myutil import Globals
+from utils.myutil import Globals, create_incremental_folder
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
 
@@ -187,6 +188,10 @@ def run(
     # 目录操作
     save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # 增加路径序号
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # 创建目录
+    # 获取递增异常存储文件夹
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    base_path = os.path.join(base_path, "exception")
+    base_path = create_incremental_folder(base_path)
     webcam = source.isnumeric()  # 判断source是否为数字
     # 加载模型
     device = select_device(device)  # 选择设备
@@ -350,7 +355,6 @@ def run(
         idx += 1
         if len(stack) >= 30:
             del stack[0]
-
         for i, det in enumerate(yolo_pred):  # per image
             seen += 1
             if webcam:  # batch_size >= 1
@@ -361,7 +365,8 @@ def run(
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             s += '%gx%g ' % im.shape[2:]  # print string
-            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字', font_size=int(max(im0.shape[1], im0.shape[0])/50))
+            annotator = Annotator(im0, line_width=line_thickness, example=str(names) + '汉字',
+                                  font_size=int(max(im0.shape[1], im0.shape[0]) / 50))
             if len(det):
                 # 遍历所有识别框
                 for j, (*box, cls, trackid, vx, vy) in enumerate(yolo_pred[0]):
@@ -377,6 +382,36 @@ def run(
                         ava_label = 'Unknow'
                         # 如果trackid在id_to_labels字典的键中，将ava_label置为对应的值
                         # 否则，将ava_label置为'Unknow'
+
+                    # 获取异常图片
+                    if trackid in id_to_ava_labels.keys():
+                        if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
+                            files = os.listdir(base_path)
+                            file_names = [f for f in files if f.endswith('.jpg')]
+                            if file_names:
+                                file_name = int(file_names[-1].split('_')[-1].split('.')[0]) + 1
+                            else:
+                                file_name = 1
+                            # 制造文件名
+                            file_name_str = str(file_name).zfill(6)
+                            # 获取框选区域的坐标
+                            x_min, y_min, x_max, y_max = map(int, box)
+                            # 截取框选区域的图像
+                            cropped_image = im0[y_min:y_max, x_min:x_max]
+                            # 保存异常部分图片
+                            cv2.imwrite(os.path.join(base_path, file_name_str + ".jpg"), cropped_image)
+                            try:
+                                with open(os.path.join(base_path, file_name_str + ".txt"), "w") as file:
+                                    file.write("秒数 :" + str(idx % int(vid_cap.get(cv2.CAP_PROP_FPS)))+"\n")
+                                    file.write("编号 :" + str(int(trackid))+"\n")
+                                    file.write("类别 :" + str(Globals.yolov5_dict[names[int(cls)]]) + "\n")
+                                    file.write("动作 :" + str(Globals.yolo_slowfast_dict[ava_label]) + "\n")
+                                    file.write("坐标 :(" + str(x_min) + "," + str(y_min) + ")")
+                                    file.write("(" + str(x_max) + "," + str(y_max) + ")" + "\n")
+                                    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    file.write("时间 :" + current_datetime + "\n")
+                            except Exception as e:
+                                print(e)
 
                     text = '{} {} {}'.format(int(trackid), Globals.yolov5_dict[names[int(cls)]],
                                              Globals.yolo_slowfast_dict[ava_label])

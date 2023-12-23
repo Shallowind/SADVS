@@ -81,21 +81,6 @@ class Annotator:
         self.lw = line_width or max(round(sum(im.shape) / 2 * 0.003), 2)  # line width
 
     def box_label(self, box, label='', color=(128, 128, 128), txt_color=(255, 255, 255)):
-        # Add one xyxy box to image with label
-        # if self.pil or not is_ascii(label):
-        #     self.draw.rectangle(box, width=self.lw, outline=tuple(color))  # box
-        #     if label:
-        #         # w, h = self.font.getsize(label)  # text width, height (WARNING: deprecated) in 9.2.0
-        #         _, _, w, h = self.font.getbbox(label)  # text width, height (New)
-        #         outside = box[1] - h >= 0  # label fits outside box
-        #         self.draw.rectangle(
-        #             (box[0], box[1] - h if outside else box[1], box[0] + w + 1,
-        #              box[1] + 1 if outside else box[1] + h + 1),
-        #             fill=tuple(color),
-        #         )
-        #         # self.draw.text((box[0], box[1]), label, fill=txt_color, font=self.font, anchor='ls')  # for PIL>8.0
-        #         self.draw.text((box[0], box[1] - h if outside else box[1]), label, fill=tuple(txt_color),
-        #                    font=self.font,spacing=max(self.lw - 1, 1))
         if self.pil or not is_ascii(label):
             self.draw.rectangle(box, width=self.lw, outline=tuple(color))  # box
             if label:

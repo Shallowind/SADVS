@@ -13,11 +13,11 @@ import numpy as np
 import pygame.camera
 import qdarkstyle
 from PyQt5 import uic
-from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal
+from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal, QSize
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QSplitter, QTreeWidgetItem, QListView, QTreeWidget, QMainWindow, \
-    QMenu, QAction, QMessageBox, QSizePolicy
+    QMenu, QAction, QMessageBox, QSizePolicy, QListWidgetItem
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -327,6 +327,22 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             }
         """)
         self.verticalLayout_10.addWidget(splitter_control)
+
+        splitter_exp = QSplitter(Qt.Horizontal)
+        splitter_exp.addWidget(self.exp_widget)
+        splitter_exp.addWidget(self.splitter)
+        splitter_exp.setStretchFactor(0, 10)
+        splitter_exp.setStretchFactor(1, 4)
+        splitter_exp.setStyleSheet("""
+            QSplitter {
+                background-color: 19232d;
+            }
+            QSplitter::handle {
+                background-color: 19232d;
+            }
+        """)
+        self.horizontalLayout_9.addWidget(splitter_exp)
+
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
         self.folder_icon = QIcon("resources/folder_ico.ico")
@@ -363,6 +379,67 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         with open(os.path.join(path, "yolov5", "字典.txt"), 'r', encoding='utf-8') as f:
             content = f.read()
         Globals.yolov5_dict = loads(content)
+
+        self.tabWidget.tabBarClicked.connect(self.tabClicked)
+        self.tabWidget.setCurrentIndex(0)
+        self.exp_list.clicked.connect(self.listClicked)
+
+    def listClicked(self):
+        item = self.exp_list.currentItem()
+        if item and self.tabWidget.currentIndex() == 2:
+            path = item.data(Qt.UserRole)
+            if path:
+                try:
+                    # 显示异常图片
+                    pixmap = QPixmap(path)
+                    self.expplayer.setAlignment(Qt.AlignCenter)
+                    self.expplayer.setPixmap(pixmap.scaled(self.expplayer.size(), aspectRatioMode=True))
+                    # 打开.txt文件并读取内容
+                    self.textEdit_2.clear()
+                    with open(path.split('.')[0] + '.txt', 'r') as file:
+                        text = file.read()
+                    # 将文件内容写入textEdit_2中
+                    self.exp_inf.setText(text)
+                    self.exp_inf.setReadOnly(True)
+                except Exception as e:
+                    # 处理错误，例如无效的图像路径
+                    print(f"设置图像时发生错误：{e}")
+
+    def tabClicked(self, index):
+        self.exp_list.setIconSize(QSize(75, 75))
+        self.exp_list.setStyleSheet("QListWidget::item { border: 2px solid black; }"
+                                      "QListWidget::item { color: red; }")
+
+        if index == 2:
+            # 清空列表以便重新加载
+            self.exp_list.clear()
+
+            # 遍历文件夹中的所有图片文件
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.join(base_path, "exception")
+            pathlist = []
+            for filename in os.listdir(base_path):
+                if filename.startswith('ep'):
+                    pathlist.append(filename)
+            if len(pathlist) == 0:
+                return
+            folder_path = os.path.join(base_path, pathlist[-1])
+            for filename in os.listdir(folder_path):
+                if filename.endswith(('.jpg', '.png', '.jpeg', '.bmp')):  # 仅处理图片文件
+                    # 创建 QListWidgetItem
+                    item = QListWidgetItem()
+                    path = os.path.join(folder_path, filename)
+                    item.setData(Qt.UserRole, path)
+                    # 创建 QPixmap 以便在列表中显示缩略图
+                    pixmap = QPixmap(path)
+                    icon = QIcon(pixmap)
+                    item.setIcon(icon)
+                    with open(path.split('.')[0] + '.txt', 'r') as file:
+                        text = file.read()
+                    text = text.split('动作 :')[-1].split('\n')[0]
+                    item.setText(text)
+                    # 将 QListWidgetItem 添加到 QListWidget
+                    self.exp_list.addItem(item)
 
     def change_select_video_widget(self, num):
         if num == 1:

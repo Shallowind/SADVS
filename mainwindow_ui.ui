@@ -218,7 +218,7 @@ QPushButton:pressed {
             <number>0</number>
            </property>
            <item row="0" column="0">
-            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,5">
+            <layout class="QHBoxLayout" name="horizontalLayout_14" stretch="1,4">
              <item>
               <widget class="QWidget" name="widget_list" native="true">
                <layout class="QGridLayout" name="gridLayout_14">
@@ -2814,6 +2814,79 @@ QPushButton:pressed {
                  </item>
                 </layout>
                </widget>
+               <widget class="QWidget" name="tab">
+                <attribute name="title">
+                 <string>异常检测</string>
+                </attribute>
+                <layout class="QGridLayout" name="gridLayout_28">
+                 <item row="0" column="1">
+                  <layout class="QHBoxLayout" name="horizontalLayout_9">
+                   <item>
+                    <widget class="QWidget" name="exp_widget" native="true">
+                     <layout class="QGridLayout" name="gridLayout_27">
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <item row="0" column="0">
+                       <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="4,10">
+                        <item>
+                         <widget class="QListWidget" name="exp_list"/>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="expplayer">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">
+        background: rgb(0, 0, 0);</string>
+                          </property>
+                          <property name="text">
+                           <string/>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSplitter" name="splitter">
+                     <property name="styleSheet">
+                      <string notr="true">            QSplitter {
+                background-color: 19232d;
+            }
+            QSplitter::handle {
+                background-color: 19232d;
+            }</string>
+                     </property>
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <widget class="QTextEdit" name="exp_inf"/>
+                     <widget class="QTextEdit" name="textEdit_2"/>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
               </widget>
              </item>
             </layout>
@@ -3261,7 +3334,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
