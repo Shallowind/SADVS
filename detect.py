@@ -192,6 +192,12 @@ def run(
     base_path = os.path.dirname(os.path.abspath(__file__))
     base_path = os.path.join(base_path, "exception")
     base_path = create_incremental_folder(base_path)
+    exp_path = os.path.basename(base_path)
+    try:
+        with open(os.path.join(base_path, exp_path + ".txt"), "w") as file:
+            file.write('异常类别：\n' + str(Globals.settings['labels']))
+    except Exception as e:
+        print(e)
     webcam = source.isnumeric()  # 判断source是否为数字
     # 加载模型
     device = select_device(device)  # 选择设备
@@ -389,21 +395,26 @@ def run(
                             files = os.listdir(base_path)
                             file_names = [f for f in files if f.endswith('.jpg')]
                             if file_names:
-                                file_name = int(file_names[-1].split('_')[-1].split('.')[0]) + 1
+                                file_name = int(file_names[-1].split('.')[0].split('all')[0]) + 1
                             else:
                                 file_name = 1
                             # 制造文件名
                             file_name_str = str(file_name).zfill(6)
                             # 获取框选区域的坐标
                             x_min, y_min, x_max, y_max = map(int, box)
+                            im1 = np.copy(im0)
+                            # 在原始图像上画一个框
+                            cv2.rectangle(im1, (x_min, y_min), (x_max, y_max), (0, 0, 255), line_thickness)
                             # 截取框选区域的图像
+                            cv2.imwrite(os.path.join(base_path, file_name_str + "all.jpg"), im1)
+
                             cropped_image = im0[y_min:y_max, x_min:x_max]
                             # 保存异常部分图片
                             cv2.imwrite(os.path.join(base_path, file_name_str + ".jpg"), cropped_image)
                             try:
                                 with open(os.path.join(base_path, file_name_str + ".txt"), "w") as file:
-                                    file.write("秒数 :" + str(idx % int(vid_cap.get(cv2.CAP_PROP_FPS)))+"\n")
-                                    file.write("编号 :" + str(int(trackid))+"\n")
+                                    file.write("秒数 :" + str(idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) + 1) + "\n")
+                                    file.write("编号 :" + str(int(trackid)) + "\n")
                                     file.write("类别 :" + str(Globals.yolov5_dict[names[int(cls)]]) + "\n")
                                     file.write("动作 :" + str(Globals.yolo_slowfast_dict[ava_label]) + "\n")
                                     file.write("坐标 :(" + str(x_min) + "," + str(y_min) + ")")
@@ -432,26 +443,13 @@ def run(
             im1 = im0.astype("uint8")
             show = cv2.cvtColor(im1, cv2.COLOR_BGR2RGB)
             showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
-
-            # label_size = show_label.size()
-            # label_size.setWidth(label_size.width() - 10)
-            # label_size.setHeight(label_size.height() - 10)
-            # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            #
-            # pixmap = QPixmap.fromImage(scaled_image)
-            # show_label.setPixmap(pixmap)
-            # show_label.setAlignment(Qt.AlignCenter)
-
             scale_factor = min(show_window.player_2.width() / showImage.width(),
                                show_window.player_2.height() / showImage.height())
-
             # 计算新的宽度和高度
             new_width = int(showImage.width() * scale_factor)
             new_height = int(showImage.height() * scale_factor)
-
             # 设置新的最大大小
             show_window.camera_2.setMaximumSize(new_width, new_height)
-
             show_window.camera_2.setPixmap(QPixmap(showImage))
             show_window.camera_2.setScaledContents(True)
 

@@ -29,7 +29,7 @@ class User_management(Ui_user_management,QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         # 登录
-        self.signin.clicked.connect(self.Login)
+        self.signin.clicked.connect(self.close)
         self.signup.clicked.connect(self.Signup)
         # 退出
         # self.quit.clicked.connect(self.close)
