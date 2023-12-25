@@ -22,6 +22,9 @@ class Video(QWidget):
         # 设置定时器，定期更新进度条
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_progress_bar)
+        self.timer_cv = QTimer()
+        self.timer_cv.timeout.connect(self.updateFrame)
+
         # self.ui.comboBox.currentIndexChanged.connect(self.speed_change)
 
     def setPosition(self, position):
@@ -32,7 +35,6 @@ class Video(QWidget):
         self.displayTime(current_time)
 
     def displayTime(self, ms):
-        # print(ms)
         minutes = int(ms / 60000)
         seconds = int((ms % 60000) / 1000)
         if self.video_time is not None:
@@ -58,12 +60,15 @@ class Video(QWidget):
 
     def speed_change(self, speed):
         # 改变帧率
-        self.fps = int(self.player.get(cv2.CAP_PROP_FPS) * float(speed))
+        self.fps = self.player.get(cv2.CAP_PROP_FPS) / float(speed)
+        self.timer_cv.setInterval(self.fps)  # 1000毫秒 = 1秒
+
 
     def pause(self):
         # 切换播放状态
         self.timer.stop()
         self.playing = False
+        self.timer_cv.stop()
 
     def update_progress_bar(self):
         # 获取当前帧数
@@ -111,18 +116,15 @@ class Video(QWidget):
             self.show_frame(img)
         # 视频文件
         elif self.is_video_file(self.video_path):
-            while self.playing:
-                ret, frame = self.player.read()
-                if ret:
-                    self.show_frame(frame)
-                else:
-                    break
+            self.timer_cv.start()
 
-                # 获取当前播放的时间（毫秒）
-                current_time = self.player.get(cv2.CAP_PROP_POS_MSEC)
-                self.displayTime(current_time)
-
-                cv2.waitKey(int(1000 / self.fps))
+    def updateFrame(self):
+        ret, frame = self.player.read()
+        if ret:
+            self.show_frame(frame)
+        # 获取当前播放的时间（毫秒）
+        current_time = self.player.get(cv2.CAP_PROP_POS_MSEC)
+        self.displayTime(current_time)
 
     @staticmethod
     def is_video_file(file_path):
@@ -162,6 +164,7 @@ class Video(QWidget):
             self.video_path = video_path
         self.player = cv2.VideoCapture(self.video_path)
         self.fps = self.player.get(cv2.CAP_PROP_FPS)
+        self.timer_cv.setInterval(self.fps)  # 1000毫秒 = 1秒
 
     def show_frame(self, frame):
         show = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

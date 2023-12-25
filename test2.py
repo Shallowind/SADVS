@@ -56,16 +56,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 播放器
         self.vdplayer_1 = Video()
         self.vdplayer = self.vdplayer_1
-        self.vdplayer_1.setVideoOutput([self.player_show_1, self.player_widget_1], self.video_slider, self.video_time,
+        self.vdplayer_1.setVideoOutput([self.player_show_1, self.player_widget_1], self.video_slider, self.video_time_1,
                                        self.cut_time)
         self.vdplayer_2 = Video()
-        self.vdplayer_2.setVideoOutput([self.player_show_2, self.player_widget_2], self.video_slider_2, self.video_time,
+        self.vdplayer_2.setVideoOutput([self.player_show_2, self.player_widget_2], self.video_slider_2, self.video_time_2,
                                        self.cut_time)
         self.vdplayer_3 = Video()
-        self.vdplayer_3.setVideoOutput([self.player_show_3, self.player_widget_3], self.video_slider_3, self.video_time,
+        self.vdplayer_3.setVideoOutput([self.player_show_3, self.player_widget_3], self.video_slider_3, self.video_time_3,
                                        self.cut_time)
         self.vdplayer_4 = Video()
-        self.vdplayer_4.setVideoOutput([self.player_show_4, self.player_widget_4], self.video_slider_5, self.video_time,
+        self.vdplayer_4.setVideoOutput([self.player_show_4, self.player_widget_4], self.video_slider_5, self.video_time_4,
                                        self.cut_time)
         self.change_video_widget_enabled = False
         self.widget_1.doubleClicked.connect(lambda: self.change_video_widget(1))
@@ -76,7 +76,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.widget_3.mousePressed.connect(lambda: self.change_select_video_widget(3))
         self.widget_4.doubleClicked.connect(lambda: self.change_video_widget(4))
         self.widget_4.mousePressed.connect(lambda: self.change_select_video_widget(4))
-
+        self.idplayer = Video()
+        self.idplayer.setVideoOutput([self.camera_2, self.camera_2], None, None,
+                                       None)
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -1412,8 +1414,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             file_size = self.convert_bytes_to_readable(file_size)
             # 将信息设置到UI元素中
             info_text = f"总帧数: {total_frames}\n\n帧率: {frame_rate}\n\n时长: {hours}:{minutes}:{seconds}\n\n"
-            self.video_time_all.setText(f"{minutes}:{seconds}")
-            self.cut_time_all.setText(f"{minutes}:{seconds}")
+            # self.video_time_all.setText(f"{minutes}:{seconds}")
+            # self.cut_time_all.setText(f"{minutes}:{seconds}")
             info_text += f"修改日期:{formatted_date} \n\n文件大小: {file_size}\n\n分辨率: {width}x{height}"
             self.video_info.setPlainText(info_text)
 
@@ -1446,19 +1448,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         formatted_size = "{:.2f}".format(size)
         # 返回格式化后的结果，包括单位
         return f"{formatted_size} {units[unit_index]}"
-
-    # 显示剩余时间
-    def displayTime(self, ms):
-        # print(ms)
-        minutes = int(ms / 60000)
-        seconds = int((ms % 60000) / 1000)
-        milliseconds = int(ms % 1000)
-        if self.tabWidget.currentIndex() == 0:
-            self.video_time.setText('{}:{}'.format(minutes, seconds))
-            self.cut_time.setText('{}:{}'.format(minutes, seconds))
-        elif self.tabWidget.currentIndex() == 1:
-            self.video_time_2.setText('{}:{}'.format(minutes, seconds))
-            self.action_list.clear()
 
     # 暂停/播放
     def playPause(self):

@@ -5,6 +5,7 @@ import sys
 import threading
 # import ffmpeg
 from datetime import datetime
+from time import sleep
 from tkinter import Tk, simpledialog
 from json import loads
 import cv2
@@ -12,11 +13,11 @@ import numpy as np
 import pygame.camera
 import qdarkstyle
 from PyQt5 import uic
-from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal
+from PyQt5.QtCore import QUrl, Qt, QTimer, QFileInfo, pyqtSignal, QSize
 from PyQt5.QtGui import QIcon, QImage, QPixmap, QColor
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtWidgets import QFileDialog, QApplication, QSplitter, QTreeWidgetItem, QListView, QTreeWidget, QMainWindow, \
-    QMenu, QAction, QMessageBox
+    QMenu, QAction, QMessageBox, QSizePolicy, QListWidgetItem
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -31,6 +32,7 @@ from utils.myutil import Globals, ConsoleRedirector
 from mainwindow_ui import Ui_MainWindow
 
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
+from test import Video
 
 
 class MainWindow(Ui_MainWindow, QMainWindow):
@@ -52,10 +54,42 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.tabWidget.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
         self.signal.connect(self.cut_completed)
         # 播放器
-        self.vdplayer = QMediaPlayer()
-        self.vdplayer.setVideoOutput([self.player, self.player_1])
-        self.vdplayer_2 = QMediaPlayer()
-        self.vdplayer_2.setVideoOutput([self.camera_2, self.player_2])
+        self.vdplayer_1 = Video()
+        self.vdplayer = self.vdplayer_1
+        self.video_time_all = self.video_time_all_1
+        self.label_inf_widget_2.setVisible(False)
+        self.video_slider_2.setVisible(False)
+        self.label_inf_widget_3.setVisible(False)
+        self.video_slider_3.setVisible(False)
+        self.label_inf_widget_4.setVisible(False)
+        self.video_slider_4.setVisible(False)
+        self.vdplayer_1.setVideoOutput([self.player_show_1, self.player_widget_1], self.video_slider_1,
+                                       self.video_time_1,
+                                       self.cut_time)
+        self.vdplayer_2 = Video()
+        self.vdplayer_2.setVideoOutput([self.player_show_2, self.player_widget_2], self.video_slider_2,
+                                       self.video_time_2,
+                                       self.cut_time)
+        self.vdplayer_3 = Video()
+        self.vdplayer_3.setVideoOutput([self.player_show_3, self.player_widget_3], self.video_slider_3,
+                                       self.video_time_3,
+                                       self.cut_time)
+        self.vdplayer_4 = Video()
+        self.vdplayer_4.setVideoOutput([self.player_show_4, self.player_widget_4], self.video_slider_4,
+                                       self.video_time_4,
+                                       self.cut_time)
+        self.change_video_widget_enabled = False
+        self.widget_1.doubleClicked.connect(lambda: self.change_video_widget(1))
+        self.widget_1.mousePressed.connect(lambda: self.change_select_video_widget(1))
+        self.widget_2.doubleClicked.connect(lambda: self.change_video_widget(2))
+        self.widget_2.mousePressed.connect(lambda: self.change_select_video_widget(2))
+        self.widget_3.doubleClicked.connect(lambda: self.change_video_widget(3))
+        self.widget_3.mousePressed.connect(lambda: self.change_select_video_widget(3))
+        self.widget_4.doubleClicked.connect(lambda: self.change_video_widget(4))
+        self.widget_4.mousePressed.connect(lambda: self.change_select_video_widget(4))
+        self.idplayer = Video()
+        self.idplayer.setVideoOutput([self.camera_2, self.camera_2], None, None,
+                                     None)
         # 选择文件夹
         self.video_select.triggered.connect(self.openVideoFolder)
         self.new_file.clicked.connect(self.openVideoFolder)
@@ -102,12 +136,12 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.work_list.setContextMenuPolicy(Qt.CustomContextMenu)
         self.work_list.customContextMenuRequested.connect(self.worklist_show_context_menu)
         # 进度条
-        self.vdplayer.durationChanged.connect(self.getDuration)
-        self.vdplayer.positionChanged.connect(self.getPosition)
-        self.vdplayer_2.durationChanged.connect(self.getDuration)
-        self.vdplayer_2.positionChanged.connect(self.getPosition)
-        self.video_slider.sliderMoved.connect(self.updatePosition)
-        self.video_slider_2.sliderMoved.connect(self.updatePosition)
+        # self.vdplayer.durationChanged.connect(self.getDuration)
+        # self.vdplayer.positionChanged.connect(self.getPosition)
+        # self.idplayer.durationChanged.connect(self.getDuration)
+        # self.idplayer.positionChanged.connect(self.getPosition)
+        # self.video_slider.sliderMoved.connect(self.updatePosition)
+        # self.video_slider_2.sliderMoved.connect(self.updatePosition)
         self.cut_slider.sliderMoved.connect(self.echo)
         self.cut_slider.setVisible(False)
         self.cut_time.setVisible(False)
@@ -138,7 +172,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 使用样式表来设置项的高度
         self.v_d_comboBox.setStyleSheet('QComboBox QAbstractItemView::item { height: 20px; }')
         self.v_d_comboBox.setMaxVisibleItems(50)
-        self.camera.setVisible(False)
         # tab切换
         self.tabWidget.currentChanged.connect(self.tabChanged)
         # 定时器
@@ -211,7 +244,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """)
         self.work_list.setSelectionMode(QTreeWidget.ExtendedSelection)
         self.terminal.setStyleSheet("background-color: 000000")
-        # sys.stdout = ConsoleRedirector(self, self.terminal)
+        sys.stdout = ConsoleRedirector(self, self.terminal)
         # sys.stderr = ConsoleRedirector(self, self.terminal, QColor(255, 0, 0))
         print()
 
@@ -241,7 +274,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         splitter_tab = QSplitter(Qt.Horizontal)
         splitter_tab.addWidget(self.widget_list)
         splitter_tab.addWidget(self.tabWidget)
-        splitter_tab.setStretchFactor(0, 8)
+        splitter_tab.setStretchFactor(0, 12)
         splitter_tab.setStretchFactor(1, 10)
         splitter_tab.setStyleSheet("""
             QSplitter {
@@ -267,7 +300,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         splitter_video.addWidget(self.video_widget)
         splitter_video.addWidget(self.video_label_widget)
         splitter_video.setStretchFactor(0, 5)
-        splitter_video.setStretchFactor(1, 2)
+        splitter_video.setStretchFactor(1, 5)
         self.horizontalLayout_5.addWidget(splitter_video)
         splitter_video.setStyleSheet("""
             QSplitter {
@@ -307,6 +340,22 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             }
         """)
         self.verticalLayout_10.addWidget(splitter_control)
+
+        splitter_exp = QSplitter(Qt.Horizontal)
+        splitter_exp.addWidget(self.exp_widget)
+        splitter_exp.addWidget(self.splitter)
+        splitter_exp.setStretchFactor(0, 10)
+        splitter_exp.setStretchFactor(1, 4)
+        splitter_exp.setStyleSheet("""
+            QSplitter {
+                background-color: 19232d;
+            }
+            QSplitter::handle {
+                background-color: 19232d;
+            }
+        """)
+        self.horizontalLayout_9.addWidget(splitter_exp)
+
         # 图标
         self.file_icon = QIcon("resources/file_ico.png")
         self.folder_icon = QIcon("resources/folder_ico.ico")
@@ -344,9 +393,150 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             content = f.read()
         Globals.yolov5_dict = loads(content)
 
+        self.tabWidget.tabBarClicked.connect(self.tabClicked)
+        self.tabWidget.setCurrentIndex(0)
+        self.exp_list.clicked.connect(self.listClicked)
+
+    def listClicked(self):
+        item = self.exp_list.currentItem()
+        if item and self.tabWidget.currentIndex() == 2:
+            path = item.data(Qt.UserRole)
+            if path:
+                try:
+                    # 显示异常图片
+                    pixmap = QPixmap(path.split('.')[0] + 'all.jpg')
+                    self.expplayer.setAlignment(Qt.AlignCenter)
+                    self.expplayer.setPixmap(pixmap.scaled(self.expplayer.size(), aspectRatioMode=True))
+                    # 打开.txt文件并读取内容
+                    self.exp_inf.clear()
+                    self.exp_type.clear()
+                    with open(path.split('.')[0] + '.txt', 'r') as file:
+                        text = file.read()
+                    # 将文件内容写入textEdit_2中
+                    self.exp_inf.setText(text)
+                    path1 = os.path.join(os.path.dirname(path), os.path.basename(os.path.dirname(path))+'.txt')
+                    # print(os.path.dirname(path) + '.txt')
+                    with open(path1, 'r') as file:
+                        text = file.read()
+                    self.exp_type.setText(text)
+                    self.exp_inf.setReadOnly(True)
+                    self.exp_type.setReadOnly(True)
+                except Exception as e:
+                    # 处理错误，例如无效的图像路径
+                    print(f"设置图像时发生错误：{e}")
+
+    def tabClicked(self, index):
+        self.exp_list.setIconSize(QSize(75, 75))
+
+        if index == 2:
+            # 清空列表以便重新加载
+            self.exp_list.clear()
+
+            # 遍历文件夹中的所有图片文件
+            base_path = os.path.dirname(os.path.abspath(__file__))
+            base_path = os.path.join(base_path, "exception")
+            pathlist = []
+            for filename in os.listdir(base_path):
+                if filename.startswith('ep'):
+                    pathlist.append(filename)
+            if len(pathlist) == 0:
+                return
+            folder_path = os.path.join(base_path, pathlist[-1])
+            for filename in os.listdir(folder_path):
+                if filename.endswith(('.jpg', '.png', '.jpeg', '.bmp')):  # 仅处理图片文件
+                    if filename.endswith('all.jpg'):
+                        continue
+                    # 创建 QListWidgetItem
+                    item = QListWidgetItem()
+                    path = os.path.join(folder_path, filename)
+                    item.setData(Qt.UserRole, path.split('all')[0])
+                    # 创建 QPixmap 以便在列表中显示缩略图
+                    pixmap = QPixmap(path)
+                    icon = QIcon(pixmap)
+                    item.setIcon(icon)
+                    with open(path.split('.')[0].split('all')[0] + '.txt', 'r') as file:
+                        text = file.read()
+                    text = text.split('动作 :')[-1].split('\n')[0]
+                    item.setTextAlignment(Qt.AlignRight)
+                    item.setText(text)
+                    # 将 QListWidgetItem 添加到 QListWidget
+                    self.exp_list.addItem(item)
+
+    def change_select_video_widget(self, num):
+        if num == 1:
+            self.vdplayer = self.vdplayer_1
+            self.video_time_all = self.video_time_all_1
+            self.label_inf_widget_1.setVisible(True)
+            self.label_inf_widget_2.setVisible(False)
+            self.label_inf_widget_3.setVisible(False)
+            self.label_inf_widget_4.setVisible(False)
+            self.video_slider_1.setVisible(True)
+            self.video_slider_2.setVisible(False)
+            self.video_slider_3.setVisible(False)
+            self.video_slider_4.setVisible(False)
+        elif num == 2:
+            self.vdplayer = self.vdplayer_2
+            self.video_time_all = self.video_time_all_2
+            self.label_inf_widget_1.setVisible(False)
+            self.label_inf_widget_2.setVisible(True)
+            self.label_inf_widget_3.setVisible(False)
+            self.label_inf_widget_4.setVisible(False)
+            self.video_slider_1.setVisible(False)
+            self.video_slider_2.setVisible(True)
+            self.video_slider_3.setVisible(False)
+            self.video_slider_4.setVisible(False)
+        elif num == 3:
+            self.vdplayer = self.vdplayer_3
+            self.video_time_all = self.video_time_all_3
+            self.label_inf_widget_1.setVisible(False)
+            self.label_inf_widget_2.setVisible(False)
+            self.label_inf_widget_3.setVisible(True)
+            self.label_inf_widget_4.setVisible(False)
+            self.video_slider_1.setVisible(False)
+            self.video_slider_2.setVisible(True)
+            self.video_slider_3.setVisible(False)
+            self.video_slider_4.setVisible(False)
+        elif num == 4:
+            self.vdplayer = self.vdplayer_4
+            self.video_time_all = self.video_time_all_4
+            self.label_inf_widget_1.setVisible(False)
+            self.label_inf_widget_2.setVisible(False)
+            self.label_inf_widget_3.setVisible(False)
+            self.label_inf_widget_4.setVisible(True)
+            self.video_slider_1.setVisible(False)
+            self.video_slider_2.setVisible(True)
+            self.video_slider_3.setVisible(False)
+            self.video_slider_4.setVisible(False)
+
+    def change_video_widget(self, num):
+        if self.change_video_widget_enabled:
+            self.change_video_widget_enabled = False
+            self.widget_1.setVisible(True)
+            self.widget_2.setVisible(True)
+            self.widget_3.setVisible(True)
+            self.widget_4.setVisible(True)
+        else:
+            self.change_video_widget_enabled = True
+            if num == 1:
+                self.widget_2.setVisible(False)
+                self.widget_4.setVisible(False)
+                self.widget_3.setVisible(False)
+            elif num == 2:
+                self.widget_1.setVisible(False)
+                self.widget_3.setVisible(False)
+                self.widget_4.setVisible(False)
+            elif num == 3:
+                self.widget_1.setVisible(False)
+                self.widget_2.setVisible(False)
+                self.widget_4.setVisible(False)
+            elif num == 4:
+                self.widget_1.setVisible(False)
+                self.widget_2.setVisible(False)
+                self.widget_3.setVisible(False)
+
     # 保存行为识别报告
     def stopIdentify(self):
-        QMessageBox.information(self, "提示", "识别报告已保存到文件夹\nD:/VScode/motion-monitor-x/result")
+        # QMessageBox.information(self, "提示", "识别报告已保存到文件夹\nD:/VScode/motion-monitor-x/result")
         Globals.detection_run = False
         self.start_identify.setEnabled(True)
         self.stop_identify.setEnabled(False)
@@ -568,11 +758,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         target, fileType = QFileDialog.getSaveFileName(self, "保存文件", default_name, f"*.{default_extension}")
         source = self.selected_path.strip()
         target = target.strip()
-        start_time_ms = self.lopo  # 获取开始剪切时间（毫秒）
-        stop_time_ms = self.hipo  # 获取剪切的结束时间（毫秒）
+        # 获得视频时长
+        all_seconds = self.vdplayer.player.get(cv2.CAP_PROP_FRAME_COUNT) / self.vdplayer.player.get(
+            cv2.CAP_PROP_FPS)
 
-        start_time_sec = start_time_ms / 1000.0
-        stop_time_sec = stop_time_ms / 1000.0
+        start_time_sec = self.lopo / 100 * all_seconds  # 获取开始剪切时间（毫秒）
+        stop_time_sec = self.hipo / 100 * all_seconds  # 获取剪切的结束时间（毫秒）
+
+        print(f"开始剪切时间：{start_time_sec}")
+        print(f"结束剪切时间：{stop_time_sec}")
         try:
             print("剪辑进行中，请耐心等待...")
             video = VideoFileClip(source)  # 视频文件加载
@@ -596,6 +790,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     # 开始剪辑模式
     def cutMode(self):
         self.vdplayer.pause()
+        self.play_pause.setIcon(self.play_ico)
         self.cut_slider.setVisible(True)
         self.cut_time.setVisible(True)
         self.label_2.setVisible(True)
@@ -650,30 +845,26 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     # 倍速数值改变触发
     def speed_change(self):
         if self.tabWidget.currentIndex() == 0:
-            self.vdplayer.pause()
-            self.speed_play(self.vdplayer)
-
-    # 倍速播放
-    def speed_play(self, player):
-        speed = self.speed.currentText()
-        speed = float(speed.split("x")[0])
-        player.setPlaybackRate(speed)
-        player.play()
+            speed = self.speed.currentText()
+            speed = float(speed.split("x")[0])
+            self.vdplayer.speed_change(speed)
 
     def echo(self, low_value, high_value):
         # print(low_value, high_value)
         if self.tabWidget.currentIndex() == 0:
             if low_value != self.lopo:
                 self.lopo = low_value
-                self.speed_play(self.vdplayer)
                 self.vdplayer.setPosition(low_value)
-                self.vdplayer.pause()
+                # self.vdplayer.play()
+                # self.speed_play(self.vdplayer)
+                # self.vdplayer.pause()
                 self.play_pause.setIcon(self.play_ico)
             elif high_value != self.hipo:
                 self.hipo = high_value
-                self.speed_play(self.vdplayer)
                 self.vdplayer.setPosition(high_value)
-                self.vdplayer.pause()
+                # self.vdplayer.play()
+                # self.speed_play(self.vdplayer)
+                # self.vdplayer.pause()
                 self.play_pause.setIcon(self.play_ico)
 
     # 工作区右键菜单显示
@@ -926,21 +1117,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def select_V_D(self):
         selected_option = self.v_d_comboBox.currentText()
         if selected_option == '视频列表':
-            self.player.setVisible(True)
-            self.camera.setVisible(False)
-
             # 释放资源
-            if self.capture is not None:
-                self.capture.release()
-            self.timer_cv.stop()
+            # if self.capture is not None:
+            #     self.capture.release()
+            # self.timer_cv.stop()
             self.video_tree.clear()
 
             # 添加视频列表
             if self.selected_folder != "":
                 self.addFolderToTree(self.video_tree, self.selected_folder)
         elif selected_option == '设备列表':
-            self.player.setVisible(False)
-            self.camera.setVisible(True)
             self.video_tree.clear()
 
             # 添加设备列表
@@ -961,9 +1147,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         print("检测到设备：" + str(self.camera_id_list))
         selected_option = self.v_d_comboBox.currentText()
         if selected_option == '设备列表':
-            # 隐藏播放器、显示摄像头
-            self.player.setVisible(False)
-            self.camera.setVisible(True)
             # 清空视频树的显示内容
             self.video_tree.clear()
             if self.camera_id_list is not None:
@@ -1076,12 +1259,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         selected_option = self.v_d_comboBox.currentText()
         if selected_option == '视频列表':
             self.playSelectedVideo(item, False)
-            self.player.setVisible(True)
-            self.camera.setVisible(False)
         elif selected_option == '设备列表':
-            self.player.setVisible(False)
-            self.camera.setVisible(True)
-
             self.capture = cv2.VideoCapture(int(item.text(0)))
             self.timer_cv.start()
 
@@ -1092,44 +1270,62 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.start_identify.setEnabled(True)
         if item.isCamera:
             # 如果项目是摄像头
-            self.player.setVisible(False)
-            self.camera.setVisible(True)
-            self.capture = cv2.VideoCapture(0)
+            self.capture = cv2.VideoCapture(int(item.text(0)))
             # 初始化摄像头捕捉对象
             self.timer_cv.start()
             # 启动定时器
         else:
             # 播放选定的视频，带声音
             self.playSelectedVideo(item, True)
-            self.player.setVisible(True)
-            self.camera.setVisible(False)
 
     # 从OpenCV捕获摄像头获取一帧图像
     def updateFrame(self):
         flag, image = self.capture.read()
         show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         # 将图像转换为QImage对象
-        showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-        label = self.camera
+
+        showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
+
+        label = self.player_show_1
+        widget = self.player_2
         # 根据当前选中的选项卡索引调整标签
         if self.tabWidget.currentIndex() == 0:
-            label = self.camera
+            label = self.player_show_1
+            widget = self.player_widget_1
         elif self.tabWidget.currentIndex() == 1:
             label = self.camera_2
+            widget = self.player_2
         label_size = label.size()
         # 缩小尺寸并保持宽高比
-        label_size.setWidth(label_size.width() - 10)
-        label_size.setHeight(label_size.height() - 10)
-        scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-        pixmap = QPixmap.fromImage(scaled_image)
-        label.setPixmap(pixmap)
-        label.setAlignment(Qt.AlignCenter)
+        # label_size.setWidth(label_size.width() - 10)
+        # label_size.setHeight(label_size.height() - 10)
+        # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # pixmap = QPixmap.fromImage(scaled_image)
+        # label.setPixmap(pixmap)
+        # label.setAlignment(Qt.AlignCenter)
+
+        scale_factor = min(widget.width() / showImage.width(),
+                           widget.height() / showImage.height())
+
+        # 计算新的宽度和高度
+        new_width = int(showImage.width() * scale_factor)
+        new_height = int(showImage.height() * scale_factor)
+
+        # 设置新的最大大小
+        label.setMaximumSize(new_width, new_height)
+
+        label.setPixmap(QPixmap(showImage))
+        label.setScaledContents(True)
+
+    def setMedia(self, video_path):
+        self.vdplayer = cv2.VideoCapture(video_path)
+        self.fps = self.vdplayer.get(cv2.CAP_PROP_FPS)
 
     # 播放选中视频
     def playSelectedVideo(self, item, isworklist, path=''):
-        if self.capture is not None:
-            self.capture.release()
-        self.timer_cv.stop()
+        # if self.capture is not None:
+        #     self.capture.release()
+        # self.timer_cv.stop()
         # 重置标签
         self.video_label_edit.setText("")
         # 解禁设置视频标签
@@ -1137,8 +1333,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.save_label.setEnabled(True)
         # 获取所选项的完整路径，包括文件夹结构
         if path:
-            self.player.setVisible(True)
-            self.camera.setVisible(False)
             selected_video_path = path
         else:
             if isworklist:
@@ -1177,39 +1371,56 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             player = self.vdplayer
             play_pause = self.play_pause
             if os.path.isfile(selected_video_path) and file_extension:
-                player.setMedia(QMediaContent(QUrl.fromLocalFile(selected_video_path)))
+                player.setMedia(selected_video_path)
+                self.getVideoinfo(selected_video_path)
+                # player.setMedia(QMediaContent(QUrl.fromLocalFile(selected_video_path)))
                 # 根据文件后缀选择不同处理方式
                 if file_extension == ".avi" or file_extension == ".mp4":
                     play_pause.setEnabled(True)
                     self.cut_mode.setEnabled(True)
                     self.play_pause.setIcon(self.pause_ico)
-                    self.speed_play(player)
+                    # self.speed_play(player)
+                    player.play()
                 elif file_extension == ".jpg" or file_extension == ".png":
                     play_pause.setEnabled(False)
                     self.cut_mode.setEnabled(False)
-                    self.speed_play(player)
+                    # self.speed_play(player)
+                    player.play()
                 else:
                     self.cut_mode.setEnabled(False)
                     play_pause.setEnabled(False)
-                self.getVideoinfo(selected_video_path)
+
         elif self.tabWidget.currentIndex() == 1:
             video_path = selected_video_path
-            cap = cv2.VideoCapture(video_path)
-            if cap.isOpened():
+            self.idplayer.setMedia(video_path)
+            if self.idplayer.player.isOpened():
                 # 读取第一帧
-                flag, image = cap.read()
+                flag, image = self.idplayer.player.read()
                 if flag:
                     show = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                    showImage = QImage(show.data, show.shape[1], show.shape[0], QImage.Format_RGB888)
-                    label_size = self.camera_2.size()
-                    label_size.setWidth(label_size.width() - 10)
-                    label_size.setHeight(label_size.height() - 10)
-                    scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio)
-                    pixmap = QPixmap.fromImage(scaled_image)
-                    self.camera_2.setPixmap(pixmap)
-                    self.camera_2.setAlignment(Qt.AlignCenter)
-            cap.release()
-            player = self.vdplayer_2
+                    showImage = QImage(show.data, show.shape[1], show.shape[0], show.shape[1] * 3, QImage.Format_RGB888)
+                    # label_size = self.camera_2.size()
+                    # label_size.setWidth(label_size.width() - 10)
+                    # label_size.setHeight(label_size.height() - 10)
+                    # scaled_image = showImage.scaled(label_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                    # pixmap = QPixmap.fromImage(scaled_image)
+                    # self.camera_2.setPixmap(pixmap)
+                    # self.camera_2.setAlignment(Qt.AlignCenter)
+                    # 计算缩放比例
+                    scale_factor = min(self.player_2.width() / showImage.width(),
+                                       self.player_2.height() / showImage.height())
+
+                    # 计算新的宽度和高度
+                    new_width = int(showImage.width() * scale_factor)
+                    new_height = int(showImage.height() * scale_factor)
+
+                    # 设置新的最大大小
+                    self.camera_2.setMaximumSize(new_width, new_height)
+
+                    self.camera_2.setPixmap(QPixmap(showImage))
+                    self.camera_2.setScaledContents(True)
+            else:
+                self.idplayer.play()
 
     def getFullPath(self, item):
         # 从所选项递归构建完整路径
@@ -1222,20 +1433,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 将路径组件连接起来
         full_path = os.path.join(self.selected_folder, *path_components)
         return full_path
-
-    # 视频总时长获取
-    def getDuration(self, d):
-        if self.tabWidget.currentIndex() == 0:
-            self.video_slider.setRange(0, d)
-            self.cut_slider.setRange(0, d)
-            self.cut_slider.setHighToMaximum()
-            self.lopo = 0
-            self.hipo = self.cut_slider.maximum()
-            self.video_slider.setEnabled(True)
-        elif self.tabWidget.currentIndex() == 1:
-            self.video_slider_2.setRange(0, d)
-            self.video_slider_2.setEnabled(True)
-        self.displayTime(d)
 
     # 视频详细数据获取
     def getVideoinfo(self, selected_video_path):
@@ -1273,13 +1470,24 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             # 将信息设置到UI元素中
             info_text = f"总帧数: {total_frames}\n\n帧率: {frame_rate}\n\n时长: {hours}:{minutes}:{seconds}\n\n"
             self.video_time_all.setText(f"{minutes}:{seconds}")
-            self.cut_time_all.setText(f"{minutes}:{seconds}")
+            # self.cut_time_all.setText(f"{minutes}:{seconds}")
             info_text += f"修改日期:{formatted_date} \n\n文件大小: {file_size}\n\n分辨率: {width}x{height}"
             self.video_info.setPlainText(info_text)
 
         except Exception as e:
             # 处理异常情况
-            self.video_info.setPlainText(f"获取视频信息时发生错误: {str(e)}")
+            if Video.is_image_file(selected_video_path):
+                # 获取图像信息
+                img = cv2.imread(selected_video_path)
+                height, width, channels = img.shape
+
+                # 添加分辨率信息
+                resolution_info = f"分辨率: {width} x {height}"
+                info_text = f"{resolution_info}  \n通道: {channels}"
+
+                self.video_info.setPlainText(info_text)
+            else:
+                self.video_info.setPlainText(f"获取视频信息时发生错误")
 
         # 单位转换
 
@@ -1296,46 +1504,6 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 返回格式化后的结果，包括单位
         return f"{formatted_size} {units[unit_index]}"
 
-    # 视频实时位置获取
-    def getPosition(self):
-        # 判断当前点击的选项卡索引
-        if self.tabWidget.currentIndex() == 0:
-            # 获取当前视频播放器的位置
-            p = self.vdplayer.position()
-            # 更新视频滑块的值
-            self.video_slider.setValue(p)
-            # 在界面上显示时间
-            self.displayTime(p)
-        elif self.tabWidget.currentIndex() == 1:
-            p = self.vdplayer_2.position()
-            self.video_slider_2.setValue(p)
-            self.displayTime(p)
-
-    # 显示剩余时间
-    def displayTime(self, ms):
-        # print(ms)
-        minutes = int(ms / 60000)
-        seconds = int((ms % 60000) / 1000)
-        milliseconds = int(ms % 1000)
-        if self.tabWidget.currentIndex() == 0:
-            self.video_time.setText('{}:{}'.format(minutes, seconds))
-            self.cut_time.setText('{}:{}'.format(minutes, seconds))
-        elif self.tabWidget.currentIndex() == 1:
-            self.video_time_2.setText('{}:{}'.format(minutes, seconds))
-            self.action_list.clear()
-
-    # 用进度条更新视频位置
-    def updatePosition(self, v):
-        if self.tabWidget.currentIndex() == 0:
-            self.displayTime(self.video_slider.maximum() - v)
-            self.speed_play(self.vdplayer)
-            self.vdplayer.setPosition(v)
-            self.vdplayer.pause()
-            self.play_pause.setIcon(self.play_ico)
-        elif self.tabWidget.currentIndex() == 1:
-            self.displayTime(self.video_slider_2.maximum() - v)
-            self.vdplayer_2.setPosition(v)
-
     # 暂停/播放
     def playPause(self):
         if self.tabWidget.currentIndex() == 0:
@@ -1344,11 +1512,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 self.vdplayer.pause()
             else:
                 self.play_pause.setIcon(self.pause_ico)
-                self.speed_play(self.vdplayer)
+                self.vdplayer.play()
         elif self.tabWidget.currentIndex() == 1:
-            if self.vdplayer_2.state() == 1:
+            if self.idplayer.state() == 1:
                 self.play_pause_2.setIcon(self.play_ico)
-                self.vdplayer_2.pause()
+                self.idplayer.pause()
             else:
                 self.play_pause_2.setIcon(self.pause_ico)
                 self.speed_play(self.vdplayer)

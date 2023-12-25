@@ -252,7 +252,7 @@ QPushButton:pressed {
                       <number>6</number>
                      </property>
                      <item row="0" column="0">
-                      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0,0,20">
+                      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,20">
                        <item>
                         <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0">
                          <property name="spacing">
@@ -515,27 +515,6 @@ QPushButton:pressed {
                           </widget>
                          </item>
                         </layout>
-                       </item>
-                       <item>
-                        <widget class="QSlider" name="video_slider_2">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSlider" name="video_slider_5">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QSlider" name="video_slider_3">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                        </widget>
                        </item>
                        <item>
                         <widget class="QTreeWidget" name="video_tree">
@@ -1258,7 +1237,7 @@ QWidget{
                          </spacer>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,10,0,0,0,0,0">
+                         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,10,10,10,10,0,0,0,0,0,0">
                           <property name="spacing">
                            <number>0</number>
                           </property>
@@ -1419,7 +1398,7 @@ QPushButton:pressed {
                            </spacer>
                           </item>
                           <item>
-                           <widget class="QSlider" name="video_slider">
+                           <widget class="QSlider" name="video_slider_2">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -1435,42 +1414,307 @@ QPushButton:pressed {
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLabel" name="video_time">
-                            <property name="font">
-                             <font>
-                              <family>小米兰亭</family>
-                              <pointsize>12</pointsize>
-                             </font>
+                           <widget class="QSlider" name="video_slider_3">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
                             </property>
-                            <property name="text">
-                             <string>--:--</string>
+                            <property name="styleSheet">
+                             <string notr="true"/>
                             </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QLabel" name="label">
-                            <property name="font">
-                             <font>
-                              <family>小米兰亭</family>
-                              <pointsize>12</pointsize>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>/</string>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
                             </property>
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLabel" name="video_time_all">
-                            <property name="font">
-                             <font>
-                              <family>小米兰亭</family>
-                              <pointsize>12</pointsize>
-                             </font>
+                           <widget class="QSlider" name="video_slider_4">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
                             </property>
-                            <property name="text">
-                             <string>--:--</string>
+                            <property name="styleSheet">
+                             <string notr="true"/>
                             </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QSlider" name="video_slider_1">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="styleSheet">
+                             <string notr="true"/>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="label_inf_widget_2" native="true">
+                            <layout class="QGridLayout" name="gridLayout_30">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <item row="0" column="0">
+                              <layout class="QGridLayout" name="gridLayout_29">
+                               <item row="0" column="1">
+                                <widget class="QLabel" name="label_4">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>/</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="2">
+                                <widget class="QLabel" name="video_time_all_2">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="0">
+                                <widget class="QLabel" name="video_time_2">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="label_inf_widget_1" native="true">
+                            <layout class="QGridLayout" name="gridLayout_35">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <item row="0" column="0">
+                              <layout class="QGridLayout" name="gridLayout_36">
+                               <item row="0" column="0">
+                                <widget class="QLabel" name="video_time_1">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="1">
+                                <widget class="QLabel" name="label_7">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>/</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="2">
+                                <widget class="QLabel" name="video_time_all_1">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="label_inf_widget_3" native="true">
+                            <layout class="QGridLayout" name="gridLayout_31">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <item row="0" column="0">
+                              <layout class="QGridLayout" name="gridLayout_32">
+                               <item row="0" column="0">
+                                <widget class="QLabel" name="video_time_3">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="1">
+                                <widget class="QLabel" name="label_5">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>/</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="2">
+                                <widget class="QLabel" name="video_time_all_3">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QWidget" name="label_inf_widget_4" native="true">
+                            <layout class="QGridLayout" name="gridLayout_33">
+                             <property name="leftMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="topMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="rightMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="bottomMargin">
+                              <number>0</number>
+                             </property>
+                             <property name="spacing">
+                              <number>0</number>
+                             </property>
+                             <item row="0" column="0">
+                              <layout class="QGridLayout" name="gridLayout_34">
+                               <item row="0" column="0">
+                                <widget class="QLabel" name="video_time_4">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="1">
+                                <widget class="QLabel" name="label_6">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>/</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="2">
+                                <widget class="QLabel" name="video_time_all_4">
+                                 <property name="font">
+                                  <font>
+                                   <family>小米兰亭</family>
+                                   <pointsize>12</pointsize>
+                                  </font>
+                                 </property>
+                                 <property name="text">
+                                  <string>--:--</string>
+                                 </property>
+                                </widget>
+                               </item>
+                              </layout>
+                             </item>
+                            </layout>
                            </widget>
                           </item>
                           <item>
@@ -2842,7 +3086,17 @@ QPushButton:pressed {
                       <item row="0" column="0">
                        <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="4,10">
                         <item>
-                         <widget class="QListWidget" name="exp_list"/>
+                         <widget class="QListWidget" name="exp_list">
+                          <property name="font">
+                           <font>
+                            <pointsize>12</pointsize>
+                           </font>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">QListWidget::item { border: 2px solid black; }
+/*QListWidget::item { color: red; }*/</string>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <widget class="QLabel" name="expplayer">
@@ -2879,8 +3133,22 @@ QPushButton:pressed {
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
                      </property>
-                     <widget class="QTextEdit" name="exp_inf"/>
-                     <widget class="QTextEdit" name="textEdit_2"/>
+                     <widget class="QTextEdit" name="exp_inf">
+                      <property name="font">
+                       <font>
+                        <family>微软雅黑</family>
+                        <pointsize>10</pointsize>
+                       </font>
+                      </property>
+                     </widget>
+                     <widget class="QTextEdit" name="exp_type">
+                      <property name="font">
+                       <font>
+                        <family>微软雅黑</family>
+                        <pointsize>12</pointsize>
+                       </font>
+                      </property>
+                     </widget>
                     </widget>
                    </item>
                   </layout>
@@ -3334,7 +3602,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>1066</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="system_set">
