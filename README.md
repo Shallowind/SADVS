@@ -13,3 +13,6 @@ pip install -r requirements.txt
 python mainwindow.py 
 ```
 即可编译
+
+### 运行截图
+![location](./resources/UI/running.png)
