@@ -1,36 +1,56 @@
-import argparse
-import os
-import platform
-import sys
-import time
-import threading
-import random
+from PyQt5.QtCore import Qt, pyqtSignal
+from qfluentwidgets import InfoBar, InfoBarPosition
+
+
+def script_method(fn, _rcb=None):
+    return fn
+
+
+def script(obj, optimize=True, _frames_up=0, _rcb=None):
+    return obj
+
+
+import torch.jit
+
+script_method1 = torch.jit.script_method
+script1 = torch.jit.script
+torch.jit.script_method = script_method
+torch.jit.script = script
+
 import json
+import os
+
+os.environ['TORCH_HOME'] = os.path.join(os.getcwd(), 'cache')
+
+import random
+import time
 from datetime import datetime
+from pathlib import Path
 
 import numpy as np
-from pathlib import Path
 import torch
-from PyQt5.QtWidgets import QMessageBox
-
-from deep_sort.deep_sort import DeepSort
-from torchvision.transforms._functional_video import normalize
+from PyQt5.QtGui import QPixmap, QImage
 from pytorchvideo.data.ava import AvaLabeledVideoFramePaths
 from pytorchvideo.models.hub import slowfast_r50_detection
 from pytorchvideo.transforms.functional import (
-    uniform_temporal_subsample,
     short_side_scale_with_boxes,
     clip_boxes_to_image, )
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap, QImage
-from mainwindow import MainWindow
+from torchvision.transforms._functional_video import normalize
+# from ultralytics import YOLO
+
+from PDF import PDF
+from deep_sort.deep_sort import DeepSort
 from models.common import DetectMultiBackend
-from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
-from utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
-                           increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
+from utils.dataloaders import LoadImages, LoadStreams
+from utils.general import (LOGGER, Profile, check_img_size, cv2,
+                           increment_path, non_max_suppression, scale_boxes, xyxy2xywh)
 from utils.myutil import Globals, create_incremental_folder
-from utils.plots import Annotator, colors, save_one_box
+from utils.plots import Annotator
 from utils.torch_utils import select_device, smart_inference_mode
+
+'''
+slowfast 函数，该部分来自yolo_slowfast
+'''
 
 
 def func_slowfast(vid_cap, idx, stack, yolo_pred, img_size, device, video_model):
@@ -87,10 +107,19 @@ def my_uniform_temporal_subsample(
     return torch.index_select(x, temporal_dim, indices)
 
 
-# 对跟踪器进行更新，并返回更新后的结果。
+'''
+使用deepsort更新追踪结果，该部分来自yolo_slowfast
+'''
+
+
 def deepsort_update(Tracker, pred, xywh, np_img):
     outputs = Tracker.update(xywh, pred[:, 4:5], pred[:, 5].tolist(), cv2.cvtColor(np_img, cv2.COLOR_BGR2RGB))
     return outputs
+
+
+'''
+将图像从BGR转RGB并从array转换为tensor，该部分来自yolo_slowfast
+'''
 
 
 def to_tensor(img):
@@ -98,6 +127,11 @@ def to_tensor(img):
     img = torch.from_numpy(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     # 在张量上增加一个维度，以便于处理
     return img.unsqueeze(0)
+
+
+'''
+为slowfast将数据处理为快慢通道，该部分来自yolo_slowfast
+'''
 
 
 def ava_inference_transform(
@@ -150,8 +184,14 @@ def ava_inference_transform(
     return clip, torch.from_numpy(boxes), roi_boxes
 
 
+'''
+主体函数，运行目标检测和动作识别，并带有接口，该部分原创程度高
+'''
+
+
 @smart_inference_mode()
 def run(
+        pdf,  # 创建pdf
         weights='yolov5s.pt',  # 模型路径或triton URL
         source='data/images',  # 文件/目录/URL/glob/screen/0（摄像头）
         data='',  # dataset.yaml路径
@@ -182,7 +222,8 @@ def run(
         show_label=None,  # 显示标签
         use_camera=False,  # 使用摄像头
         show_window=None,  # 显示窗口
-        select_labels=None  # 选择标签
+        select_labels=None,  # 选择标签
+        select_objects=None,  # 选择对象
 ):
     source = str(source)  # 将source转换为字符串类型
     # 目录操作
@@ -204,6 +245,7 @@ def run(
     model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)  # 加载模型
     stride, names, pt = model.stride, model.names, model.pt  # 获取模型的步长、名称和pt值
     imgsz = check_img_size(imgsz, s=stride)  # 检查图像大小
+    time_when_start = time.time()
     # 数据加载器
     bs = 1  # 批次大小
     if webcam:
@@ -226,15 +268,13 @@ def run(
     deepsort_tracker = DeepSort("deep_sort/deep_sort/deep/checkpoint/ckpt.t7")  # 创建 DeepSort 追踪器
     dict_text = {}  # 创建空字典 dict_text
     dict_text_persec = {}  # 创建空字典 dict_text_persec
-    a = time.time()  # 记录当前时间到变量 a
 
     for path, im, im0s, vid_cap, s in dataset:
-        if not Globals.detection_run:
-            return
         # 对于数据集中的每个路径、图像、原始图像、视频捕获和帧编号进行循环
         if not Globals.detection_run:
             # 如果全局变量detection_run为False，则跳出循环
             break
+        # 对于数据集中的每个路径、图像、原始图像、视频捕获和帧编号进行循环
         if use_camera:
             # 如果使用相机
             vid_cap = dataset.cap
@@ -329,9 +369,12 @@ def run(
                     slowfaster_preds = slowfaster_preds.cpu()  # 将slowfaster_preds转为cpu类型，将结果赋值给slowfaster_preds
                 for tid, avalabel in zip(yolo_pred[0][:, 5].tolist(), np.argmax(slowfaster_preds,
                                                                                 axis=1).tolist()):  # 对yolo_pred的第一个维度的第5列进行tolist，以及np.argmax(slowfaster_preds, axis=1).tolist()进行迭代，将迭代出的值分别赋值给tid和avalabel
-                    id_to_ava_labels[tid] = ava_labelnames[
-                        avalabel + 1]  # 将ava_labelnames[avalabel + 1]赋值给id_to_ava_labels[tid]
+
                     id_to_labels[tid] = avalabel + 1  # 将avalabel + 1赋值给id_to_labels[tid]
+                    # 如果
+                    if id_to_labels[tid] in select_labels:
+                        id_to_ava_labels[tid] = ava_labelnames[
+                            avalabel + 1]  # 将ava_labelnames[avalabel + 1]赋值给id_to_ava_labels[tid]
 
             if show_window is not None:
                 show_window.action_list.clear()
@@ -341,11 +384,11 @@ def run(
                 for action in dict_text_persec:
                     # 过滤动作标签
                     try:
-                        # 如果动作标签在选择的标签列表中
-                        if id_to_labels[action] in select_labels:
-                            # 在动作标签列表中添加条目
-                            show_window.action_list.addItem(
-                                f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
+                        # # 如果动作标签在选择的标签列表中
+                        # if id_to_labels[action] in select_labels:
+                        # 在动作标签列表中添加条目
+                        show_window.action_list.addItem(
+                            f"时间：{idx // fps} 动作：{action}-{dict_text_persec[action]}")
                     except KeyError:
                         # 继续循环，跳过不存在的动作标签
                         continue
@@ -353,8 +396,8 @@ def run(
                     # try: if id_to_labels[action] in select_labels: show_window.action_list.addItem(f"时间：{idx //
                     # fps} 动作：{action}-{dict_text_persec[action]}")
 
-        MainWindow.drawLineChart(show_window)
-        MainWindow.drawPieChart(show_window)
+        show_window.drawLineChart()
+        show_window.drawPieChart()
         del dict_text_persec
         dict_text_persec = {}
 
@@ -377,21 +420,27 @@ def run(
                 # 遍历所有识别框
                 for j, (*box, cls, trackid, vx, vy) in enumerate(yolo_pred[0]):
                     if int(cls) != 0:
+                        if int(cls) in select_objects:
+                            continue
                         ava_label = ''
                     elif trackid in id_to_ava_labels.keys():
                         ava_label = id_to_ava_labels[trackid]
                         # 如果cls不为0，将ava_label置为空字符串
                         # 如果trackid在id_to_ava_labels字典的键中，将ava_label置为对应的值
-                    elif trackid not in id_to_labels.keys():
-                        ava_label = 'Unknow'
+                    elif trackid in id_to_labels.keys():
+                        ava_label = ava_labelnames[id_to_labels[trackid]]
                     else:
                         ava_label = 'Unknow'
-                        # 如果trackid在id_to_labels字典的键中，将ava_label置为对应的值
-                        # 否则，将ava_label置为'Unknow'
 
                     # 获取异常图片
-                    if trackid in id_to_ava_labels.keys():
+                    if trackid in id_to_ava_labels.keys() or int(cls) != 0 or (
+                            int(cls) == 0 and trackid not in id_to_labels.keys() and int(cls) not in select_objects):
                         if idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) == 0 and idx != 0:
+                            if int(cls) == 0 and trackid in id_to_ava_labels.keys():
+                                warn_text = f'警告发现异常行为：{Globals.yolo_slowfast_dict[ava_label]}'
+                            else:
+                                warn_text = f'警告发现异常物体：{Globals.yolov5_dict[names[int(cls)]]}'
+                            show_window.warnSignal.emit(warn_text)
                             files = os.listdir(base_path)
                             file_names = [f for f in files if f.endswith('.jpg')]
                             if file_names:
@@ -410,17 +459,28 @@ def run(
 
                             cropped_image = im0[y_min:y_max, x_min:x_max]
                             # 保存异常部分图片
-                            cv2.imwrite(os.path.join(base_path, file_name_str + ".jpg"), cropped_image)
+                            img_path = os.path.join(base_path, file_name_str + ".jpg")
+                            cv2.imwrite(img_path, cropped_image)
                             try:
                                 with open(os.path.join(base_path, file_name_str + ".txt"), "w") as file:
-                                    file.write("秒数 :" + str(idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) + 1) + "\n")
-                                    file.write("编号 :" + str(int(trackid)) + "\n")
-                                    file.write("类别 :" + str(Globals.yolov5_dict[names[int(cls)]]) + "\n")
-                                    file.write("动作 :" + str(Globals.yolo_slowfast_dict[ava_label]) + "\n")
-                                    file.write("坐标 :(" + str(x_min) + "," + str(y_min) + ")")
-                                    file.write("(" + str(x_max) + "," + str(y_max) + ")" + "\n")
+                                    s1 = str(idx % int(vid_cap.get(cv2.CAP_PROP_FPS)) + 1)
+                                    s2 = str(int(trackid))
+                                    s3 = str(Globals.yolov5_dict[names[int(cls)]])
+                                    if ava_label == '':
+                                        s4 = '无'
+                                    else:
+                                        s4 = str(Globals.yolo_slowfast_dict[ava_label])
+                                    s5 = '(' + str(x_min) + "," + str(y_min) + ')'
+                                    s6 = '(' + str(x_max) + "," + str(y_max) + ')'
                                     current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                    file.write("时间 :" + current_datetime + "\n")
+                                    s7 = "时间 :" + current_datetime + "\n"
+                                    data = [img_path, s1, s2, s3, s4, s5 + s6, current_datetime]
+                                    file.write(
+                                        '秒数 :' + s1 + '\n' + '编号 :' + s2 + '\n' + '类别 :' + s3 + '\n' + '动作 :'
+                                        + s4 + '\n' + '坐标 :' + s5 + s6 + '\n' + s7)
+                                    # 获取前面的文本信息
+                                    pdf.pdf_data.append(data)
+
                             except Exception as e:
                                 print(e)
 
@@ -472,17 +532,20 @@ def run(
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps,
                                                         (w, h))  # 创建视频写入器
                     vid_writer[i].write(im0)  # 将图像写入视频
-
-        # 打印时间（只进行推断）
+        # 打印推理所用时间
         LOGGER.info(
             f"{s}{'' if len(det) else '(没有检测结果), '}{time.time() - time_frame_st:.3f}s {time_yolo_end - time_frame_st:.3f}s {time_deepsort_end - time_yolo_end:.3f}s {time.time() - time_deepsort_end:.3f}s")
 
-        # 如果摄像头不再运行并且使用摄像头
+        # 关闭摄像头->退出
         if not Globals.camera_running and use_camera:
             dataset.cap.release()  # 释放摄像头
             break
-
-        # 打开'pred_results.json'文件以供写入
+    time_when_end = time.time()
+    Globals.Identify_use_time = f"{time_when_end - time_when_start:.3f}s"
+    print(f"识别完成！耗时: {Globals.Identify_use_time}")
+    # 打开'pred_results.json'文件以供写入
     with open('pred_results.json', 'w') as json_file:
         # 将dict_text字典写入json_file文件中
         json.dump(dict_text, json_file)
+    Globals.dict_text = {}
+    show_window.saveChart()

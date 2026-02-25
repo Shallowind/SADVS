@@ -1,0 +1,56 @@
+<RCC>
+    <qresource prefix="/gallery">
+        <file>qss/dark/setting_interface.qss</file>
+        <file>qss/light/setting_interface.qss</file>
+        <file>UI/cam_ico.png</file>
+        <file>UI/file.ico</file>
+        <file>UI/file_ico.png</file>
+        <file>UI/folder_ico.ico</file>
+        <file>UI/icon.ico</file>
+        <file>UI/img_ico.ico</file>
+        <file>UI/logo.ico</file>
+        <file>UI/logo.png</file>
+        <file>UI/logo_new.png</file>
+        <file>UI/me.png</file>
+        <file>UI/MMX.png</file>
+        <file>UI/pause_ico.png</file>
+        <file>UI/pause_ico_1.png</file>
+        <file>UI/play_ico.png</file>
+        <file>UI/play_ico_1.png</file>
+        <file>UI/running.png</file>
+        <file>UI/text_ico.png</file>
+        <file>UI/video_ico.png</file>
+        <file>qss/dark/demo.qss</file>
+        <file>qss/light/demo.qss</file>
+        <file>op_icon/add.png</file>
+        <file>op_icon/add_1.png</file>
+        <file>op_icon/alarm.png</file>
+        <file>op_icon/alarm_1.png</file>
+        <file>op_icon/clear.png</file>
+        <file>op_icon/clear_1.png</file>
+        <file>op_icon/delete-file.png</file>
+        <file>op_icon/delete-file_1.png</file>
+        <file>op_icon/edit.png</file>
+        <file>op_icon/edit_1.png</file>
+        <file>op_icon/exit.png</file>
+        <file>op_icon/file.png</file>
+        <file>op_icon/file_1.png</file>
+        <file>op_icon/folder.png</file>
+        <file>op_icon/folder_1.png</file>
+        <file>op_icon/next.png</file>
+        <file>op_icon/prev.png</file>
+        <file>op_icon/rename.png</file>
+        <file>op_icon/rename_1.png</file>
+        <file>op_icon/save.png</file>
+        <file>op_icon/save_1.png</file>
+        <file>op_icon/search.png</file>
+        <file>op_icon/search-1.png</file>
+        <file>op_icon/terminal.png</file>
+        <file>op_icon/terminal_1.png</file>
+        <file>op_icon/workspace.png</file>
+        <file>op_icon/workspace_1.png</file>
+        <file>qss/light/gallery_interface.qss</file>
+        <file>qss/dark/gallery_interface.qss</file>
+    </qresource>
+</RCC>
+

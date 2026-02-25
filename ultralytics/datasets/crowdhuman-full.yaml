@@ -1,0 +1,7 @@
+train: /home/qdu/datasets/CrowdHuman_Fullbody/images/train
+val: /home/qdu/datasets/CrowdHuman_Fullbody/images/val
+
+
+names:
+  0: head
+  1: Fullbody

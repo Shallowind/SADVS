@@ -164,7 +164,7 @@ class Video(QWidget):
             self.video_path = video_path
         self.player = cv2.VideoCapture(self.video_path)
         self.fps = self.player.get(cv2.CAP_PROP_FPS)
-        self.timer_cv.setInterval(self.fps)  # 1000毫秒 = 1秒
+        self.timer_cv.setInterval(int(self.fps))  # 1000i毫秒 = 1秒
 
     def show_frame(self, frame):
         show = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

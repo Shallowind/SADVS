@@ -1,0 +1,76 @@
+MinimizeButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: white;
+    qproperty-hoverBackgroundColor: rgba(255, 255, 255, 26);
+    qproperty-pressedColor: white;
+    qproperty-pressedBackgroundColor: rgba(255, 255, 255, 51)
+}
+
+
+MaximizeButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+    qproperty-hoverColor: white;
+    qproperty-hoverBackgroundColor: rgba(255, 255, 255, 26);
+    qproperty-pressedColor: white;
+    qproperty-pressedBackgroundColor: rgba(255, 255, 255, 51)
+}
+
+CloseButton {
+    qproperty-normalColor: white;
+    qproperty-normalBackgroundColor: transparent;
+}
+
+StandardTitleBar > QLabel {
+    color: white;
+}
+
+UserWidget, #scrollWidget {
+    background-color: transparent;
+}
+
+SettingInterface, #scrollWidget {
+    background-color: transparent;
+}
+
+QScrollArea {
+    border: none;
+    background-color: transparent;
+}
+
+MainWindow{
+    background: #202020;
+}
+
+User_management{
+    background: rgb(39, 39, 39);
+}
+
+ModelSettings{
+    background: rgb(39, 39, 39);
+}
+
+SmoothScrollArea {
+    background-color: transparent;
+}
+
+QTableWidget {
+    background-color: #202020;
+    border: 1px solid #2b2b2b;
+    border-radius: 5px;
+    outline: 0;
+    padding-right: 5px;
+    /* font: 13px 'Segoe UI', 'Microsoft YaHei'; */
+    selection-background-color: transparent;
+}
+
+QTreeWidget {
+    background-color: #272727;
+    border: 1px solid #2b2b2b;
+    border-radius: 5px;
+    outline: 0;
+    padding-right: 5px;
+    /* font: 13px 'Segoe UI', 'Microsoft YaHei'; */
+    selection-background-color: transparent;
+}

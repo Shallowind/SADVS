@@ -1,0 +1,35 @@
+{
+  "yolo_slowfast": {
+    "model_select": "yolo_slowfast",
+    "labels": "\u4ea4\u901a",
+    "pt_path": "yolo_slowfast",
+    "save_path": "D:/0000/sadvs/result",
+    "max_det": 80,
+    "pdf_save_path": "D:/0000/sadvs/result",
+    "conf": 0.4,
+    "iou": 0.5,
+    "line_thickness": 3
+  },
+  "yolov5": {
+    "model_select": "yolov5",
+    "labels": "yolov5",
+    "pt_path": "yolov5",
+    "save_path": "D:/0000/sadvs/result",
+    "max_det": 80,
+    "pdf_save_path": "D:/0000/sadvs/result",
+    "conf": 0.4,
+    "iou": 0.5,
+    "line_thickness": 3
+  },
+  "yolov8_BRA_DCNv3": {
+    "model_select": "yolov8_BRA_DCNv3",
+    "labels": "yolov8_BRA_DCNv3",
+    "pt_path": "yolov8_BRA_DCNv3",
+    "save_path": "D:/0000/sadvs/result",
+    "max_det": 80,
+    "pdf_save_path": "D:/0000/sadvs/result",
+    "conf": 0.4,
+    "iou": 0.5,
+    "line_thickness": 3
+  }
+}

@@ -1,0 +1,7 @@
+train: /home/qdu/datasets/AVA_YOLO/images/train
+val: /home/qdu/datasets/AVA_YOLO/images/val
+
+
+names:
+  0: head
+  1: Human

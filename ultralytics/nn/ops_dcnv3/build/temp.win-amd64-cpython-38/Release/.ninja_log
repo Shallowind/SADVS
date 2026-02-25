@@ -1,0 +1,4 @@
+# ninja log v5
+8	6187	7354330599148919	D:/0000/sadvs/ultralytics/nn/ops_dcnv3/build/temp.win-amd64-cpython-38/Release/0000/sadvs/ultralytics/nn/ops_dcnv3/src/cpu/dcnv3_cpu.obj	697c8e67aa298765
+1	16594	7354330703115972	D:/0000/sadvs/ultralytics/nn/ops_dcnv3/build/temp.win-amd64-cpython-38/Release/0000/sadvs/ultralytics/nn/ops_dcnv3/src/vision.obj	169f4c9bcaa7b39b
+6	51501	7354331050378282	D:/0000/sadvs/ultralytics/nn/ops_dcnv3/build/temp.win-amd64-cpython-38/Release/0000/sadvs/ultralytics/nn/ops_dcnv3/src/cuda/dcnv3_cuda.obj	aab7a09b498918f3

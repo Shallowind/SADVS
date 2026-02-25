@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>760</width>
+    <height>602</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
+     <item>
+      <widget class="TitleLabel" name="TitleLabel">
+       <property name="text">
+        <string>安全管理评估指标</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>总承包企业资质               </string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="ComboBox" name="ComboBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_6">
+         <property name="text">
+          <string>专项施工方案 </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_2">
+         <property name="text">
+          <string>专业及劳务分包企业资质</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_7">
+         <property name="text">
+          <string>作业人员经验 </string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_4">
+         <property name="text">
+          <string>安全管理人员配备 </string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_3">
+         <property name="text">
+          <string>历史事故情况</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="ComboBox" name="ComboBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel_5">
+         <property name="text">
+          <string>安全投入 </string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="ComboBox" name="ComboBox_7"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="ComboBox" name="ComboBox_3"/>
+       </item>
+       <item row="4" column="1">
+        <widget class="ComboBox" name="ComboBox_4"/>
+       </item>
+       <item row="5" column="1">
+        <widget class="ComboBox" name="ComboBox_6"/>
+       </item>
+       <item row="6" column="1">
+        <widget class="ComboBox" name="ComboBox_5"/>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CaptionLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>TitleLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>model_settings</class>
+ <widget class="QDialog" name="model_settings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>939</width>
+    <height>621</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
+     <property name="spacing">
+      <number>5</number>
+     </property>
+     <property name="leftMargin">
+      <number>5</number>
+     </property>
+     <property name="topMargin">
+      <number>5</number>
+     </property>
+     <property name="rightMargin">
+      <number>5</number>
+     </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>30</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="15" column="2">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="4">
+        <widget class="ToolButton" name="pdf_button"/>
+       </item>
+       <item row="7" column="0">
+        <widget class="CaptionLabel" name="label_3">
+         <property name="text">
+          <string>选择模型</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="4">
+        <widget class="ToolButton" name="pt_select_button"/>
+       </item>
+       <item row="10" column="2">
+        <widget class="CompactSpinBox" name="max_size_comboBox">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="singleStep">
+          <number>10</number>
+         </property>
+         <property name="value">
+          <number>40</number>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="CaptionLabel" name="label_8">
+         <property name="text">
+          <string>置信度</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="LineEdit" name="pdf_save_path"/>
+       </item>
+       <item row="11" column="2">
+        <widget class="CompactDoubleSpinBox" name="conf_doubleSpinBox">
+         <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.400000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="CaptionLabel" name="label_4">
+         <property name="text">
+          <string>标签集</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="ToolButton" name="save_address_button"/>
+       </item>
+       <item row="12" column="0">
+        <widget class="CaptionLabel" name="label_9">
+         <property name="text">
+          <string>iou(交并比)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="4">
+        <widget class="ToolButton" name="iou"/>
+       </item>
+       <item row="2" column="2">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="6" column="2">
+        <widget class="LineEdit" name="pt_edit"/>
+       </item>
+       <item row="9" column="2">
+        <widget class="ComboBox" name="object_combox"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="CaptionLabel" name="label">
+         <property name="text">
+          <string>视频保存地址</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="LineEdit" name="save_address_edit"/>
+       </item>
+       <item row="5" column="0">
+        <widget class="CaptionLabel" name="label_5">
+         <property name="text">
+          <string>识别报告保存地址</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="4">
+        <widget class="ToolButton" name="line_thickness_button"/>
+       </item>
+       <item row="9" column="0">
+        <widget class="CaptionLabel" name="CaptionLabel">
+         <property name="text">
+          <string>物体标签</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="2">
+        <widget class="CompactSpinBox" name="line_thickness">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="4">
+        <widget class="ToolButton" name="conf"/>
+       </item>
+       <item row="10" column="4">
+        <widget class="ToolButton" name="max_size"/>
+       </item>
+       <item row="0" column="2">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="SubtitleLabel" name="SubtitleLabel">
+           <property name="text">
+            <string>识别预设</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="ComboBox" name="define_conbox"/>
+         </item>
+         <item>
+          <widget class="ToolButton" name="preinf"/>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="12" column="2">
+        <widget class="CompactDoubleSpinBox" name="iou_doubleSpinBox">
+         <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="stepType">
+          <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+         </property>
+         <property name="value">
+          <double>0.400000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="CaptionLabel" name="label_10">
+         <property name="text">
+          <string>识别框线条大小</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="ComboBox" name="label_combox"/>
+       </item>
+       <item row="7" column="4">
+        <widget class="ToolButton" name="model_select_button"/>
+       </item>
+       <item row="7" column="2">
+        <widget class="ComboBox" name="model_combox"/>
+       </item>
+       <item row="6" column="0">
+        <widget class="CaptionLabel" name="label_2">
+         <property name="text">
+          <string>选择权重</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="4">
+        <widget class="ToolButton" name="labels_select_button"/>
+       </item>
+       <item row="10" column="0">
+        <widget class="CaptionLabel" name="label_7">
+         <property name="text">
+          <string>最大识别数量</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="4">
+        <widget class="ToolButton" name="object_button"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QWidget" name="widget" native="true">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="spacing">
+           <number>50</number>
+          </property>
+          <property name="leftMargin">
+           <number>10</number>
+          </property>
+          <property name="rightMargin">
+           <number>10</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PushButton" name="save_button">
+            <property name="text">
+             <string>保存</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="PushButton" name="begin">
+            <property name="text">
+             <string>开始识别</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ComboBox</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>QPushButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>ToolButton</class>
+   <extends>QToolButton</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CaptionLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>SubtitleLabel</class>
+   <extends>QLabel</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CompactSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+  <customwidget>
+   <class>CompactDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>qfluentwidgets</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

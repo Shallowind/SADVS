@@ -1,0 +1,27 @@
+{
+    "Material": {
+        "AcrylicBlurRadius": 30
+    },
+    "Update": {
+        "CheckUpdateAtStartUp": true
+    },
+    "Folders": {
+        "Download": "D:/0000/sadvs/result",
+        "LocalMusic": []
+    },
+    "MainWindow": {
+        "DpiScale": 2,
+        "Language": "zh_CN"
+    },
+    "QFluentWidgets": {
+        "identifyType": "YOLOv5",
+        "labelType": "YOLOv5",
+        "numType": 20,
+        "ThemeColor": "#ff009faa",
+        "ThemeMode": "Dark",
+        "weightsType": "YOLOv5"
+    },
+    "SettingInterface": {
+        "MicaEnabled": true
+    }
+}

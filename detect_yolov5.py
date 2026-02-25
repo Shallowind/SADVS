@@ -1,3 +1,18 @@
+def script_method(fn, _rcb=None):
+    return fn
+
+
+def script(obj, optimize=True, _frames_up=0, _rcb=None):
+    return obj
+
+
+import torch.jit
+script_method1 = torch.jit.script_method
+script1 = torch.jit.script
+torch.jit.script_method = script_method
+torch.jit.script = script
+
+
 import argparse
 import os
 import platform
@@ -20,6 +35,7 @@ from utils.torch_utils import select_device, smart_inference_mode
 
 @smart_inference_mode()
 def run(
+        pdf,  # 创建pdf
         weights='yolov5s.pt',  # 模型路径或triton URL
         source='data/images',  # 文件/目录/URL/glob/screen/0（摄像头）
         data='',  # dataset.yaml路径
@@ -198,6 +214,6 @@ def run(
         LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
 
         # 关闭摄像头->退出
-        if not Globals.camera_running and use_camera:
+        if not Globals.detection_run or (not Globals.camera_running and use_camera):
             dataset.cap.release()  # 释放摄像头
             break

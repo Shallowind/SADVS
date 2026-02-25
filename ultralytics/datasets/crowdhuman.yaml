@@ -1,0 +1,7 @@
+train: /home/qdu/datasets/CrowdHuman/images/train
+val: /home/qdu/datasets/CrowdHuman/images/val
+
+
+names:
+  0: head
+  1: Vperson
