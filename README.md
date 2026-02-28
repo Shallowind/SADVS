@@ -87,11 +87,8 @@ pip install -r requirements.txt
 # 创建模型目录
 mkdir -p weights
 
-# 下载YOLOv5权重 (示例)
+# 下载YOLOv5权重
 wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5s.pt -O weights/yolov5s.pt
-
-# 下载SlowFast配置
-# 请参考 models/README.md 获取完整模型列表
 ```
 
 #### 5. 运行应用
@@ -99,9 +96,6 @@ wget https://github.com/ultralytics/yolov5/releases/download/v6.2/yolov5s.pt -O 
 ```bash
 # 启动主程序
 python TransDetecter.py
-
-# 或启动简化版
-python main.py
 ```
 
 ---
@@ -285,7 +279,7 @@ device = 'cpu'  # 仅使用CPU
 ### 项目结构
 
 ```
-e-shi-ping-an/
+SADVS/
 ├── UI/                      # UI界面文件
 │   ├── centralwidget.py     # 主界面布局
 │   ├── VdWidget.py         # 视频显示组件
@@ -410,4 +404,5 @@ SOFTWARE.
 
 <p align="center">
   Made with ❤️ by e视平安团队
+
 </p>
